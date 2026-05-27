@@ -1,0 +1,39 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: lms-postgres
+    restart: unless-stopped
+    ports:
+      - '5433:5432'
+    environment:
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_DATABASE:-lms_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - lms-network
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: lms-pgadmin
+    restart: unless-stopped
+    ports:
+      - '5050:80'
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@lms.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - lms-network
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
+  pgadmin_data:
+
+networks:
+  lms-network:
+    driver: bridge
