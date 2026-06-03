@@ -4,6 +4,6 @@ export abstract class UserRepositoryPort {
   abstract findById(id: string): Promise<UserEntity | null>;
   abstract findByEmail(email: string): Promise<UserEntity | null>;
   abstract save(user: UserEntity): Promise<UserEntity>;
-  abstract findPaginated(page: number, limit: number): Promise<{ data: UserEntity[], total: number }>;
+  abstract findPaginated(page: number, limit: number, role?: string): Promise<{ data: UserEntity[], total: number }>;
   abstract softDelete(id: string): Promise<void>;
 }

@@ -28,8 +28,10 @@ export class UserPostgresRepository implements UserRepositoryPort {
     return UserOrmEntity.toDomain(saved);
   }
 
-  async findPaginated(page: number, limit: number): Promise<{ data: UserEntity[], total: number }> {
+  async findPaginated(page: number, limit: number, role?: string): Promise<{ data: UserEntity[], total: number }> {
+    const whereClause = role ? { role: { name: role } } : {};
     const [ormEntities, total] = await this.repository.findAndCount({
+      where: whereClause,
       skip: (page - 1) * limit,
       take: limit,
       order: { createdAt: 'DESC' },

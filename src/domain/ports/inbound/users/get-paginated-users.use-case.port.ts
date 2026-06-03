@@ -4,6 +4,7 @@ import { PaginatedResponse } from '../../../../common/pagination/pagination.resp
 export interface GetPaginatedUsersCommand {
   page: number;
   limit: number;
+  role?: string;
 }
 
 export abstract class GetPaginatedUsersUseCasePort {

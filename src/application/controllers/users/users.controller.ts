@@ -27,10 +27,10 @@ export class UsersController {
 
   @Get()
   @Roles('admin')
-  async findAll(@Query('page') page: string = '1', @Query('limit') limit: string = '10', @Request() req) {
+  async findAll(@Query('page') page: string = '1', @Query('limit') limit: string = '10', @Query('role') role: string | undefined, @Request() req) {
     const host = req.headers.host || 'localhost:3000';
     const result = await this.getPaginatedUsersUseCase.execute(
-      { page: parseInt(page, 10), limit: parseInt(limit, 10) },
+      { page: parseInt(page, 10), limit: parseInt(limit, 10), role },
       host
     );
     return {
@@ -41,7 +41,8 @@ export class UsersController {
 
   @Get('me')
   async getProfile(@Request() req) {
-    return req.user;
+    const user = await this.getUserByIdUseCase.execute(req.user.id);
+    return UserResponseDto.fromEntity(user);
   }
 
   @Get(':id')
