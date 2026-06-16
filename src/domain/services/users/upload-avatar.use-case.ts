@@ -10,13 +10,19 @@ export class UploadAvatarUseCase implements UploadAvatarUseCasePort {
     private readonly imageUploadService: ImageUploadPort,
   ) {}
 
-  async execute(userId: string, fileBuffer: Buffer): Promise<{ user: UserEntity }> {
+  async execute(
+    userId: string,
+    fileBuffer: Buffer,
+  ): Promise<{ user: UserEntity }> {
     const user = await this.userRepository.findById(userId);
     if (!user) {
       throw new NotFoundException('Usuario no encontrado');
     }
 
-    const avatarUrl = await this.imageUploadService.uploadImage(fileBuffer, `lms/avatars/${userId}`);
+    const avatarUrl = await this.imageUploadService.uploadImage(
+      fileBuffer,
+      `lms/avatars/${userId}`,
+    );
 
     const updatedUser = new UserEntity(
       user.id,

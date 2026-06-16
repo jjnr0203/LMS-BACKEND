@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { TokenGeneratorPort, TokenPayload } from '../../../domain/ports/outbound/auth/token-generator.port';
+import {
+  TokenGeneratorPort,
+  TokenPayload,
+} from '../../../domain/ports/outbound/auth/token-generator.port';
+import type { SignOptions } from 'jsonwebtoken';
 
 @Injectable()
 export class JwtTokenGenerator implements TokenGeneratorPort {
@@ -11,17 +15,31 @@ export class JwtTokenGenerator implements TokenGeneratorPort {
   ) {}
 
   generateAccessToken(payload: TokenPayload): string {
-    return this.jwtService.sign({ ...payload, type: 'access' }, {
-      secret: this.configService.get<string>('JWT_SECRET'),
-      expiresIn: this.configService.get<string>('JWT_EXPIRES_IN', '15m') as any,
-    });
+    const expiresIn = this.configService.get<string>(
+      'JWT_EXPIRES_IN',
+      '15m',
+    ) as unknown as SignOptions['expiresIn'];
+    return this.jwtService.sign(
+      { ...payload, type: 'access' },
+      {
+        secret: this.configService.get<string>('JWT_SECRET'),
+        expiresIn,
+      },
+    );
   }
 
   generateRefreshToken(payload: TokenPayload): string {
-    return this.jwtService.sign({ ...payload, type: 'refresh' }, {
-      secret: this.configService.get<string>('JWT_SECRET'),
-      expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRES_IN', '7d') as any,
-    });
+    const expiresIn = this.configService.get<string>(
+      'JWT_REFRESH_EXPIRES_IN',
+      '7d',
+    ) as unknown as SignOptions['expiresIn'];
+    return this.jwtService.sign(
+      { ...payload, type: 'refresh' },
+      {
+        secret: this.configService.get<string>('JWT_SECRET'),
+        expiresIn,
+      },
+    );
   }
 
   verifyAccessToken(token: string): TokenPayload {

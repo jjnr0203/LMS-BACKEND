@@ -1,5 +1,21 @@
-import { Controller, Get, Put, Patch, Delete, Body, Param, Query, UseGuards, Request, Post, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Put,
+  Patch,
+  Delete,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  Request as ReqDecorator,
+  Post,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Request } from 'express';
 import { JwtAuthGuard } from '../../../infrastructure/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../infrastructure/auth/guards/roles.guard';
 import { Roles } from '../../../infrastructure/auth/decorators/roles.decorator';
@@ -12,6 +28,10 @@ import { UploadAvatarUseCase } from '../../../domain/services/users/upload-avata
 import { UpdateUserDto } from '../../dto/users/update-user.dto';
 import { UpdatePasswordDto } from '../../dto/users/update-password.dto';
 import { UserResponseDto } from '../../dto/users/user-response.dto';
+
+interface AuthenticatedRequest extends Request {
+  user: { id: string; email: string; role: string };
+}
 
 @Controller('users')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -27,20 +47,25 @@ export class UsersController {
 
   @Get()
   @Roles('admin')
-  async findAll(@Query('page') page: string = '1', @Query('limit') limit: string = '10', @Query('role') role: string | undefined, @Request() req) {
+  async findAll(
+    @Query('page') page: string = '1',
+    @Query('limit') limit: string = '10',
+    @Query('role') role: string | undefined,
+    @ReqDecorator() req: AuthenticatedRequest,
+  ) {
     const host = req.headers.host || 'localhost:3000';
     const result = await this.getPaginatedUsersUseCase.execute(
       { page: parseInt(page, 10), limit: parseInt(limit, 10), role },
-      host
+      host,
     );
     return {
       ...result,
-      data: result.data.map(user => UserResponseDto.fromEntity(user)),
+      data: result.data.map((user) => UserResponseDto.fromEntity(user)),
     };
   }
 
   @Get('me')
-  async getProfile(@Request() req) {
+  async getProfile(@ReqDecorator() req: AuthenticatedRequest) {
     const user = await this.getUserByIdUseCase.execute(req.user.id);
     return UserResponseDto.fromEntity(user);
   }
@@ -54,19 +79,29 @@ export class UsersController {
 
   @Post('me/avatar')
   @UseInterceptors(FileInterceptor('file'))
-  async uploadAvatar(@UploadedFile() file: Express.Multer.File, @Request() req) {
+  async uploadAvatar(
+    @UploadedFile() file: Express.Multer.File,
+    @ReqDecorator() req: AuthenticatedRequest,
+  ) {
     if (!file) {
       throw new BadRequestException('Ningún archivo enviado');
     }
-    const { user } = await this.uploadAvatarUseCase.execute(req.user.id, file.buffer);
+    const { user } = await this.uploadAvatarUseCase.execute(
+      req.user.id,
+      file.buffer,
+    );
     return {
       message: 'Avatar actualizado exitosamente',
-      user: UserResponseDto.fromEntity(user)
+      user: UserResponseDto.fromEntity(user),
     };
   }
 
   @Put(':id')
-  async updateUser(@Param('id') id: string, @Body() dto: UpdateUserDto, @Request() req) {
+  async updateUser(
+    @Param('id') id: string,
+    @Body() dto: UpdateUserDto,
+    @ReqDecorator() req: AuthenticatedRequest,
+  ) {
     if (req.user.role !== 'admin' && req.user.id !== id) {
       throw new Error('Unauthorized to update this user');
     }
@@ -75,7 +110,10 @@ export class UsersController {
   }
 
   @Patch('me/password')
-  async updatePassword(@Body() dto: UpdatePasswordDto, @Request() req) {
+  async updatePassword(
+    @Body() dto: UpdatePasswordDto,
+    @ReqDecorator() req: AuthenticatedRequest,
+  ) {
     await this.updatePasswordUseCase.execute({
       id: req.user.id,
       currentPassword: dto.currentPassword,

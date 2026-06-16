@@ -4,6 +4,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './application/modules/auth.module';
 import { UsersModule } from './application/modules/users.module';
+import { AdminModule } from './application/modules/admin.module';
+import { CoordinatorModule } from './application/modules/coordinator.module';
+import { TreasuryModule } from './application/modules/treasury.module';
+import { TeacherModule } from './application/modules/teacher.module';
 import { DatabaseModule } from './application/modules/database.module';
 
 @Module({
@@ -12,6 +16,10 @@ import { DatabaseModule } from './application/modules/database.module';
     DatabaseModule,
     AuthModule,
     UsersModule,
+    AdminModule,
+    CoordinatorModule,
+    TreasuryModule,
+    TeacherModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,11 +1,15 @@
-import { LoginUseCasePort, LoginCommand, LoginResult } from '../../ports/inbound/auth/login.use-case.port';
+import {
+  LoginUseCasePort,
+  LoginCommand,
+  LoginResult,
+} from '../../ports/inbound/auth/login.use-case.port';
 import { UserRepositoryPort } from '../../ports/outbound/users/user-repository.port';
 import { PasswordHasherPort } from '../../ports/outbound/auth/password-hasher.port';
 import { TokenGeneratorPort } from '../../ports/outbound/auth/token-generator.port';
 import { RefreshTokenRepositoryPort } from '../../ports/outbound/auth/refresh-token-repository.port';
 import { RoleRepositoryPort } from '../../ports/outbound/users/role-repository.port';
 import { RefreshTokenEntity } from '../../entities/auth/refresh-token.entity';
-import { UnauthorizedException } from '@nestjs/common';
+import { UnauthorizedException, ForbiddenException } from '@nestjs/common';
 import * as crypto from 'crypto';
 
 export class LoginUseCase implements LoginUseCasePort {
@@ -20,8 +24,8 @@ export class LoginUseCase implements LoginUseCasePort {
   async execute(command: LoginCommand): Promise<LoginResult> {
     // Determine if input is cedula (only digits) or email
     const isEmail = command.emailOrCedula.includes('@');
-    
-    const user = isEmail 
+
+    const user = isEmail
       ? await this.userRepository.findByEmail(command.emailOrCedula)
       : await this.userRepository.findById(command.emailOrCedula);
 
@@ -30,10 +34,15 @@ export class LoginUseCase implements LoginUseCasePort {
     }
 
     if (!user.isActive) {
-      throw new Error('User is inactive');
+      throw new ForbiddenException(
+        'Su cuenta ha sido suspendida por falta de pago. Contacte a tesorería.',
+      );
     }
 
-    const isPasswordValid = await this.passwordHasher.compare(command.passwordRaw, user.passwordHash);
+    const isPasswordValid = await this.passwordHasher.compare(
+      command.passwordRaw,
+      user.passwordHash,
+    );
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -50,13 +59,14 @@ export class LoginUseCase implements LoginUseCasePort {
     };
 
     const accessToken = this.tokenGenerator.generateAccessToken(payload);
-    const refreshTokenString = this.tokenGenerator.generateRefreshToken(payload);
+    const refreshTokenString =
+      this.tokenGenerator.generateRefreshToken(payload);
 
     const refreshTokenEntity = new RefreshTokenEntity(
       crypto.randomUUID(), // id
       refreshTokenString,
       user.id,
-      new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days expiration for DB tracking
+      new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days expiration for DB tracking
     );
 
     await this.refreshTokenRepository.save(refreshTokenEntity);

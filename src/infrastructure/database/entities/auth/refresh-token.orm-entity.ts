@@ -7,7 +7,7 @@ export class RefreshTokenOrmEntity {
   @PrimaryColumn({ type: 'uuid' })
   id: string;
 
-  @Column({ type: 'varchar', length: 255, unique: true })
+  @Column({ type: 'varchar', length: 500 })
   token: string;
 
   @Column({ type: 'varchar', length: 20, name: 'user_id' })

@@ -15,11 +15,18 @@ export class RefreshUseCase implements RefreshUseCasePort {
     private readonly roleRepository: RoleRepositoryPort,
   ) {}
 
-  async execute(tokenString: string): Promise<{ accessToken: string; refreshToken: string }> {
+  async execute(
+    tokenString: string,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
     // 1. Find token in DB
-    const tokenEntity = await this.refreshTokenRepository.findByToken(tokenString);
-    
-    if (!tokenEntity || tokenEntity.isRevoked || tokenEntity.expiresAt < new Date()) {
+    const tokenEntity =
+      await this.refreshTokenRepository.findByToken(tokenString);
+
+    if (
+      !tokenEntity ||
+      tokenEntity.isRevoked ||
+      tokenEntity.expiresAt < new Date()
+    ) {
       throw new UnauthorizedException('Token de refresco inválido o expirado');
     }
 
@@ -45,13 +52,14 @@ export class RefreshUseCase implements RefreshUseCasePort {
     };
 
     const newAccessToken = this.tokenGenerator.generateAccessToken(payload);
-    const newRefreshTokenString = this.tokenGenerator.generateRefreshToken(payload);
+    const newRefreshTokenString =
+      this.tokenGenerator.generateRefreshToken(payload);
 
     const newRefreshTokenEntity = new RefreshTokenEntity(
       crypto.randomUUID(),
       newRefreshTokenString,
       user.id,
-      new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+      new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     );
 
     await this.refreshTokenRepository.save(newRefreshTokenEntity);

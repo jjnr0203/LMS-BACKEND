@@ -43,10 +43,12 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(@Body() dto: LoginDto) {
-    const { user, accessToken, refreshToken } = await this.loginUseCase.execute({
-      emailOrCedula: dto.emailOrCedula,
-      passwordRaw: dto.password,
-    });
+    const { user, accessToken, refreshToken } = await this.loginUseCase.execute(
+      {
+        emailOrCedula: dto.emailOrCedula,
+        passwordRaw: dto.passwordRaw,
+      },
+    );
 
     return {
       user: {

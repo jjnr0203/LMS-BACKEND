@@ -8,5 +8,8 @@ export interface GetPaginatedUsersCommand {
 }
 
 export abstract class GetPaginatedUsersUseCasePort {
-  abstract execute(command: GetPaginatedUsersCommand, host: string): Promise<PaginatedResponse<UserEntity>>;
+  abstract execute(
+    command: GetPaginatedUsersCommand,
+    host: string,
+  ): Promise<PaginatedResponse<UserEntity>>;
 }

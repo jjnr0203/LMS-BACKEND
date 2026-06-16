@@ -1,4 +1,7 @@
-import { RegisterUseCasePort, RegisterCommand } from '../../ports/inbound/auth/register.use-case.port';
+import {
+  RegisterUseCasePort,
+  RegisterCommand,
+} from '../../ports/inbound/auth/register.use-case.port';
 import { UserRepositoryPort } from '../../ports/outbound/users/user-repository.port';
 import { RoleRepositoryPort } from '../../ports/outbound/users/role-repository.port';
 import { PasswordHasherPort } from '../../ports/outbound/auth/password-hasher.port';
@@ -20,7 +23,9 @@ export class RegisterUseCase implements RegisterUseCasePort {
     }
 
     // Check if user exists by email
-    const existingByEmail = await this.userRepository.findByEmail(command.email);
+    const existingByEmail = await this.userRepository.findByEmail(
+      command.email,
+    );
     if (existingByEmail) {
       throw new BadRequestException('Ya existe un usuario con este email');
     }

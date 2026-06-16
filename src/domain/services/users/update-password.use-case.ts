@@ -1,4 +1,7 @@
-import { UpdatePasswordUseCasePort, UpdatePasswordCommand } from '../../ports/inbound/users/update-password.use-case.port';
+import {
+  UpdatePasswordUseCasePort,
+  UpdatePasswordCommand,
+} from '../../ports/inbound/users/update-password.use-case.port';
 import { UserRepositoryPort } from '../../ports/outbound/users/user-repository.port';
 import { PasswordHasherPort } from '../../ports/outbound/auth/password-hasher.port';
 import { UserEntity } from '../../entities/users/user.entity';
@@ -17,7 +20,10 @@ export class UpdatePasswordUseCase implements UpdatePasswordUseCasePort {
     }
 
     if (command.currentPassword) {
-      const isMatch = await this.passwordHasher.compare(command.currentPassword, user.passwordHash);
+      const isMatch = await this.passwordHasher.compare(
+        command.currentPassword,
+        user.passwordHash,
+      );
       if (!isMatch) {
         throw new UnauthorizedException('La contraseña actual es incorrecta');
       }

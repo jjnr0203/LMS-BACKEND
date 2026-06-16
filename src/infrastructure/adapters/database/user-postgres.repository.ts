@@ -13,12 +13,18 @@ export class UserPostgresRepository implements UserRepositoryPort {
   ) {}
 
   async findById(id: string): Promise<UserEntity | null> {
-    const ormEntity = await this.repository.findOne({ where: { id }, withDeleted: true });
+    const ormEntity = await this.repository.findOne({
+      where: { id },
+      withDeleted: true,
+    });
     return ormEntity ? UserOrmEntity.toDomain(ormEntity) : null;
   }
 
   async findByEmail(email: string): Promise<UserEntity | null> {
-    const ormEntity = await this.repository.findOne({ where: { email }, withDeleted: true });
+    const ormEntity = await this.repository.findOne({
+      where: { email },
+      withDeleted: true,
+    });
     return ormEntity ? UserOrmEntity.toDomain(ormEntity) : null;
   }
 
@@ -28,7 +34,11 @@ export class UserPostgresRepository implements UserRepositoryPort {
     return UserOrmEntity.toDomain(saved);
   }
 
-  async findPaginated(page: number, limit: number, role?: string): Promise<{ data: UserEntity[], total: number }> {
+  async findPaginated(
+    page: number,
+    limit: number,
+    role?: string,
+  ): Promise<{ data: UserEntity[]; total: number }> {
     const whereClause = role ? { role: { name: role } } : {};
     const [ormEntities, total] = await this.repository.findAndCount({
       where: whereClause,
@@ -36,7 +46,7 @@ export class UserPostgresRepository implements UserRepositoryPort {
       take: limit,
       order: { createdAt: 'DESC' },
     });
-    return { data: ormEntities.map(UserOrmEntity.toDomain), total };
+    return { data: ormEntities.map((e) => UserOrmEntity.toDomain(e)), total };
   }
 
   async softDelete(id: string): Promise<void> {
