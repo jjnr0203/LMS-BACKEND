@@ -1,4 +1,4 @@
-import { RefreshTokenEntity } from '../../../entities/auth/refresh-token.entity';
+import { RefreshTokenEntity } from '@domain/entities/auth/refresh-token.entity';
 
 export abstract class RefreshTokenRepositoryPort {
   abstract save(token: RefreshTokenEntity): Promise<RefreshTokenEntity>;

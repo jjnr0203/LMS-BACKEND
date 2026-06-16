@@ -1,4 +1,4 @@
-import { RoleEntity } from '../../../entities/users/role.entity';
+import { RoleEntity } from '@domain/entities/users/role.entity';
 
 export abstract class RoleRepositoryPort {
   abstract findById(id: string): Promise<RoleEntity | null>;

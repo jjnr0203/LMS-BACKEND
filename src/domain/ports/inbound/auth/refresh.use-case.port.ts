@@ -1,3 +1,5 @@
 export abstract class RefreshUseCasePort {
-  abstract execute(token: string): Promise<{ accessToken: string; refreshToken: string }>;
+  abstract execute(
+    token: string,
+  ): Promise<{ accessToken: string; refreshToken: string }>;
 }

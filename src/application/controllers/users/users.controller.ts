@@ -1,17 +1,33 @@
-import { Controller, Get, Put, Patch, Delete, Body, Param, Query, UseGuards, Request, Post, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Put,
+  Patch,
+  Delete,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  Request,
+  Post,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
+} from '@nestjs/common';
+import { Request as ExpressRequest } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { JwtAuthGuard } from '../../../infrastructure/auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../../../infrastructure/auth/guards/roles.guard';
-import { Roles } from '../../../infrastructure/auth/decorators/roles.decorator';
-import { GetPaginatedUsersUseCase } from '../../../domain/services/users/get-paginated-users.use-case';
-import { GetUserByIdUseCase } from '../../../domain/services/users/get-user-by-id.use-case';
-import { UpdateUserUseCase } from '../../../domain/services/users/update-user.use-case';
-import { UpdatePasswordUseCase } from '../../../domain/services/users/update-password.use-case';
-import { SoftDeleteUserUseCase } from '../../../domain/services/users/soft-delete-user.use-case';
-import { UploadAvatarUseCase } from '../../../domain/services/users/upload-avatar.use-case';
-import { UpdateUserDto } from '../../dto/users/update-user.dto';
-import { UpdatePasswordDto } from '../../dto/users/update-password.dto';
-import { UserResponseDto } from '../../dto/users/user-response.dto';
+import { JwtAuthGuard } from '@infrastructure/auth/guards/jwt-auth.guard';
+import { RolesGuard } from '@infrastructure/auth/guards/roles.guard';
+import { Roles } from '@infrastructure/auth/decorators/roles.decorator';
+import { GetPaginatedUsersUseCase } from '@domain/services/users/get-paginated-users.use-case';
+import { GetUserByIdUseCase } from '@domain/services/users/get-user-by-id.use-case';
+import { UpdateUserUseCase } from '@domain/services/users/update-user.use-case';
+import { UpdatePasswordUseCase } from '@domain/services/users/update-password.use-case';
+import { SoftDeleteUserUseCase } from '@domain/services/users/soft-delete-user.use-case';
+import { UploadAvatarUseCase } from '@domain/services/users/upload-avatar.use-case';
+import { UpdateUserDto } from '@application/dto/users/update-user.dto';
+import { UpdatePasswordDto } from '@application/dto/users/update-password.dto';
+import { mapUserToResponse } from '@application/dto/users/user-response.dto';
 
 @Controller('users')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -27,55 +43,75 @@ export class UsersController {
 
   @Get()
   @Roles('admin')
-  async findAll(@Query('page') page: string = '1', @Query('limit') limit: string = '10', @Query('role') role: string | undefined, @Request() req) {
+  async findAll(
+    @Query('page') page: string = '1',
+    @Query('limit') limit: string = '10',
+    @Query('role') role: string | undefined,
+    @Request() req: ExpressRequest & { user: { id: string; role: string } },
+  ) {
     const host = req.headers.host || 'localhost:3000';
     const result = await this.getPaginatedUsersUseCase.execute(
       { page: parseInt(page, 10), limit: parseInt(limit, 10), role },
-      host
+      host,
     );
     return {
       ...result,
-      data: result.data.map(user => UserResponseDto.fromEntity(user)),
+      data: result.data.map((user) => mapUserToResponse(user)),
     };
   }
 
   @Get('me')
-  async getProfile(@Request() req) {
+  async getProfile(
+    @Request() req: ExpressRequest & { user: { id: string; role: string } },
+  ) {
     const user = await this.getUserByIdUseCase.execute(req.user.id);
-    return UserResponseDto.fromEntity(user);
+    return mapUserToResponse(user);
   }
 
   @Get(':id')
   @Roles('admin')
   async findOne(@Param('id') id: string) {
     const user = await this.getUserByIdUseCase.execute(id);
-    return UserResponseDto.fromEntity(user);
+    return mapUserToResponse(user);
   }
 
   @Post('me/avatar')
   @UseInterceptors(FileInterceptor('file'))
-  async uploadAvatar(@UploadedFile() file: Express.Multer.File, @Request() req) {
+  async uploadAvatar(
+    @UploadedFile() file: Express.Multer.File,
+    @Request() req: ExpressRequest & { user: { id: string; role: string } },
+  ) {
     if (!file) {
       throw new BadRequestException('Ningún archivo enviado');
     }
-    const { user } = await this.uploadAvatarUseCase.execute(req.user.id, file.buffer);
+    const { user } = await this.uploadAvatarUseCase.execute(
+      req.user.id,
+      file.buffer,
+    );
     return {
       message: 'Avatar actualizado exitosamente',
-      user: UserResponseDto.fromEntity(user)
+      user: mapUserToResponse(user),
     };
   }
 
   @Put(':id')
-  async updateUser(@Param('id') id: string, @Body() dto: UpdateUserDto, @Request() req) {
+  async updateUser(
+    @Param('id') id: string,
+    @Body() dto: UpdateUserDto,
+    @Request() req: ExpressRequest & { user: { id: string; role: string } },
+  ) {
     if (req.user.role !== 'admin' && req.user.id !== id) {
       throw new Error('Unauthorized to update this user');
     }
     const { user } = await this.updateUserUseCase.execute({ id, ...dto });
-    return { user: UserResponseDto.fromEntity(user) };
+    return { user: mapUserToResponse(user) };
   }
 
   @Patch('me/password')
-  async updatePassword(@Body() dto: UpdatePasswordDto, @Request() req) {
+  async updatePassword(
+    @Body() dto: UpdatePasswordDto,
+    @Request() req: ExpressRequest & { user: { id: string; role: string } },
+  ) {
     await this.updatePasswordUseCase.execute({
       id: req.user.id,
       currentPassword: dto.currentPassword,

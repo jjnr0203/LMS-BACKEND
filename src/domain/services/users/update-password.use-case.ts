@@ -1,7 +1,10 @@
-import { UpdatePasswordUseCasePort, UpdatePasswordCommand } from '../../ports/inbound/users/update-password.use-case.port';
-import { UserRepositoryPort } from '../../ports/outbound/users/user-repository.port';
-import { PasswordHasherPort } from '../../ports/outbound/auth/password-hasher.port';
-import { UserEntity } from '../../entities/users/user.entity';
+import {
+  UpdatePasswordUseCasePort,
+  UpdatePasswordCommand,
+} from '@domain/ports/inbound/users/update-password.use-case.port';
+import { UserRepositoryPort } from '@domain/ports/outbound/users/user-repository.port';
+import { PasswordHasherPort } from '@domain/ports/outbound/auth/password-hasher.port';
+import { UserEntity } from '@domain/entities/users/user.entity';
 import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 
 export class UpdatePasswordUseCase implements UpdatePasswordUseCasePort {
@@ -17,7 +20,10 @@ export class UpdatePasswordUseCase implements UpdatePasswordUseCasePort {
     }
 
     if (command.currentPassword) {
-      const isMatch = await this.passwordHasher.compare(command.currentPassword, user.passwordHash);
+      const isMatch = await this.passwordHasher.compare(
+        command.currentPassword,
+        user.passwordHash,
+      );
       if (!isMatch) {
         throw new UnauthorizedException('La contraseña actual es incorrecta');
       }

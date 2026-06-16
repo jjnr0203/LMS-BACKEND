@@ -1,4 +1,4 @@
-import { UserEntity } from '../../../entities/users/user.entity';
+import { UserEntity } from '@domain/entities/users/user.entity';
 import { PaginatedResponse } from '../../../../common/pagination/pagination.response';
 
 export interface GetPaginatedUsersCommand {
@@ -8,5 +8,8 @@ export interface GetPaginatedUsersCommand {
 }
 
 export abstract class GetPaginatedUsersUseCasePort {
-  abstract execute(command: GetPaginatedUsersCommand, host: string): Promise<PaginatedResponse<UserEntity>>;
+  abstract execute(
+    command: GetPaginatedUsersCommand,
+    host: string,
+  ): Promise<PaginatedResponse<UserEntity>>;
 }

@@ -1,6 +1,6 @@
-import { GetUserByIdUseCasePort } from '../../ports/inbound/users/get-user-by-id.use-case.port';
-import { UserRepositoryPort } from '../../ports/outbound/users/user-repository.port';
-import { UserEntity } from '../../entities/users/user.entity';
+import { GetUserByIdUseCasePort } from '@domain/ports/inbound/users/get-user-by-id.use-case.port';
+import { UserRepositoryPort } from '@domain/ports/outbound/users/user-repository.port';
+import { UserEntity } from '@domain/entities/users/user.entity';
 import { NotFoundException } from '@nestjs/common';
 
 export class GetUserByIdUseCase implements GetUserByIdUseCasePort {

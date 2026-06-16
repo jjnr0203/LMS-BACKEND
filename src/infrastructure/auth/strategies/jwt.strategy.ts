@@ -2,7 +2,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { RefreshTokenRepositoryPort } from '../../../domain/ports/outbound/auth/refresh-token-repository.port';
+import { RefreshTokenRepositoryPort } from '@domain/ports/outbound/auth/refresh-token-repository.port';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -17,12 +17,19 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: any) {
+  async validate(payload: {
+    sub: string;
+    email: string;
+    role: string;
+    type: string;
+  }) {
     if (payload.type !== 'access') {
       throw new UnauthorizedException('Token inválido para esta operación');
     }
 
-    const hasSession = await this.refreshTokenRepo.hasActiveSession(payload.sub);
+    const hasSession = await this.refreshTokenRepo.hasActiveSession(
+      payload.sub,
+    );
     if (!hasSession) {
       throw new UnauthorizedException('Sesión cerrada o expirada');
     }

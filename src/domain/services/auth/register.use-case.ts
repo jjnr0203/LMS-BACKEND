@@ -1,8 +1,11 @@
-import { RegisterUseCasePort, RegisterCommand } from '../../ports/inbound/auth/register.use-case.port';
-import { UserRepositoryPort } from '../../ports/outbound/users/user-repository.port';
-import { RoleRepositoryPort } from '../../ports/outbound/users/role-repository.port';
-import { PasswordHasherPort } from '../../ports/outbound/auth/password-hasher.port';
-import { UserEntity } from '../../entities/users/user.entity';
+import {
+  RegisterUseCasePort,
+  RegisterCommand,
+} from '@domain/ports/inbound/auth/register.use-case.port';
+import { UserRepositoryPort } from '@domain/ports/outbound/users/user-repository.port';
+import { RoleRepositoryPort } from '@domain/ports/outbound/users/role-repository.port';
+import { PasswordHasherPort } from '@domain/ports/outbound/auth/password-hasher.port';
+import { UserEntity } from '@domain/entities/users/user.entity';
 import { BadRequestException } from '@nestjs/common';
 
 export class RegisterUseCase implements RegisterUseCasePort {
@@ -20,7 +23,9 @@ export class RegisterUseCase implements RegisterUseCasePort {
     }
 
     // Check if user exists by email
-    const existingByEmail = await this.userRepository.findByEmail(command.email);
+    const existingByEmail = await this.userRepository.findByEmail(
+      command.email,
+    );
     if (existingByEmail) {
       throw new BadRequestException('Ya existe un usuario con este email');
     }

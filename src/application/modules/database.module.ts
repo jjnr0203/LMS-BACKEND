@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UserOrmEntity } from '../../infrastructure/database/entities/users/user.orm-entity';
-import { RoleOrmEntity } from '../../infrastructure/database/entities/users/role.orm-entity';
-import { RefreshTokenOrmEntity } from '../../infrastructure/database/entities/auth/refresh-token.orm-entity';
+import { UserOrmEntity } from '@infrastructure/database/entities/users/user.orm-entity';
+import { RoleOrmEntity } from '@infrastructure/database/entities/users/role.orm-entity';
+import { RefreshTokenOrmEntity } from '@infrastructure/database/entities/auth/refresh-token.orm-entity';
 
 @Module({
   imports: [
@@ -21,7 +21,11 @@ import { RefreshTokenOrmEntity } from '../../infrastructure/database/entities/au
         synchronize: true, // Only for dev, change to false later
       }),
     }),
-    TypeOrmModule.forFeature([UserOrmEntity, RoleOrmEntity, RefreshTokenOrmEntity]),
+    TypeOrmModule.forFeature([
+      UserOrmEntity,
+      RoleOrmEntity,
+      RefreshTokenOrmEntity,
+    ]),
   ],
   exports: [TypeOrmModule],
 })

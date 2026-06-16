@@ -1,4 +1,4 @@
-import { UserEntity } from '../../../entities/users/user.entity';
+import { UserEntity } from '@domain/entities/users/user.entity';
 
 export interface UpdateUserCommand {
   id: string; // Target user's cedula

@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { v2 as cloudinary, UploadApiErrorResponse, UploadApiResponse } from 'cloudinary';
-import { ImageUploadPort } from '../../../domain/ports/outbound/storage/image-upload.port';
+import {
+  v2 as cloudinary,
+  UploadApiErrorResponse,
+  UploadApiResponse,
+} from 'cloudinary';
+import { ImageUploadPort } from '@domain/ports/outbound/storage/image-upload.port';
 import * as streamifier from 'streamifier';
 
 @Injectable()
@@ -19,7 +23,7 @@ export class CloudinaryAdapter implements ImageUploadPort {
       const uploadStream = cloudinary.uploader.upload_stream(
         { folder },
         (error: UploadApiErrorResponse, result: UploadApiResponse) => {
-          if (error) return reject(error);
+          if (error) return reject(new Error(error.message || 'Upload error'));
           resolve(result.secure_url);
         },
       );

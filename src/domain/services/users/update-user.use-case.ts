@@ -1,7 +1,10 @@
-import { UpdateUserUseCasePort, UpdateUserCommand } from '../../ports/inbound/users/update-user.use-case.port';
-import { UserRepositoryPort } from '../../ports/outbound/users/user-repository.port';
-import { UserEntity } from '../../entities/users/user.entity';
-import { NotFoundException, BadRequestException, UnauthorizedException } from '@nestjs/common';
+import {
+  UpdateUserUseCasePort,
+  UpdateUserCommand,
+} from '@domain/ports/inbound/users/update-user.use-case.port';
+import { UserRepositoryPort } from '@domain/ports/outbound/users/user-repository.port';
+import { UserEntity } from '@domain/entities/users/user.entity';
+import { NotFoundException, BadRequestException } from '@nestjs/common';
 
 export class UpdateUserUseCase implements UpdateUserUseCasePort {
   constructor(private readonly userRepository: UserRepositoryPort) {}

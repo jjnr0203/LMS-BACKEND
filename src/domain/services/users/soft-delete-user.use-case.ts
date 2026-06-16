@@ -1,5 +1,5 @@
-import { SoftDeleteUserUseCasePort } from '../../ports/inbound/users/soft-delete-user.use-case.port';
-import { UserRepositoryPort } from '../../ports/outbound/users/user-repository.port';
+import { SoftDeleteUserUseCasePort } from '@domain/ports/inbound/users/soft-delete-user.use-case.port';
+import { UserRepositoryPort } from '@domain/ports/outbound/users/user-repository.port';
 import { NotFoundException } from '@nestjs/common';
 
 export class SoftDeleteUserUseCase implements SoftDeleteUserUseCasePort {
