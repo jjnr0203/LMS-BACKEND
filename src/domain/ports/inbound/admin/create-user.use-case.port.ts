@@ -5,6 +5,8 @@ export interface CreateUserCommand {
   firstName: string;
   lastName: string;
   email: string;
+  birthDate?: Date;
+  phone?: string;
   password: string;
   roleName: string;
 }

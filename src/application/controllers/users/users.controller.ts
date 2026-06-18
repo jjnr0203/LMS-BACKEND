@@ -46,13 +46,16 @@ export class UsersController {
   ) {}
 
   @Get()
-  @Roles('admin')
+  @Roles('admin', 'treasury', 'coordinator', 'teacher')
   async findAll(
     @Query('page') page: string = '1',
     @Query('limit') limit: string = '10',
     @Query('role') role: string | undefined,
     @ReqDecorator() req: AuthenticatedRequest,
   ) {
+    if (req.user.role === 'treasury') {
+      role = 'student';
+    }
     const host = req.headers.host || 'localhost:3000';
     const result = await this.getPaginatedUsersUseCase.execute(
       { page: parseInt(page, 10), limit: parseInt(limit, 10), role },
@@ -60,7 +63,11 @@ export class UsersController {
     );
     return {
       ...result,
-      data: result.data.map((user) => UserResponseDto.fromEntity(user)),
+      data: result.data.map((user) => {
+        const dto = UserResponseDto.fromEntity(user);
+        delete dto.avatarUrl;
+        return dto;
+      }),
     };
   }
 
@@ -71,9 +78,12 @@ export class UsersController {
   }
 
   @Get(':id')
-  @Roles('admin')
-  async findOne(@Param('id') id: string) {
+  @Roles('admin', 'treasury')
+  async findOne(@Param('id') id: string, @ReqDecorator() req: AuthenticatedRequest) {
     const user = await this.getUserByIdUseCase.execute(id);
+    if (req.user.role === 'treasury' && user.roleName !== 'student') {
+      throw new BadRequestException('Unauthorized to view this user');
+    }
     return UserResponseDto.fromEntity(user);
   }
 
@@ -103,7 +113,14 @@ export class UsersController {
     @ReqDecorator() req: AuthenticatedRequest,
   ) {
     if (req.user.role !== 'admin' && req.user.id !== id) {
-      throw new Error('Unauthorized to update this user');
+      if (req.user.role === 'treasury') {
+        const targetUser = await this.getUserByIdUseCase.execute(id);
+        if (targetUser.roleName !== 'student') {
+          throw new BadRequestException('Unauthorized to update this user');
+        }
+      } else {
+        throw new BadRequestException('Unauthorized to update this user');
+      }
     }
     const { user } = await this.updateUserUseCase.execute({ id, ...dto });
     return { user: UserResponseDto.fromEntity(user) };
@@ -123,8 +140,14 @@ export class UsersController {
   }
 
   @Delete(':id')
-  @Roles('admin')
-  async remove(@Param('id') id: string) {
+  @Roles('admin', 'treasury')
+  async remove(@Param('id') id: string, @ReqDecorator() req: AuthenticatedRequest) {
+    if (req.user.role === 'treasury') {
+      const targetUser = await this.getUserByIdUseCase.execute(id);
+      if (targetUser.roleName !== 'student') {
+        throw new BadRequestException('Unauthorized to delete this user');
+      }
+    }
     await this.softDeleteUserUseCase.execute(id);
     return { message: 'User deleted successfully' };
   }

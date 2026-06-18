@@ -21,6 +21,8 @@ export class AdminController {
       email: dto.email,
       password: dto.password,
       roleName: dto.roleName,
+      birthDate: dto.birthDate,
+      phone: dto.phone,
     });
     return {
       message: 'Usuario creado exitosamente',

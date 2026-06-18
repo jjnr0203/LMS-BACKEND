@@ -10,6 +10,7 @@ import { EnrollmentOrmEntity } from '@infrastructure/database/entities/academic/
 import { AssignmentOrmEntity } from '@infrastructure/database/entities/academic/assignment.orm-entity';
 import { SubmissionOrmEntity } from '@infrastructure/database/entities/academic/submission.orm-entity';
 import { StudentSubjectOrmEntity } from '@infrastructure/database/entities/academic/student-subject.orm-entity';
+import { TeacherSubjectOrmEntity } from '@infrastructure/database/entities/academic/teacher-subject.orm-entity';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { StudentSubjectOrmEntity } from '@infrastructure/database/entities/acade
           AssignmentOrmEntity,
           SubmissionOrmEntity,
           StudentSubjectOrmEntity,
+          TeacherSubjectOrmEntity,
         ],
         synchronize: true,
       }),
@@ -48,6 +50,7 @@ import { StudentSubjectOrmEntity } from '@infrastructure/database/entities/acade
       AssignmentOrmEntity,
       SubmissionOrmEntity,
       StudentSubjectOrmEntity,
+      TeacherSubjectOrmEntity,
     ]),
   ],
   exports: [TypeOrmModule],

@@ -71,6 +71,7 @@ export class UserOrmEntity {
       ormEntity.createdAt,
       ormEntity.updatedAt,
       ormEntity.deletedAt,
+      ormEntity.role?.name,
     );
   }
 

@@ -6,11 +6,21 @@ import {
   Length,
 } from 'class-validator';
 
+import { IsOptional, IsDate } from 'class-validator';
+
 export class RegisterTeacherDto {
   @IsString()
   @IsNotEmpty()
   @Length(10, 10, { message: 'La cédula debe tener exactamente 10 caracteres' })
   id: string;
+
+  @IsOptional()
+  @IsDate()
+  birthDate?: Date;
+
+  @IsOptional()
+  @IsString()
+  phone?: string;
 
   @IsString()
   @IsNotEmpty()

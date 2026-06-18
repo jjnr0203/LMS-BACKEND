@@ -45,6 +45,8 @@ export class RegisterTeacherUseCase implements RegisterTeacherUseCasePort {
       passwordHash,
       role.id,
       true,
+      command.birthDate,
+      command.phone
     );
 
     const savedUser = await this.userRepository.save(user);

@@ -2,7 +2,7 @@ import {
   RegisterStudentUseCasePort,
   RegisterStudentCommand,
   RegisterStudentResult,
-} from '../../ports/inbound/coordinator/register-student.use-case.port';
+} from '../../ports/inbound/treasury/register-student.use-case.port';
 import { UserRepositoryPort } from '../../ports/outbound/users/user-repository.port';
 import { RoleRepositoryPort } from '../../ports/outbound/users/role-repository.port';
 import { PasswordHasherPort } from '../../ports/outbound/auth/password-hasher.port';
@@ -50,6 +50,8 @@ export class RegisterStudentUseCase implements RegisterStudentUseCasePort {
       passwordHash,
       role.id,
       true,
+      command.birthDate,
+      command.phone,
     );
 
     const savedUser = await this.userRepository.save(user);

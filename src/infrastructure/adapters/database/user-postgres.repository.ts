@@ -16,6 +16,7 @@ export class UserPostgresRepository implements UserRepositoryPort {
     const ormEntity = await this.repository.findOne({
       where: { id },
       withDeleted: true,
+      relations: ['role'],
     });
     return ormEntity ? UserOrmEntity.toDomain(ormEntity) : null;
   }
@@ -24,6 +25,7 @@ export class UserPostgresRepository implements UserRepositoryPort {
     const ormEntity = await this.repository.findOne({
       where: { email },
       withDeleted: true,
+      relations: ['role'],
     });
     return ormEntity ? UserOrmEntity.toDomain(ormEntity) : null;
   }
@@ -45,6 +47,7 @@ export class UserPostgresRepository implements UserRepositoryPort {
       skip: (page - 1) * limit,
       take: limit,
       order: { createdAt: 'DESC' },
+      relations: ['role'],
     });
     return { data: ormEntities.map((e) => UserOrmEntity.toDomain(e)), total };
   }

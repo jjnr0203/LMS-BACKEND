@@ -43,6 +43,8 @@ export class CreateUserUseCase implements CreateUserUseCasePort {
       passwordHash,
       role.id,
       true,
+      command.birthDate,
+      command.phone
     );
 
     const savedUser = await this.userRepository.save(user);

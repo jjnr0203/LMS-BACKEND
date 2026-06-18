@@ -13,5 +13,6 @@ export class UserEntity {
     public readonly createdAt?: Date,
     public readonly updatedAt?: Date,
     public readonly deletedAt?: Date,
+    public readonly roleName?: string,
   ) {}
 }

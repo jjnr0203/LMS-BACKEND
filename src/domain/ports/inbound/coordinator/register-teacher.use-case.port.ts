@@ -5,6 +5,8 @@ export interface RegisterTeacherCommand {
   firstName: string;
   lastName: string;
   email: string;
+  birthDate?: Date;
+  phone?: string;
   password: string;
 }
 

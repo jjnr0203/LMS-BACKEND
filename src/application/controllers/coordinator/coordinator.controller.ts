@@ -1,5 +1,6 @@
 import {
   Controller,
+  Get,
   Post,
   Body,
   UseGuards,
@@ -9,14 +10,11 @@ import { Request } from 'express';
 import { JwtAuthGuard } from '@infrastructure/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@infrastructure/auth/guards/roles.guard';
 import { Roles } from '@infrastructure/auth/decorators/roles.decorator';
-import { RegisterStudentUseCase } from '@domain/services/coordinator/register-student.use-case';
-import { RegisterTeacherUseCase } from '@domain/services/coordinator/register-teacher.use-case';
 import { CreateSubjectUseCase } from '@domain/services/coordinator/create-subject.use-case';
 import { EnrollStudentUseCase } from '@domain/services/coordinator/enroll-student.use-case';
-import { RegisterStudentDto } from '../../dto/coordinator/register-student.dto';
-import { RegisterTeacherDto } from '../../dto/coordinator/register-teacher.dto';
+import { AssignTeacherUseCase } from '@domain/services/coordinator/assign-teacher.use-case';
+import { ListSubjectsUseCase } from '@domain/services/coordinator/list-subjects.use-case';
 import { CreateSubjectDto } from '../../dto/coordinator/create-subject.dto';
-import { AdminResponseDto } from '../../dto/admin/admin-response.dto';
 
 interface AuthenticatedRequest extends Request {
   user: { id: string; email: string; role: string };
@@ -27,44 +25,26 @@ interface AuthenticatedRequest extends Request {
 @Roles('coordinator')
 export class CoordinatorController {
   constructor(
-    private readonly registerStudentUseCase: RegisterStudentUseCase,
-    private readonly registerTeacherUseCase: RegisterTeacherUseCase,
     private readonly createSubjectUseCase: CreateSubjectUseCase,
     private readonly enrollStudentUseCase: EnrollStudentUseCase,
+    private readonly assignTeacherUseCase: AssignTeacherUseCase,
+    private readonly listSubjectsUseCase: ListSubjectsUseCase,
   ) {}
 
-  @Post('estudiantes')
-  async registerStudent(@Body() dto: RegisterStudentDto) {
-    const { user, tuition } = await this.registerStudentUseCase.execute({
-      id: dto.id,
-      firstName: dto.firstName,
-      lastName: dto.lastName,
-      email: dto.email,
-      password: dto.password,
+  @Post('asignar-docente')
+  async assignTeacher(@Body() body: { teacherId: string; subjectId: string }) {
+    await this.assignTeacherUseCase.execute({
+      teacherId: body.teacherId,
+      subjectId: body.subjectId,
     });
-    return {
-      message: 'Estudiante registrado exitosamente',
-      user: AdminResponseDto.fromEntity(user),
-      tuition: {
-        status: tuition.status,
-        paidInstallments: tuition.paidInstallments,
-      },
-    };
+    return { message: 'Docente asignado a la materia exitosamente' };
   }
 
-  @Post('docentes')
-  async registerTeacher(@Body() dto: RegisterTeacherDto) {
-    const { user } = await this.registerTeacherUseCase.execute({
-      id: dto.id,
-      firstName: dto.firstName,
-      lastName: dto.lastName,
-      email: dto.email,
-      password: dto.password,
-    });
-    return {
-      message: 'Docente registrado exitosamente',
-      user: AdminResponseDto.fromEntity(user),
-    };
+  @Roles('coordinator', 'teacher', 'admin')
+  @Get('materias')
+  async listSubjects() {
+    const { subjects } = await this.listSubjectsUseCase.execute();
+    return { subjects };
   }
 
   @Post('materias')

@@ -11,6 +11,7 @@ import { EnrollmentRepositoryPort } from '@domain/ports/outbound/academic/enroll
 import { AssignmentRepositoryPort } from '@domain/ports/outbound/academic/assignment-repository.port';
 import { SubmissionRepositoryPort } from '@domain/ports/outbound/academic/submission-repository.port';
 import { StudentSubjectRepositoryPort } from '@domain/ports/outbound/academic/student-subject-repository.port';
+import { TeacherSubjectRepositoryPort } from '@domain/ports/outbound/academic/teacher-subject-repository.port';
 import { UserPostgresRepository } from '@infrastructure/adapters/database/user-postgres.repository';
 import { RolePostgresRepository } from '@infrastructure/adapters/database/role-postgres.repository';
 import { RefreshTokenPostgresRepository } from '@infrastructure/adapters/database/refresh-token-postgres.repository';
@@ -20,6 +21,7 @@ import { EnrollmentPostgresRepository } from '@infrastructure/adapters/database/
 import { AssignmentPostgresRepository } from '@infrastructure/adapters/database/academic/assignment-postgres.repository';
 import { SubmissionPostgresRepository } from '@infrastructure/adapters/database/academic/submission-postgres.repository';
 import { StudentSubjectPostgresRepository } from '@infrastructure/adapters/database/academic/student-subject-postgres.repository';
+import { TeacherSubjectPostgresRepository } from '@infrastructure/adapters/database/academic/teacher-subject-postgres.repository';
 import { BcryptPasswordHasher } from '@infrastructure/adapters/auth/bcrypt-password-hasher';
 import { JwtTokenGenerator } from '@infrastructure/adapters/auth/jwt-token-generator';
 import { JwtModule, JwtService } from '@nestjs/jwt';
@@ -91,6 +93,10 @@ import { RolesGuard } from '@infrastructure/auth/guards/roles.guard';
       provide: StudentSubjectRepositoryPort,
       useClass: StudentSubjectPostgresRepository,
     },
+    {
+      provide: TeacherSubjectRepositoryPort,
+      useClass: TeacherSubjectPostgresRepository,
+    },
     RolesGuard,
   ],
   exports: [
@@ -105,6 +111,7 @@ import { RolesGuard } from '@infrastructure/auth/guards/roles.guard';
     AssignmentRepositoryPort,
     SubmissionRepositoryPort,
     StudentSubjectRepositoryPort,
+    TeacherSubjectRepositoryPort,
     RolesGuard,
   ],
 })

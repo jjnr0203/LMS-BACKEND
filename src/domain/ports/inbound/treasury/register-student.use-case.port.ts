@@ -6,6 +6,8 @@ export interface RegisterStudentCommand {
   firstName: string;
   lastName: string;
   email: string;
+  birthDate?: Date;
+  phone?: string;
   password: string;
 }
 

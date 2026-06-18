@@ -3,13 +3,17 @@ import {
   AssignTeacherCommand,
 } from '../../ports/inbound/coordinator/assign-teacher.use-case.port';
 import { SubjectRepositoryPort } from '../../ports/outbound/academic/subject-repository.port';
+import { TeacherSubjectRepositoryPort } from '../../ports/outbound/academic/teacher-subject-repository.port';
 import { UserRepositoryPort } from '../../ports/outbound/users/user-repository.port';
+import { TeacherSubjectEntity } from '../../entities/academic/teacher-subject.entity';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
+import * as crypto from 'crypto';
 
 export class AssignTeacherUseCase implements AssignTeacherUseCasePort {
   constructor(
     private readonly subjectRepository: SubjectRepositoryPort,
     private readonly userRepository: UserRepositoryPort,
+    private readonly teacherSubjectRepository: TeacherSubjectRepositoryPort,
   ) {}
 
   async execute(command: AssignTeacherCommand): Promise<void> {
@@ -23,10 +27,21 @@ export class AssignTeacherUseCase implements AssignTeacherUseCasePort {
       throw new NotFoundException('Docente no encontrado');
     }
 
-    // Assign teacher by updating subject's coordinator (in a real system, might have a separate field)
-    // For now, we track assignments via the student_subjects table in the teacher flow
-    throw new BadRequestException(
-      'Use el endpoint del docente para asignar estudiantes a materias',
+    const existingRelation = await this.teacherSubjectRepository.findByTeacherAndSubject(
+      command.teacherId,
+      command.subjectId,
     );
+    if (existingRelation) {
+      throw new BadRequestException('El docente ya está asignado a esta materia');
+    }
+
+    const relation = new TeacherSubjectEntity(
+      crypto.randomUUID(),
+      command.teacherId,
+      command.subjectId,
+      new Date(),
+    );
+
+    await this.teacherSubjectRepository.save(relation);
   }
 }
