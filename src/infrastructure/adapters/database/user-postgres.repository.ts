@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { UserRepositoryPort } from '../../../domain/ports/outbound/users/user-repository.port';
-import { UserEntity } from '../../../domain/entities/users/user.entity';
+import { UserRepositoryPort } from '@domain/ports/outbound/users/user-repository.port';
+import { UserEntity } from '@domain/entities/users/user.entity';
 import { UserOrmEntity } from '../../database/entities/users/user.orm-entity';
 
 @Injectable()

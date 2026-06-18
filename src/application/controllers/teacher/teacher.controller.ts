@@ -6,12 +6,12 @@ import {
   Request as ReqDecorator,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { JwtAuthGuard } from '../../../infrastructure/auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../../../infrastructure/auth/guards/roles.guard';
-import { Roles } from '../../../infrastructure/auth/decorators/roles.decorator';
-import { EnrollStudentSubjectUseCase } from '../../../domain/services/teacher/enroll-student-subject.use-case';
-import { CreateAssignmentUseCase } from '../../../domain/services/teacher/create-assignment.use-case';
-import { GradeSubmissionUseCase } from '../../../domain/services/teacher/grade-submission.use-case';
+import { JwtAuthGuard } from '@infrastructure/auth/guards/jwt-auth.guard';
+import { RolesGuard } from '@infrastructure/auth/guards/roles.guard';
+import { Roles } from '@infrastructure/auth/decorators/roles.decorator';
+import { EnrollStudentSubjectUseCase } from '@domain/services/teacher/enroll-student-subject.use-case';
+import { CreateAssignmentUseCase } from '@domain/services/teacher/create-assignment.use-case';
+import { GradeSubmissionUseCase } from '@domain/services/teacher/grade-submission.use-case';
 import { EnrollStudentSubjectDto } from '../../dto/teacher/enroll-student-subject.dto';
 import { CreateAssignmentDto } from '../../dto/teacher/create-assignment.dto';
 import { GradeSubmissionDto } from '../../dto/teacher/grade-submission.dto';
@@ -20,9 +20,9 @@ interface AuthenticatedRequest extends Request {
   user: { id: string; email: string; role: string };
 }
 
-@Controller('docente')
+@Controller('teacher')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('docente')
+@Roles('teacher')
 export class TeacherController {
   constructor(
     private readonly enrollStudentSubjectUseCase: EnrollStudentSubjectUseCase,

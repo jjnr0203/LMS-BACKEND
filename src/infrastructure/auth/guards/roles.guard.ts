@@ -7,7 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { ROLES_KEY } from '../decorators/roles.decorator';
-import { UserRepositoryPort } from '../../../domain/ports/outbound/users/user-repository.port';
+import { UserRepositoryPort } from '@domain/ports/outbound/users/user-repository.port';
 
 interface AuthenticatedRequest extends Request {
   user: { id: string; email: string; role: string };

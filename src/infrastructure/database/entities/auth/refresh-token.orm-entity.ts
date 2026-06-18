@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { RefreshTokenEntity } from '../../../../domain/entities/auth/refresh-token.entity';
+import { RefreshTokenEntity } from '@domain/entities/auth/refresh-token.entity';
 import { UserOrmEntity } from '../users/user.orm-entity';
 
 @Entity('refresh_tokens')

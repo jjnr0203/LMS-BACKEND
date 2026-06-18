@@ -2,16 +2,16 @@ import { Module } from '@nestjs/common';
 import { UsersController } from '../controllers/users/users.controller';
 import { RepositoryProvidersModule } from './repository-providers.module';
 import { ConfigModule } from '@nestjs/config';
-import { GetPaginatedUsersUseCase } from '../../domain/services/users/get-paginated-users.use-case';
-import { GetUserByIdUseCase } from '../../domain/services/users/get-user-by-id.use-case';
-import { UpdateUserUseCase } from '../../domain/services/users/update-user.use-case';
-import { UpdatePasswordUseCase } from '../../domain/services/users/update-password.use-case';
-import { SoftDeleteUserUseCase } from '../../domain/services/users/soft-delete-user.use-case';
-import { UploadAvatarUseCase } from '../../domain/services/users/upload-avatar.use-case';
-import { CloudinaryAdapter } from '../../infrastructure/adapters/storage/cloudinary.adapter';
-import { ImageUploadPort } from '../../domain/ports/outbound/storage/image-upload.port';
-import { UserRepositoryPort } from '../../domain/ports/outbound/users/user-repository.port';
-import { PasswordHasherPort } from '../../domain/ports/outbound/auth/password-hasher.port';
+import { GetPaginatedUsersUseCase } from '@domain/services/users/get-paginated-users.use-case';
+import { GetUserByIdUseCase } from '@domain/services/users/get-user-by-id.use-case';
+import { UpdateUserUseCase } from '@domain/services/users/update-user.use-case';
+import { UpdatePasswordUseCase } from '@domain/services/users/update-password.use-case';
+import { SoftDeleteUserUseCase } from '@domain/services/users/soft-delete-user.use-case';
+import { UploadAvatarUseCase } from '@domain/services/users/upload-avatar.use-case';
+import { CloudinaryAdapter } from '@infrastructure/adapters/storage/cloudinary.adapter';
+import { ImageUploadPort } from '@domain/ports/outbound/storage/image-upload.port';
+import { UserRepositoryPort } from '@domain/ports/outbound/users/user-repository.port';
+import { PasswordHasherPort } from '@domain/ports/outbound/auth/password-hasher.port';
 
 @Module({
   imports: [RepositoryProvidersModule, ConfigModule],

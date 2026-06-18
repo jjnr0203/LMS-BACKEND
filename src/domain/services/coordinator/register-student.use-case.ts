@@ -35,7 +35,7 @@ export class RegisterStudentUseCase implements RegisterStudentUseCasePort {
       throw new BadRequestException('Ya existe un usuario con este email');
     }
 
-    const role = await this.roleRepository.findByName('estudiante');
+    const role = await this.roleRepository.findByName('student');
     if (!role) {
       throw new BadRequestException('El rol estudiante no existe');
     }

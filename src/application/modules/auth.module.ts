@@ -1,16 +1,16 @@
 import { Module } from '@nestjs/common';
 import { AuthController } from '../controllers/auth/auth.controller';
-import { LoginUseCase } from '../../domain/services/auth/login.use-case';
-import { RegisterUseCase } from '../../domain/services/auth/register.use-case';
-import { RefreshUseCase } from '../../domain/services/auth/refresh.use-case';
-import { LogoutUseCase } from '../../domain/services/auth/logout.use-case';
-import { UserRepositoryPort } from '../../domain/ports/outbound/users/user-repository.port';
-import { RoleRepositoryPort } from '../../domain/ports/outbound/users/role-repository.port';
-import { RefreshTokenRepositoryPort } from '../../domain/ports/outbound/auth/refresh-token-repository.port';
-import { PasswordHasherPort } from '../../domain/ports/outbound/auth/password-hasher.port';
-import { TokenGeneratorPort } from '../../domain/ports/outbound/auth/token-generator.port';
+import { LoginUseCase } from '@domain/services/auth/login.use-case';
+import { RegisterUseCase } from '@domain/services/auth/register.use-case';
+import { RefreshUseCase } from '@domain/services/auth/refresh.use-case';
+import { LogoutUseCase } from '@domain/services/auth/logout.use-case';
+import { UserRepositoryPort } from '@domain/ports/outbound/users/user-repository.port';
+import { RoleRepositoryPort } from '@domain/ports/outbound/users/role-repository.port';
+import { RefreshTokenRepositoryPort } from '@domain/ports/outbound/auth/refresh-token-repository.port';
+import { PasswordHasherPort } from '@domain/ports/outbound/auth/password-hasher.port';
+import { TokenGeneratorPort } from '@domain/ports/outbound/auth/token-generator.port';
 import { RepositoryProvidersModule } from './repository-providers.module';
-import { JwtStrategy } from '../../infrastructure/auth/strategies/jwt.strategy';
+import { JwtStrategy } from '@infrastructure/auth/strategies/jwt.strategy';
 
 @Module({
   imports: [RepositoryProvidersModule],

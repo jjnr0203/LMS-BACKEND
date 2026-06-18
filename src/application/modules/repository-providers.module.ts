@@ -1,32 +1,31 @@
 import { Module } from '@nestjs/common';
 import { DatabaseModule } from './database.module';
-import { UserRepositoryPort } from '../../domain/ports/outbound/users/user-repository.port';
-import { RoleRepositoryPort } from '../../domain/ports/outbound/users/role-repository.port';
-import { PasswordHasherPort } from '../../domain/ports/outbound/auth/password-hasher.port';
-import { TokenGeneratorPort } from '../../domain/ports/outbound/auth/token-generator.port';
-import { RefreshTokenRepositoryPort } from '../../domain/ports/outbound/auth/refresh-token-repository.port';
-import { TuitionRepositoryPort } from '../../domain/ports/outbound/academic/tuition-repository.port';
-import { SubjectRepositoryPort } from '../../domain/ports/outbound/academic/subject-repository.port';
-import { EnrollmentRepositoryPort } from '../../domain/ports/outbound/academic/enrollment-repository.port';
-import { AssignmentRepositoryPort } from '../../domain/ports/outbound/academic/assignment-repository.port';
-import { SubmissionRepositoryPort } from '../../domain/ports/outbound/academic/submission-repository.port';
-import { StudentSubjectRepositoryPort } from '../../domain/ports/outbound/academic/student-subject-repository.port';
-import { UserPostgresRepository } from '../../infrastructure/adapters/database/user-postgres.repository';
-import { RolePostgresRepository } from '../../infrastructure/adapters/database/role-postgres.repository';
-import { RefreshTokenPostgresRepository } from '../../infrastructure/adapters/database/refresh-token-postgres.repository';
-import { TuitionPostgresRepository } from '../../infrastructure/adapters/database/academic/tuition-postgres.repository';
-import { SubjectPostgresRepository } from '../../infrastructure/adapters/database/academic/subject-postgres.repository';
-import { EnrollmentPostgresRepository } from '../../infrastructure/adapters/database/academic/enrollment-postgres.repository';
-import { AssignmentPostgresRepository } from '../../infrastructure/adapters/database/academic/assignment-postgres.repository';
-import { SubmissionPostgresRepository } from '../../infrastructure/adapters/database/academic/submission-postgres.repository';
-import { StudentSubjectPostgresRepository } from '../../infrastructure/adapters/database/academic/student-subject-postgres.repository';
-import { BcryptPasswordHasher } from '../../infrastructure/adapters/auth/bcrypt-password-hasher';
-import { JwtTokenGenerator } from '../../infrastructure/adapters/auth/jwt-token-generator';
+import { UserRepositoryPort } from '@domain/ports/outbound/users/user-repository.port';
+import { RoleRepositoryPort } from '@domain/ports/outbound/users/role-repository.port';
+import { PasswordHasherPort } from '@domain/ports/outbound/auth/password-hasher.port';
+import { TokenGeneratorPort } from '@domain/ports/outbound/auth/token-generator.port';
+import { RefreshTokenRepositoryPort } from '@domain/ports/outbound/auth/refresh-token-repository.port';
+import { TuitionRepositoryPort } from '@domain/ports/outbound/academic/tuition-repository.port';
+import { SubjectRepositoryPort } from '@domain/ports/outbound/academic/subject-repository.port';
+import { EnrollmentRepositoryPort } from '@domain/ports/outbound/academic/enrollment-repository.port';
+import { AssignmentRepositoryPort } from '@domain/ports/outbound/academic/assignment-repository.port';
+import { SubmissionRepositoryPort } from '@domain/ports/outbound/academic/submission-repository.port';
+import { StudentSubjectRepositoryPort } from '@domain/ports/outbound/academic/student-subject-repository.port';
+import { UserPostgresRepository } from '@infrastructure/adapters/database/user-postgres.repository';
+import { RolePostgresRepository } from '@infrastructure/adapters/database/role-postgres.repository';
+import { RefreshTokenPostgresRepository } from '@infrastructure/adapters/database/refresh-token-postgres.repository';
+import { TuitionPostgresRepository } from '@infrastructure/adapters/database/academic/tuition-postgres.repository';
+import { SubjectPostgresRepository } from '@infrastructure/adapters/database/academic/subject-postgres.repository';
+import { EnrollmentPostgresRepository } from '@infrastructure/adapters/database/academic/enrollment-postgres.repository';
+import { AssignmentPostgresRepository } from '@infrastructure/adapters/database/academic/assignment-postgres.repository';
+import { SubmissionPostgresRepository } from '@infrastructure/adapters/database/academic/submission-postgres.repository';
+import { StudentSubjectPostgresRepository } from '@infrastructure/adapters/database/academic/student-subject-postgres.repository';
+import { BcryptPasswordHasher } from '@infrastructure/adapters/auth/bcrypt-password-hasher';
+import { JwtTokenGenerator } from '@infrastructure/adapters/auth/jwt-token-generator';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import type { SignOptions } from 'jsonwebtoken';
-import { RolesGuard } from '../../infrastructure/auth/guards/roles.guard';
-import { SeedService } from '../../infrastructure/seed/seed.service';
+import { RolesGuard } from '@infrastructure/auth/guards/roles.guard';
 
 @Module({
   imports: [
@@ -93,7 +92,6 @@ import { SeedService } from '../../infrastructure/seed/seed.service';
       useClass: StudentSubjectPostgresRepository,
     },
     RolesGuard,
-    SeedService,
   ],
   exports: [
     UserRepositoryPort,

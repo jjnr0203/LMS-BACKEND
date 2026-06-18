@@ -1,8 +1,8 @@
 import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
-import { LoginUseCase } from '../../../domain/services/auth/login.use-case';
-import { RegisterUseCase } from '../../../domain/services/auth/register.use-case';
-import { RefreshUseCase } from '../../../domain/services/auth/refresh.use-case';
-import { LogoutUseCase } from '../../../domain/services/auth/logout.use-case';
+import { LoginUseCase } from '@domain/services/auth/login.use-case';
+import { RegisterUseCase } from '@domain/services/auth/register.use-case';
+import { RefreshUseCase } from '@domain/services/auth/refresh.use-case';
+import { LogoutUseCase } from '@domain/services/auth/logout.use-case';
 import { LoginDto } from '../../dto/auth/login.dto';
 import { RegisterDto } from '../../dto/auth/register.dto';
 import { RefreshTokenDto } from '../../dto/auth/refresh-token.dto';
@@ -45,7 +45,7 @@ export class AuthController {
   async login(@Body() dto: LoginDto) {
     const { user, accessToken, refreshToken } = await this.loginUseCase.execute(
       {
-        emailOrCedula: dto.emailOrCedula,
+        id: dto.id,
         passwordRaw: dto.passwordRaw,
       },
     );

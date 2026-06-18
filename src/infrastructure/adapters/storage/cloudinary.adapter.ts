@@ -5,7 +5,7 @@ import {
   UploadApiErrorResponse,
   UploadApiResponse,
 } from 'cloudinary';
-import { ImageUploadPort } from '../../../domain/ports/outbound/storage/image-upload.port';
+import { ImageUploadPort } from '@domain/ports/outbound/storage/image-upload.port';
 import * as streamifier from 'streamifier';
 
 @Injectable()

@@ -1,4 +1,4 @@
-import { UserEntity } from '../../../domain/entities/users/user.entity';
+import { UserEntity } from '@domain/entities/users/user.entity';
 
 export class UserResponseDto {
   static fromEntity(user: UserEntity) {

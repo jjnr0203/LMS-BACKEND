@@ -6,13 +6,13 @@ import {
   Request as ReqDecorator,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { JwtAuthGuard } from '../../../infrastructure/auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../../../infrastructure/auth/guards/roles.guard';
-import { Roles } from '../../../infrastructure/auth/decorators/roles.decorator';
-import { RegisterStudentUseCase } from '../../../domain/services/coordinator/register-student.use-case';
-import { RegisterTeacherUseCase } from '../../../domain/services/coordinator/register-teacher.use-case';
-import { CreateSubjectUseCase } from '../../../domain/services/coordinator/create-subject.use-case';
-import { EnrollStudentUseCase } from '../../../domain/services/coordinator/enroll-student.use-case';
+import { JwtAuthGuard } from '@infrastructure/auth/guards/jwt-auth.guard';
+import { RolesGuard } from '@infrastructure/auth/guards/roles.guard';
+import { Roles } from '@infrastructure/auth/decorators/roles.decorator';
+import { RegisterStudentUseCase } from '@domain/services/coordinator/register-student.use-case';
+import { RegisterTeacherUseCase } from '@domain/services/coordinator/register-teacher.use-case';
+import { CreateSubjectUseCase } from '@domain/services/coordinator/create-subject.use-case';
+import { EnrollStudentUseCase } from '@domain/services/coordinator/enroll-student.use-case';
 import { RegisterStudentDto } from '../../dto/coordinator/register-student.dto';
 import { RegisterTeacherDto } from '../../dto/coordinator/register-teacher.dto';
 import { CreateSubjectDto } from '../../dto/coordinator/create-subject.dto';
@@ -22,9 +22,9 @@ interface AuthenticatedRequest extends Request {
   user: { id: string; email: string; role: string };
 }
 
-@Controller('coordinador')
+@Controller('coordinator')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('coordinador')
+@Roles('coordinator')
 export class CoordinatorController {
   constructor(
     private readonly registerStudentUseCase: RegisterStudentUseCase,

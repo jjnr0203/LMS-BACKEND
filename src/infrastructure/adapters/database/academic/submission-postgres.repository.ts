@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { SubmissionRepositoryPort } from '../../../../domain/ports/outbound/academic/submission-repository.port';
-import { SubmissionEntity } from '../../../../domain/entities/academic/submission.entity';
+import { SubmissionRepositoryPort } from '@domain/ports/outbound/academic/submission-repository.port';
+import { SubmissionEntity } from '@domain/entities/academic/submission.entity';
 import { SubmissionOrmEntity } from '../../../database/entities/academic/submission.orm-entity';
 
 @Injectable()

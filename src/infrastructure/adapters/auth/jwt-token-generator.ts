@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import {
   TokenGeneratorPort,
   TokenPayload,
-} from '../../../domain/ports/outbound/auth/token-generator.port';
+} from '@domain/ports/outbound/auth/token-generator.port';
 import type { SignOptions } from 'jsonwebtoken';
 
 @Injectable()

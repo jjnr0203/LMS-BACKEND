@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { TuitionRepositoryPort } from '../../../../domain/ports/outbound/academic/tuition-repository.port';
-import { TuitionEntity } from '../../../../domain/entities/academic/tuition.entity';
+import { TuitionRepositoryPort } from '@domain/ports/outbound/academic/tuition-repository.port';
+import { TuitionEntity } from '@domain/entities/academic/tuition.entity';
 import { TuitionOrmEntity } from '../../../database/entities/academic/tuition.orm-entity';
 
 @Injectable()

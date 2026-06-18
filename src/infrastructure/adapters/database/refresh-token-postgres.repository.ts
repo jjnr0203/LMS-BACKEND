@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { RefreshTokenRepositoryPort } from '../../../domain/ports/outbound/auth/refresh-token-repository.port';
-import { RefreshTokenEntity } from '../../../domain/entities/auth/refresh-token.entity';
+import { RefreshTokenRepositoryPort } from '@domain/ports/outbound/auth/refresh-token-repository.port';
+import { RefreshTokenEntity } from '@domain/entities/auth/refresh-token.entity';
 import { RefreshTokenOrmEntity } from '../../database/entities/auth/refresh-token.orm-entity';
 
 @Injectable()

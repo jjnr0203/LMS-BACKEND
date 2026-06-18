@@ -1,4 +1,4 @@
-import { UserEntity } from '../../domain/entities/users/user.entity';
+import { UserEntity } from '@domain/entities/users/user.entity';
 import { UserOrmEntity } from '../database/entities/users/user.orm-entity';
 
 export class UserMapper {

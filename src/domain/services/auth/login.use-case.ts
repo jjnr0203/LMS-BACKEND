@@ -22,12 +22,7 @@ export class LoginUseCase implements LoginUseCasePort {
   ) {}
 
   async execute(command: LoginCommand): Promise<LoginResult> {
-    // Determine if input is cedula (only digits) or email
-    const isEmail = command.emailOrCedula.includes('@');
-
-    const user = isEmail
-      ? await this.userRepository.findByEmail(command.emailOrCedula)
-      : await this.userRepository.findById(command.emailOrCedula);
+    const user = await this.userRepository.findById(command.id);
 
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');

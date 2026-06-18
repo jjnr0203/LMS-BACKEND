@@ -1,8 +1,8 @@
 import { Controller, Post, Body, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../../../infrastructure/auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../../../infrastructure/auth/guards/roles.guard';
-import { Roles } from '../../../infrastructure/auth/decorators/roles.decorator';
-import { CreateUserUseCase } from '../../../domain/services/admin/create-user.use-case';
+import { JwtAuthGuard } from '@infrastructure/auth/guards/jwt-auth.guard';
+import { RolesGuard } from '@infrastructure/auth/guards/roles.guard';
+import { Roles } from '@infrastructure/auth/decorators/roles.decorator';
+import { CreateUserUseCase } from '@domain/services/admin/create-user.use-case';
 import { CreateUserDto } from '../../dto/admin/create-user.dto';
 import { AdminResponseDto } from '../../dto/admin/admin-response.dto';
 

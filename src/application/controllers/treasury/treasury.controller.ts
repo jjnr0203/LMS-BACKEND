@@ -1,16 +1,16 @@
 import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../../../infrastructure/auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../../../infrastructure/auth/guards/roles.guard';
-import { Roles } from '../../../infrastructure/auth/decorators/roles.decorator';
-import { ListTuitionsUseCase } from '../../../domain/services/treasury/list-tuitions.use-case';
-import { RegisterPaymentUseCase } from '../../../domain/services/treasury/register-payment.use-case';
-import { DisableAccountUseCase } from '../../../domain/services/treasury/disable-account.use-case';
+import { JwtAuthGuard } from '@infrastructure/auth/guards/jwt-auth.guard';
+import { RolesGuard } from '@infrastructure/auth/guards/roles.guard';
+import { Roles } from '@infrastructure/auth/decorators/roles.decorator';
+import { ListTuitionsUseCase } from '@domain/services/treasury/list-tuitions.use-case';
+import { RegisterPaymentUseCase } from '@domain/services/treasury/register-payment.use-case';
+import { DisableAccountUseCase } from '@domain/services/treasury/disable-account.use-case';
 import { RegisterPaymentDto } from '../../dto/treasury/register-payment.dto';
 import { DisableAccountDto } from '../../dto/treasury/disable-account.dto';
 
-@Controller('tesoreria')
+@Controller('treasury')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('tesoreria')
+@Roles('treasury')
 export class TreasuryController {
   constructor(
     private readonly listTuitionsUseCase: ListTuitionsUseCase,

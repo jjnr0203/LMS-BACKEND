@@ -1,7 +1,7 @@
 import { UserEntity } from '../../../entities/users/user.entity';
 
 export interface LoginCommand {
-  emailOrCedula: string;
+  id: string;
   passwordRaw: string;
 }
 

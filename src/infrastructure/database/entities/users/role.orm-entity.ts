@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
-import { RoleEntity } from '../../../../domain/entities/users/role.entity';
+import { RoleEntity } from '@domain/entities/users/role.entity';
 
 @Entity('roles')
 export class RoleOrmEntity {

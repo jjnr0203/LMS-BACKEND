@@ -1,4 +1,4 @@
-import { TuitionEntity } from '../../domain/entities/academic/tuition.entity';
+import { TuitionEntity } from '@domain/entities/academic/tuition.entity';
 import { TuitionOrmEntity } from '../database/entities/academic/tuition.orm-entity';
 
 export class TuitionMapper {
