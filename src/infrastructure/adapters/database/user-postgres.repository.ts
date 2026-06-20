@@ -55,4 +55,21 @@ export class UserPostgresRepository implements UserRepositoryPort {
   async softDelete(id: string): Promise<void> {
     await this.repository.softDelete(id);
   }
+
+  async getCountsByRole(): Promise<Record<string, number>> {
+    const counts = await this.repository
+      .createQueryBuilder('user')
+      .innerJoin('user.role', 'role')
+      .where('user.deletedAt IS NULL')
+      .select('role.name', 'roleName')
+      .addSelect('COUNT(user.id)', 'count')
+      .groupBy('role.name')
+      .getRawMany();
+
+    const result: Record<string, number> = {};
+    for (const row of counts) {
+      result[row.roleName] = parseInt(row.count, 10);
+    }
+    return result;
+  }
 }
