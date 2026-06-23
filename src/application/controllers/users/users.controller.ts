@@ -51,6 +51,7 @@ export class UsersController {
     @Query('page') page: string = '1',
     @Query('limit') limit: string = '10',
     @Query('role') role: string | undefined,
+    @Query('search') search: string | undefined,
     @ReqDecorator() req: AuthenticatedRequest,
   ) {
     if (req.user.role === 'treasury') {
@@ -58,7 +59,7 @@ export class UsersController {
     }
     const host = req.headers.host || 'localhost:3000';
     const result = await this.getPaginatedUsersUseCase.execute(
-      { page: parseInt(page, 10), limit: parseInt(limit, 10), role },
+      { page: parseInt(page, 10), limit: parseInt(limit, 10), role, search },
       host,
     );
     return {

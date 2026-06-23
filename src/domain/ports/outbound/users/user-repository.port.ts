@@ -8,6 +8,7 @@ export abstract class UserRepositoryPort {
     page: number,
     limit: number,
     role?: string,
+    search?: string,
   ): Promise<{ data: UserEntity[]; total: number }>;
   abstract softDelete(id: string): Promise<void>;
   abstract getCountsByRole(): Promise<Record<string, number>>;

@@ -33,9 +33,13 @@ export class SubjectPostgresRepository implements SubjectRepositoryPort {
     return orms.map((o) => this.toDomain(o));
   }
 
-  async findByCoordinatorId(coordinatorId: string): Promise<SubjectEntity[]> {
-    const orms = await this.repository.find({ where: { coordinatorId } });
+  async findByTeacherId(teacherId: string): Promise<SubjectEntity[]> {
+    const orms = await this.repository.find({ where: { teacherId } });
     return orms.map((o) => this.toDomain(o));
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.repository.delete(id);
   }
 
   private toDomain(orm: SubjectOrmEntity): SubjectEntity {
@@ -44,7 +48,7 @@ export class SubjectPostgresRepository implements SubjectRepositoryPort {
       orm.name,
       orm.code,
       orm.credits,
-      orm.coordinatorId,
+      orm.teacherId,
       orm.description,
     );
   }
@@ -55,7 +59,7 @@ export class SubjectPostgresRepository implements SubjectRepositoryPort {
     orm.name = entity.name;
     orm.code = entity.code;
     orm.credits = entity.credits;
-    orm.coordinatorId = entity.coordinatorId;
+    if (entity.teacherId) orm.teacherId = entity.teacherId;
     orm.description = entity.description;
     return orm;
   }

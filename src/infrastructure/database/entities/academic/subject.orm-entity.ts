@@ -15,12 +15,12 @@ export class SubjectOrmEntity {
   @Column({ type: 'int' })
   credits: number;
 
-  @Column({ type: 'varchar', length: 20, name: 'coordinator_id' })
-  coordinatorId: string;
+  @Column({ type: 'varchar', length: 20, name: 'teacher_id', nullable: true })
+  teacherId: string;
 
   @ManyToOne(() => UserOrmEntity)
-  @JoinColumn({ name: 'coordinator_id' })
-  coordinator: UserOrmEntity;
+  @JoinColumn({ name: 'teacher_id' })
+  teacher: UserOrmEntity;
 
   @Column({ type: 'text', nullable: true })
   description?: string;

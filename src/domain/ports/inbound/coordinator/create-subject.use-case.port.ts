@@ -4,7 +4,7 @@ export interface CreateSubjectCommand {
   name: string;
   code: string;
   credits: number;
-  coordinatorId: string;
+  teacherId?: string;
   description?: string;
 }
 

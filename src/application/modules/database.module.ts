@@ -11,6 +11,10 @@ import { AssignmentOrmEntity } from '@infrastructure/database/entities/academic/
 import { SubmissionOrmEntity } from '@infrastructure/database/entities/academic/submission.orm-entity';
 import { StudentSubjectOrmEntity } from '@infrastructure/database/entities/academic/student-subject.orm-entity';
 import { TeacherSubjectOrmEntity } from '@infrastructure/database/entities/academic/teacher-subject.orm-entity';
+import { AcademicTermOrmEntity } from '@infrastructure/database/entities/academic/academic-term.orm-entity';
+import { ModalityOrmEntity } from '@infrastructure/database/entities/academic/modality.orm-entity';
+import { CareerOrmEntity } from '@infrastructure/database/entities/academic/career.orm-entity';
+import { CareerSubjectOrmEntity } from '@infrastructure/database/entities/academic/career-subject.orm-entity';
 
 @Module({
   imports: [
@@ -36,6 +40,10 @@ import { TeacherSubjectOrmEntity } from '@infrastructure/database/entities/acade
           SubmissionOrmEntity,
           StudentSubjectOrmEntity,
           TeacherSubjectOrmEntity,
+          AcademicTermOrmEntity,
+          ModalityOrmEntity,
+          CareerOrmEntity,
+          CareerSubjectOrmEntity,
         ],
         synchronize: true,
       }),
@@ -51,6 +59,10 @@ import { TeacherSubjectOrmEntity } from '@infrastructure/database/entities/acade
       SubmissionOrmEntity,
       StudentSubjectOrmEntity,
       TeacherSubjectOrmEntity,
+      AcademicTermOrmEntity,
+      ModalityOrmEntity,
+      CareerOrmEntity,
+      CareerSubjectOrmEntity,
     ]),
   ],
   exports: [TypeOrmModule],

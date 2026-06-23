@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Brackets } from 'typeorm';
 import { UserRepositoryPort } from '@domain/ports/outbound/users/user-repository.port';
 import { UserEntity } from '@domain/entities/users/user.entity';
 import { UserOrmEntity } from '../../database/entities/users/user.orm-entity';
@@ -40,15 +40,30 @@ export class UserPostgresRepository implements UserRepositoryPort {
     page: number,
     limit: number,
     role?: string,
+    search?: string,
   ): Promise<{ data: UserEntity[]; total: number }> {
-    const whereClause = role ? { role: { name: role } } : {};
-    const [ormEntities, total] = await this.repository.findAndCount({
-      where: whereClause,
-      skip: (page - 1) * limit,
-      take: limit,
-      order: { createdAt: 'DESC' },
-      relations: ['role'],
-    });
+    const qb = this.repository.createQueryBuilder('user')
+      .leftJoinAndSelect('user.role', 'role')
+      .where('user.deletedAt IS NULL'); // Since withDeleted is not used here but it's handled by TypeORM soft deletes automatically, but just in case, TypeORM does it by default. Actually, we just don't need to specify deletedAt if TypeORM does it automatically unless we use withDeleted.
+
+    if (role) {
+      qb.andWhere('role.name = :role', { role });
+    }
+
+    if (search) {
+      qb.andWhere(new Brackets(qbInner => {
+        qbInner.where('user.id ILIKE :search', { search: `%${search}%` })
+               .orWhere('user.firstName ILIKE :search', { search: `%${search}%` })
+               .orWhere('user.lastName ILIKE :search', { search: `%${search}%` })
+               .orWhere('role.name ILIKE :search', { search: `%${search}%` });
+      }));
+    }
+
+    qb.orderBy('user.createdAt', 'DESC')
+      .skip((page - 1) * limit)
+      .take(limit);
+
+    const [ormEntities, total] = await qb.getManyAndCount();
     return { data: ormEntities.map((e) => UserOrmEntity.toDomain(e)), total };
   }
 

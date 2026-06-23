@@ -1,10 +1,8 @@
-export class SubjectEntity {
+export class Modality {
   constructor(
     public readonly id: string,
     public name: string,
-    public code: string,
-    public credits: number,
-    public teacherId?: string,
+    public isActive: boolean,
     public description?: string,
   ) {}
 }

@@ -5,6 +5,7 @@ export interface GetPaginatedUsersCommand {
   page: number;
   limit: number;
   role?: string;
+  search?: string;
 }
 
 export abstract class GetPaginatedUsersUseCasePort {

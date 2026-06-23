@@ -12,6 +12,10 @@ import { AssignmentRepositoryPort } from '@domain/ports/outbound/academic/assign
 import { SubmissionRepositoryPort } from '@domain/ports/outbound/academic/submission-repository.port';
 import { StudentSubjectRepositoryPort } from '@domain/ports/outbound/academic/student-subject-repository.port';
 import { TeacherSubjectRepositoryPort } from '@domain/ports/outbound/academic/teacher-subject-repository.port';
+import { AcademicTermRepositoryPort, ACADEMIC_TERM_REPOSITORY } from '@domain/ports/outbound/academic/academic-term-repository.port';
+import { ModalityRepositoryPort, MODALITY_REPOSITORY } from '@domain/ports/outbound/academic/modality-repository.port';
+import { CareerRepositoryPort, CAREER_REPOSITORY } from '@domain/ports/outbound/academic/career-repository.port';
+import { CareerSubjectRepositoryPort, CAREER_SUBJECT_REPOSITORY } from '@domain/ports/outbound/academic/career-subject-repository.port';
 import { UserPostgresRepository } from '@infrastructure/adapters/database/user-postgres.repository';
 import { RolePostgresRepository } from '@infrastructure/adapters/database/role-postgres.repository';
 import { RefreshTokenPostgresRepository } from '@infrastructure/adapters/database/refresh-token-postgres.repository';
@@ -22,6 +26,10 @@ import { AssignmentPostgresRepository } from '@infrastructure/adapters/database/
 import { SubmissionPostgresRepository } from '@infrastructure/adapters/database/academic/submission-postgres.repository';
 import { StudentSubjectPostgresRepository } from '@infrastructure/adapters/database/academic/student-subject-postgres.repository';
 import { TeacherSubjectPostgresRepository } from '@infrastructure/adapters/database/academic/teacher-subject-postgres.repository';
+import { AcademicTermPostgresRepository } from '@infrastructure/adapters/database/academic/academic-term-postgres.repository';
+import { ModalityPostgresRepository } from '@infrastructure/adapters/database/academic/modality-postgres.repository';
+import { CareerPostgresRepository } from '@infrastructure/adapters/database/academic/career-postgres.repository';
+import { CareerSubjectPostgresRepository } from '@infrastructure/adapters/database/academic/career-subject-postgres.repository';
 import { BcryptPasswordHasher } from '@infrastructure/adapters/auth/bcrypt-password-hasher';
 import { JwtTokenGenerator } from '@infrastructure/adapters/auth/jwt-token-generator';
 import { JwtModule, JwtService } from '@nestjs/jwt';
@@ -97,6 +105,22 @@ import { RolesGuard } from '@infrastructure/auth/guards/roles.guard';
       provide: TeacherSubjectRepositoryPort,
       useClass: TeacherSubjectPostgresRepository,
     },
+    {
+      provide: ACADEMIC_TERM_REPOSITORY,
+      useClass: AcademicTermPostgresRepository,
+    },
+    {
+      provide: MODALITY_REPOSITORY,
+      useClass: ModalityPostgresRepository,
+    },
+    {
+      provide: CAREER_REPOSITORY,
+      useClass: CareerPostgresRepository,
+    },
+    {
+      provide: CAREER_SUBJECT_REPOSITORY,
+      useClass: CareerSubjectPostgresRepository,
+    },
     RolesGuard,
   ],
   exports: [
@@ -112,6 +136,10 @@ import { RolesGuard } from '@infrastructure/auth/guards/roles.guard';
     SubmissionRepositoryPort,
     StudentSubjectRepositoryPort,
     TeacherSubjectRepositoryPort,
+    ACADEMIC_TERM_REPOSITORY,
+    MODALITY_REPOSITORY,
+    CAREER_REPOSITORY,
+    CAREER_SUBJECT_REPOSITORY,
     RolesGuard,
   ],
 })

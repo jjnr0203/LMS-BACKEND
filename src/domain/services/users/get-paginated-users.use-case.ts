@@ -13,11 +13,12 @@ export class GetPaginatedUsersUseCase implements GetPaginatedUsersUseCasePort {
     command: GetPaginatedUsersCommand,
     host: string,
   ): Promise<PaginatedResponse<UserEntity>> {
-    const { page, limit, role } = command;
+    const { page, limit, role, search } = command;
     const { data, total } = await this.userRepository.findPaginated(
       page,
       limit,
       role,
+      search,
     );
 
     const lastPage = Math.ceil(total / limit) || 1;
@@ -25,14 +26,15 @@ export class GetPaginatedUsersUseCase implements GetPaginatedUsersUseCasePort {
     // As per user's request, we use localhost base if no domain is provided. The controller will pass the host.
     const baseUrl = `http://${host}/api/users`;
     const roleParam = role ? `&role=${role}` : '';
+    const searchParam = search ? `&search=${encodeURIComponent(search)}` : '';
 
     const next =
       page < lastPage
-        ? `${baseUrl}?page=${page + 1}&limit=${limit}${roleParam}`
+        ? `${baseUrl}?page=${page + 1}&limit=${limit}${roleParam}${searchParam}`
         : null;
     const prev =
       page > 1
-        ? `${baseUrl}?page=${page - 1}&limit=${limit}${roleParam}`
+        ? `${baseUrl}?page=${page - 1}&limit=${limit}${roleParam}${searchParam}`
         : null;
 
     return {

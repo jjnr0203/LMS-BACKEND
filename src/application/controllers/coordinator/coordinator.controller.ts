@@ -56,7 +56,7 @@ export class CoordinatorController {
       name: dto.name,
       code: dto.code,
       credits: dto.credits,
-      coordinatorId: req.user.id,
+      teacherId: req.user.id,
       description: dto.description,
     });
     return { message: 'Materia creada exitosamente', subject };
