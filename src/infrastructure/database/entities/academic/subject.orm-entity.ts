@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, ManyToOne, JoinColumn, ManyToMany, JoinTable } from 'typeorm';
 import { UserOrmEntity } from '../users/user.orm-entity';
+import { ModalityOrmEntity } from './modality.orm-entity';
 
 @Entity('subjects')
 export class SubjectOrmEntity {
@@ -24,4 +25,12 @@ export class SubjectOrmEntity {
 
   @Column({ type: 'text', nullable: true })
   description?: string;
+
+  @ManyToMany(() => ModalityOrmEntity)
+  @JoinTable({
+    name: 'subject_modalities',
+    joinColumn: { name: 'subject_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'modality_id', referencedColumnName: 'id' }
+  })
+  modalities: ModalityOrmEntity[];
 }

@@ -7,6 +7,7 @@ export interface UpdateUserCommand {
   email?: string;
   phone?: string;
   avatarUrl?: string;
+  birthDate?: Date;
 }
 
 export abstract class UpdateUserUseCasePort {

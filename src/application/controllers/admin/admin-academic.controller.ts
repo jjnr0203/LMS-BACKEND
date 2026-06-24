@@ -7,13 +7,16 @@ import { ManageAcademicTermsUseCase } from '@domain/services/admin/academic/mana
 import { ManageModalitiesUseCase } from '@domain/services/admin/academic/manage-modalities.use-case';
 import { ManageCareersUseCase } from '@domain/services/admin/academic/manage-careers.use-case';
 import { ManageSubjectsUseCase } from '@domain/services/admin/academic/manage-subjects.use-case';
+import { BulkCreateSubjectsUseCase } from '@domain/services/admin/academic/bulk-create-subjects.use-case';
+import { ManageSemesterColorsUseCase } from '@domain/services/admin/manage-semester-colors.use-case';
 
 import { 
   CreateAcademicTermDto, 
   CreateModalityDto, 
   CreateCareerDto, 
   AssignSubjectsDto, 
-  CreateSubjectDto 
+  CreateSubjectDto,
+  BulkSubjectsDto
 } from '../../dto/admin/academic.dto';
 
 @Controller('admin/academic')
@@ -25,7 +28,21 @@ export class AdminAcademicController {
     private readonly manageModalitiesUC: ManageModalitiesUseCase,
     private readonly manageCareersUC: ManageCareersUseCase,
     private readonly manageSubjectsUC: ManageSubjectsUseCase,
+    private readonly bulkCreateSubjectsUC: BulkCreateSubjectsUseCase,
+    private readonly manageSemesterColorsUC: ManageSemesterColorsUseCase,
   ) {}
+
+  // --- SEMESTER COLORS ---
+  @Get('semester-colors')
+  async getSemesterColors() {
+    return this.manageSemesterColorsUC.getColors();
+  }
+
+  @Post('semester-colors')
+  async saveSemesterColor(@Body() dto: { semester: number; color: string }) {
+    await this.manageSemesterColorsUC.saveColor(dto.semester, dto.color);
+    return { success: true };
+  }
 
   // --- ACADEMIC TERMS ---
   @Get('terms')
@@ -120,6 +137,12 @@ export class AdminAcademicController {
   @Post('subjects')
   async createSubject(@Body() dto: CreateSubjectDto) {
     return this.manageSubjectsUC.create(dto);
+  }
+
+  @Post('subjects/bulk-upload')
+  async bulkCreateSubjects(@Body() dto: BulkSubjectsDto) {
+    await this.bulkCreateSubjectsUC.execute(dto);
+    return { success: true };
   }
 
   @Put('subjects/:id')

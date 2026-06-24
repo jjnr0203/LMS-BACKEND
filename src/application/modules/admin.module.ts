@@ -11,6 +11,8 @@ import { ManageAcademicTermsUseCase } from '@domain/services/admin/academic/mana
 import { ManageModalitiesUseCase } from '@domain/services/admin/academic/manage-modalities.use-case';
 import { ManageCareersUseCase } from '@domain/services/admin/academic/manage-careers.use-case';
 import { ManageSubjectsUseCase } from '@domain/services/admin/academic/manage-subjects.use-case';
+import { BulkCreateSubjectsUseCase } from '@domain/services/admin/academic/bulk-create-subjects.use-case';
+import { ManageSemesterColorsUseCase } from '@domain/services/admin/manage-semester-colors.use-case';
 import { AcademicTermRepositoryPort, ACADEMIC_TERM_REPOSITORY } from '@domain/ports/outbound/academic/academic-term-repository.port';
 import { ModalityRepositoryPort, MODALITY_REPOSITORY } from '@domain/ports/outbound/academic/modality-repository.port';
 import { CareerRepositoryPort, CAREER_REPOSITORY } from '@domain/ports/outbound/academic/career-repository.port';
@@ -32,8 +34,14 @@ import { SubjectRepositoryPort } from '@domain/ports/outbound/academic/subject-r
     },
     {
       provide: GetDashboardStatsUseCase,
-      useFactory: (userRepo: UserRepositoryPort) => new GetDashboardStatsUseCase(userRepo),
-      inject: [UserRepositoryPort],
+      useFactory: (
+        userRepo: UserRepositoryPort,
+        careerRepo: CareerRepositoryPort,
+        subjectRepo: SubjectRepositoryPort,
+        careerSubjectRepo: CareerSubjectRepositoryPort,
+        modalityRepo: ModalityRepositoryPort
+      ) => new GetDashboardStatsUseCase(userRepo, careerRepo, subjectRepo, careerSubjectRepo, modalityRepo),
+      inject: [UserRepositoryPort, CAREER_REPOSITORY, SubjectRepositoryPort, CAREER_SUBJECT_REPOSITORY, MODALITY_REPOSITORY],
     },
     {
       provide: ManageAcademicTermsUseCase,
@@ -52,8 +60,18 @@ import { SubjectRepositoryPort } from '@domain/ports/outbound/academic/subject-r
     },
     {
       provide: ManageSubjectsUseCase,
-      useFactory: (repo: SubjectRepositoryPort) => new ManageSubjectsUseCase(repo),
-      inject: [SubjectRepositoryPort],
+      useFactory: (repo: SubjectRepositoryPort, careerSubjRepo: CareerSubjectRepositoryPort) => new ManageSubjectsUseCase(repo, careerSubjRepo),
+      inject: [SubjectRepositoryPort, CAREER_SUBJECT_REPOSITORY],
+    },
+    {
+      provide: BulkCreateSubjectsUseCase,
+      useFactory: (subjRepo: SubjectRepositoryPort, careerSubjRepo: CareerSubjectRepositoryPort) => new BulkCreateSubjectsUseCase(subjRepo, careerSubjRepo),
+      inject: [SubjectRepositoryPort, CAREER_SUBJECT_REPOSITORY],
+    },
+    {
+      provide: ManageSemesterColorsUseCase,
+      useFactory: (repo: any) => new ManageSemesterColorsUseCase(repo),
+      inject: ['SEMESTER_COLOR_REPOSITORY'],
     },
   ],
 })

@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CareerRepositoryPort } from '@domain/ports/outbound/academic/career-repository.port';
 import { CareerOrmEntity } from '../../../database/entities/academic/career.orm-entity';
+import { ModalityOrmEntity } from '../../../database/entities/academic/modality.orm-entity';
 import { Career } from '@domain/entities/academic/career.entity';
 
 @Injectable()
@@ -18,7 +19,7 @@ export class CareerPostgresRepository implements CareerRepositoryPort {
       ormEntity.name,
       ormEntity.code,
       ormEntity.durationSemesters,
-      ormEntity.modalityId,
+      ormEntity.modalities ? ormEntity.modalities.map(m => m.id) : [],
       ormEntity.coordinatorId,
       ormEntity.isActive,
     );
@@ -30,7 +31,15 @@ export class CareerPostgresRepository implements CareerRepositoryPort {
     ormEntity.name = domainEntity.name;
     ormEntity.code = domainEntity.code;
     ormEntity.durationSemesters = domainEntity.durationSemesters;
-    if (domainEntity.modalityId) ormEntity.modalityId = domainEntity.modalityId;
+    if (domainEntity.modalityIds && domainEntity.modalityIds.length > 0) {
+      ormEntity.modalities = domainEntity.modalityIds.map(id => {
+        const m = new ModalityOrmEntity();
+        m.id = id;
+        return m;
+      });
+    } else {
+      ormEntity.modalities = [];
+    }
     if (domainEntity.coordinatorId) ormEntity.coordinatorId = domainEntity.coordinatorId;
     ormEntity.isActive = domainEntity.isActive;
     return ormEntity;
@@ -42,12 +51,12 @@ export class CareerPostgresRepository implements CareerRepositoryPort {
   }
 
   async findById(id: string): Promise<Career | null> {
-    const found = await this.repository.findOne({ where: { id }, relations: ['modality', 'coordinator'] });
+    const found = await this.repository.findOne({ where: { id }, relations: ['modalities', 'coordinator'] });
     return found ? this.mapToDomain(found) : null;
   }
 
   async findAll(): Promise<Career[]> {
-    const all = await this.repository.find({ order: { name: 'ASC' }, relations: ['modality', 'coordinator'] });
+    const all = await this.repository.find({ order: { name: 'ASC' }, relations: ['modalities', 'coordinator'] });
     return all.map((o) => this.mapToDomain(o));
   }
 

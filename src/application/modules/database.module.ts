@@ -15,6 +15,7 @@ import { AcademicTermOrmEntity } from '@infrastructure/database/entities/academi
 import { ModalityOrmEntity } from '@infrastructure/database/entities/academic/modality.orm-entity';
 import { CareerOrmEntity } from '@infrastructure/database/entities/academic/career.orm-entity';
 import { CareerSubjectOrmEntity } from '@infrastructure/database/entities/academic/career-subject.orm-entity';
+import { SemesterColorOrmEntity } from '@infrastructure/database/entities/academic/semester-color.orm-entity';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { CareerSubjectOrmEntity } from '@infrastructure/database/entities/academ
           ModalityOrmEntity,
           CareerOrmEntity,
           CareerSubjectOrmEntity,
+          SemesterColorOrmEntity,
         ],
         synchronize: true,
       }),
@@ -63,6 +65,7 @@ import { CareerSubjectOrmEntity } from '@infrastructure/database/entities/academ
       ModalityOrmEntity,
       CareerOrmEntity,
       CareerSubjectOrmEntity,
+      SemesterColorOrmEntity,
     ]),
   ],
   exports: [TypeOrmModule],

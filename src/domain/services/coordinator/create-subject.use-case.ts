@@ -25,6 +25,7 @@ export class CreateSubjectUseCase implements CreateSubjectUseCasePort {
       command.name,
       command.code,
       command.credits,
+      [],
       command.teacherId,
       command.description,
     );

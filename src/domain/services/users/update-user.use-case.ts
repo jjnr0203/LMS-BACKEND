@@ -30,7 +30,7 @@ export class UpdateUserUseCase implements UpdateUserUseCasePort {
       user.passwordHash,
       user.roleId,
       user.isActive,
-      user.birthDate,
+      command.birthDate ?? user.birthDate,
       command.phone ?? user.phone,
       command.avatarUrl ?? user.avatarUrl,
       user.createdAt,

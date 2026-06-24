@@ -4,6 +4,8 @@ import { Repository } from 'typeorm';
 import { SubjectRepositoryPort } from '@domain/ports/outbound/academic/subject-repository.port';
 import { SubjectEntity } from '@domain/entities/academic/subject.entity';
 import { SubjectOrmEntity } from '../../../database/entities/academic/subject.orm-entity';
+import { ModalityOrmEntity } from '../../../database/entities/academic/modality.orm-entity';
+import { CareerSubjectOrmEntity } from '../../../database/entities/academic/career-subject.orm-entity';
 
 @Injectable()
 export class SubjectPostgresRepository implements SubjectRepositoryPort {
@@ -13,12 +15,12 @@ export class SubjectPostgresRepository implements SubjectRepositoryPort {
   ) {}
 
   async findById(id: string): Promise<SubjectEntity | null> {
-    const orm = await this.repository.findOne({ where: { id } });
+    const orm = await this.repository.findOne({ where: { id }, relations: ['modalities'] });
     return orm ? this.toDomain(orm) : null;
   }
 
   async findByCode(code: string): Promise<SubjectEntity | null> {
-    const orm = await this.repository.findOne({ where: { code } });
+    const orm = await this.repository.findOne({ where: { code }, relations: ['modalities'] });
     return orm ? this.toDomain(orm) : null;
   }
 
@@ -29,16 +31,19 @@ export class SubjectPostgresRepository implements SubjectRepositoryPort {
   }
 
   async findAll(): Promise<SubjectEntity[]> {
-    const orms = await this.repository.find();
+    const orms = await this.repository.find({ relations: ['modalities'] });
     return orms.map((o) => this.toDomain(o));
   }
 
   async findByTeacherId(teacherId: string): Promise<SubjectEntity[]> {
-    const orms = await this.repository.find({ where: { teacherId } });
+    const orms = await this.repository.find({ where: { teacherId }, relations: ['modalities'] });
     return orms.map((o) => this.toDomain(o));
   }
 
   async delete(id: string): Promise<void> {
+    await this.repository.manager.query('DELETE FROM teacher_subjects WHERE subject_id = $1', [id]);
+    await this.repository.manager.query('DELETE FROM student_subjects WHERE subject_id = $1', [id]);
+    await this.repository.manager.delete(CareerSubjectOrmEntity, { subjectId: id });
     await this.repository.delete(id);
   }
 
@@ -48,6 +53,7 @@ export class SubjectPostgresRepository implements SubjectRepositoryPort {
       orm.name,
       orm.code,
       orm.credits,
+      orm.modalities ? orm.modalities.map(m => m.id) : [],
       orm.teacherId,
       orm.description,
     );
@@ -59,6 +65,15 @@ export class SubjectPostgresRepository implements SubjectRepositoryPort {
     orm.name = entity.name;
     orm.code = entity.code;
     orm.credits = entity.credits;
+    if (entity.modalityIds && entity.modalityIds.length > 0) {
+      orm.modalities = entity.modalityIds.map(id => {
+        const m = new ModalityOrmEntity();
+        m.id = id;
+        return m;
+      });
+    } else {
+      orm.modalities = [];
+    }
     if (entity.teacherId) orm.teacherId = entity.teacherId;
     orm.description = entity.description;
     return orm;

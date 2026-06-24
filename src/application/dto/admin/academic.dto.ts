@@ -41,9 +41,9 @@ export class CreateCareerDto {
   name: string;
 
   @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  modalityId?: string;
+  @IsArray()
+  @IsString({ each: true })
+  modalityIds?: string[];
 
   @IsOptional()
   @IsString()
@@ -81,6 +81,53 @@ export class CreateSubjectDto {
   teacherId?: string;
 
   @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  modalityIds?: string[];
+
+  @IsOptional()
   @IsString()
   description?: string;
+
+  @IsOptional()
+  @IsString()
+  careerId?: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  semester?: number;
+}
+
+export class BulkSubjectItemDto {
+  @IsString()
+  @IsNotEmpty()
+  code: string;
+
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @Type(() => Number)
+  @IsNumber()
+  credits: number;
+
+  @Type(() => Number)
+  @IsNumber()
+  semester: number;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  modalityIds?: string[];
+}
+
+export class BulkSubjectsDto {
+  @IsUUID()
+  @IsNotEmpty()
+  careerId: string;
+
+  @IsArray()
+  @Type(() => BulkSubjectItemDto)
+  subjects: BulkSubjectItemDto[];
 }

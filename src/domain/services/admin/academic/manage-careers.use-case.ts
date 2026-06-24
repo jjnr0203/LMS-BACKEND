@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 export interface CreateCareerDto {
   code: string;
   name: string;
-  modalityId?: string;
+  modalityIds?: string[];
   coordinatorId?: string;
   durationSemesters: number;
   isActive: boolean;
@@ -29,7 +29,7 @@ export class ManageCareersUseCase {
       data.name,
       data.code,
       data.durationSemesters,
-      data.modalityId,
+      data.modalityIds || [],
       data.coordinatorId,
       data.isActive,
     );
@@ -43,7 +43,7 @@ export class ManageCareersUseCase {
     if (data.name !== undefined) career.name = data.name;
     if (data.code !== undefined) career.code = data.code;
     if (data.durationSemesters !== undefined) career.durationSemesters = data.durationSemesters;
-    if (data.modalityId !== undefined) career.modalityId = data.modalityId;
+    if (data.modalityIds !== undefined) career.modalityIds = data.modalityIds;
     if (data.coordinatorId !== undefined) career.coordinatorId = data.coordinatorId;
     if (data.isActive !== undefined) career.isActive = data.isActive;
 

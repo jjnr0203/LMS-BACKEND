@@ -16,6 +16,7 @@ import { AcademicTermRepositoryPort, ACADEMIC_TERM_REPOSITORY } from '@domain/po
 import { ModalityRepositoryPort, MODALITY_REPOSITORY } from '@domain/ports/outbound/academic/modality-repository.port';
 import { CareerRepositoryPort, CAREER_REPOSITORY } from '@domain/ports/outbound/academic/career-repository.port';
 import { CareerSubjectRepositoryPort, CAREER_SUBJECT_REPOSITORY } from '@domain/ports/outbound/academic/career-subject-repository.port';
+import { SemesterColorRepositoryPort } from '@domain/ports/outbound/academic/semester-color-repository.port';
 import { UserPostgresRepository } from '@infrastructure/adapters/database/user-postgres.repository';
 import { RolePostgresRepository } from '@infrastructure/adapters/database/role-postgres.repository';
 import { RefreshTokenPostgresRepository } from '@infrastructure/adapters/database/refresh-token-postgres.repository';
@@ -30,6 +31,7 @@ import { AcademicTermPostgresRepository } from '@infrastructure/adapters/databas
 import { ModalityPostgresRepository } from '@infrastructure/adapters/database/academic/modality-postgres.repository';
 import { CareerPostgresRepository } from '@infrastructure/adapters/database/academic/career-postgres.repository';
 import { CareerSubjectPostgresRepository } from '@infrastructure/adapters/database/academic/career-subject-postgres.repository';
+import { SemesterColorPostgresRepository } from '@infrastructure/adapters/database/academic/semester-color-postgres.repository';
 import { BcryptPasswordHasher } from '@infrastructure/adapters/auth/bcrypt-password-hasher';
 import { JwtTokenGenerator } from '@infrastructure/adapters/auth/jwt-token-generator';
 import { JwtModule, JwtService } from '@nestjs/jwt';
@@ -121,6 +123,10 @@ import { RolesGuard } from '@infrastructure/auth/guards/roles.guard';
       provide: CAREER_SUBJECT_REPOSITORY,
       useClass: CareerSubjectPostgresRepository,
     },
+    {
+      provide: 'SEMESTER_COLOR_REPOSITORY',
+      useClass: SemesterColorPostgresRepository,
+    },
     RolesGuard,
   ],
   exports: [
@@ -140,6 +146,7 @@ import { RolesGuard } from '@infrastructure/auth/guards/roles.guard';
     MODALITY_REPOSITORY,
     CAREER_REPOSITORY,
     CAREER_SUBJECT_REPOSITORY,
+    'SEMESTER_COLOR_REPOSITORY',
     RolesGuard,
   ],
 })
