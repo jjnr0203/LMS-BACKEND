@@ -49,7 +49,8 @@ export class TeacherSubjectPostgresRepository implements TeacherSubjectRepositor
       where: { subjectId },
     });
     return found.map(
-      (f) => new TeacherSubjectEntity(f.id, f.teacherId, f.subjectId, f.assignedAt),
+      (f) =>
+        new TeacherSubjectEntity(f.id, f.teacherId, f.subjectId, f.assignedAt),
     );
   }
 }

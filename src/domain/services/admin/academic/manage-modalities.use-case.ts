@@ -9,9 +9,7 @@ export interface CreateModalityDto {
 }
 
 export class ManageModalitiesUseCase {
-  constructor(
-    private readonly repository: ModalityRepositoryPort,
-  ) {}
+  constructor(private readonly repository: ModalityRepositoryPort) {}
 
   async create(data: CreateModalityDto): Promise<Modality> {
     const modality = new Modality(
@@ -23,7 +21,10 @@ export class ManageModalitiesUseCase {
     return this.repository.save(modality);
   }
 
-  async update(id: string, data: Partial<CreateModalityDto>): Promise<Modality | null> {
+  async update(
+    id: string,
+    data: Partial<CreateModalityDto>,
+  ): Promise<Modality | null> {
     const modality = await this.repository.findById(id);
     if (!modality) return null;
 

@@ -13,7 +13,12 @@ export class ModalityPostgresRepository implements ModalityRepositoryPort {
   ) {}
 
   private mapToDomain(ormEntity: ModalityOrmEntity): Modality {
-    return new Modality(ormEntity.id, ormEntity.name, ormEntity.isActive, ormEntity.description);
+    return new Modality(
+      ormEntity.id,
+      ormEntity.name,
+      ormEntity.isActive,
+      ormEntity.description,
+    );
   }
 
   private mapToOrm(domainEntity: Modality): ModalityOrmEntity {
@@ -21,7 +26,8 @@ export class ModalityPostgresRepository implements ModalityRepositoryPort {
     ormEntity.id = domainEntity.id;
     ormEntity.name = domainEntity.name;
     ormEntity.isActive = domainEntity.isActive;
-    if (domainEntity.description) ormEntity.description = domainEntity.description;
+    if (domainEntity.description)
+      ormEntity.description = domainEntity.description;
     return ormEntity;
   }
 

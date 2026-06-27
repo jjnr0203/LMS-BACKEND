@@ -1,4 +1,13 @@
-import { IsString, IsNotEmpty, IsBoolean, IsDate, IsNumber, IsOptional, IsArray, IsUUID } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsBoolean,
+  IsDate,
+  IsNumber,
+  IsOptional,
+  IsArray,
+  IsUUID,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateAcademicTermDto {
@@ -97,6 +106,10 @@ export class CreateSubjectDto {
   @Type(() => Number)
   @IsNumber()
   semester?: number;
+
+  @IsOptional()
+  @IsString()
+  curriculumId?: string;
 }
 
 export class BulkSubjectItemDto {
@@ -120,6 +133,10 @@ export class BulkSubjectItemDto {
   @IsString({ each: true })
   @IsOptional()
   modalityIds?: string[];
+
+  @IsOptional()
+  @IsString()
+  curriculumId?: string;
 }
 
 export class BulkSubjectsDto {
@@ -130,4 +147,22 @@ export class BulkSubjectsDto {
   @IsArray()
   @Type(() => BulkSubjectItemDto)
   subjects: BulkSubjectItemDto[];
+
+  @IsOptional()
+  @IsString()
+  curriculumId?: string;
+}
+
+export class CreateCurriculumDto {
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isActive?: boolean;
 }

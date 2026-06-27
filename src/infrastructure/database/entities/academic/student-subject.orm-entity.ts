@@ -5,6 +5,7 @@ import {
   ManyToOne,
   JoinColumn,
   CreateDateColumn,
+  Index,
 } from 'typeorm';
 import { UserOrmEntity } from '../users/user.orm-entity';
 import { SubjectOrmEntity } from './subject.orm-entity';
@@ -14,6 +15,7 @@ export class StudentSubjectOrmEntity {
   @PrimaryColumn({ type: 'uuid' })
   id: string;
 
+  @Index()
   @Column({ type: 'varchar', length: 20, name: 'student_id' })
   studentId: string;
 
@@ -21,6 +23,7 @@ export class StudentSubjectOrmEntity {
   @JoinColumn({ name: 'student_id' })
   student: UserOrmEntity;
 
+  @Index()
   @Column({ type: 'uuid', name: 'subject_id' })
   subjectId: string;
 
@@ -28,6 +31,7 @@ export class StudentSubjectOrmEntity {
   @JoinColumn({ name: 'subject_id' })
   subject: SubjectOrmEntity;
 
+  @Index()
   @Column({ type: 'varchar', length: 20, name: 'teacher_id' })
   teacherId: string;
 

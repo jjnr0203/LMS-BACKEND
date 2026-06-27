@@ -5,6 +5,7 @@ import {
   ManyToOne,
   JoinColumn,
   CreateDateColumn,
+  Index,
 } from 'typeorm';
 import { UserOrmEntity } from '../users/user.orm-entity';
 
@@ -13,6 +14,7 @@ export class EnrollmentOrmEntity {
   @PrimaryColumn({ type: 'uuid' })
   id: string;
 
+  @Index()
   @Column({ type: 'varchar', length: 20, name: 'student_id' })
   studentId: string;
 

@@ -19,7 +19,7 @@ export class CareerPostgresRepository implements CareerRepositoryPort {
       ormEntity.name,
       ormEntity.code,
       ormEntity.durationSemesters,
-      ormEntity.modalities ? ormEntity.modalities.map(m => m.id) : [],
+      ormEntity.modalities ? ormEntity.modalities.map((m) => m.id) : [],
       ormEntity.coordinatorId,
       ormEntity.isActive,
     );
@@ -32,7 +32,7 @@ export class CareerPostgresRepository implements CareerRepositoryPort {
     ormEntity.code = domainEntity.code;
     ormEntity.durationSemesters = domainEntity.durationSemesters;
     if (domainEntity.modalityIds && domainEntity.modalityIds.length > 0) {
-      ormEntity.modalities = domainEntity.modalityIds.map(id => {
+      ormEntity.modalities = domainEntity.modalityIds.map((id) => {
         const m = new ModalityOrmEntity();
         m.id = id;
         return m;
@@ -40,7 +40,8 @@ export class CareerPostgresRepository implements CareerRepositoryPort {
     } else {
       ormEntity.modalities = [];
     }
-    if (domainEntity.coordinatorId) ormEntity.coordinatorId = domainEntity.coordinatorId;
+    if (domainEntity.coordinatorId)
+      ormEntity.coordinatorId = domainEntity.coordinatorId;
     ormEntity.isActive = domainEntity.isActive;
     return ormEntity;
   }
@@ -51,12 +52,18 @@ export class CareerPostgresRepository implements CareerRepositoryPort {
   }
 
   async findById(id: string): Promise<Career | null> {
-    const found = await this.repository.findOne({ where: { id }, relations: ['modalities', 'coordinator'] });
+    const found = await this.repository.findOne({
+      where: { id },
+      relations: ['modalities', 'coordinator'],
+    });
     return found ? this.mapToDomain(found) : null;
   }
 
   async findAll(): Promise<Career[]> {
-    const all = await this.repository.find({ order: { name: 'ASC' }, relations: ['modalities', 'coordinator'] });
+    const all = await this.repository.find({
+      order: { name: 'ASC' },
+      relations: ['modalities', 'coordinator'],
+    });
     return all.map((o) => this.mapToDomain(o));
   }
 

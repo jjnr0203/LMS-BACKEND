@@ -10,9 +10,7 @@ export class CreateAcademicTermDto {
 }
 
 export class ManageAcademicTermsUseCase {
-  constructor(
-    private readonly repository: AcademicTermRepositoryPort,
-  ) {}
+  constructor(private readonly repository: AcademicTermRepositoryPort) {}
 
   async create(data: CreateAcademicTermDto): Promise<AcademicTerm> {
     const term = new AcademicTerm(
@@ -33,7 +31,10 @@ export class ManageAcademicTermsUseCase {
     return saved;
   }
 
-  async update(id: string, data: Partial<CreateAcademicTermDto>): Promise<AcademicTerm | null> {
+  async update(
+    id: string,
+    data: Partial<CreateAcademicTermDto>,
+  ): Promise<AcademicTerm | null> {
     const term = await this.repository.findById(id);
     if (!term) return null;
 

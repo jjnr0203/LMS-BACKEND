@@ -1,4 +1,13 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, ManyToMany, JoinTable } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+  ManyToMany,
+  JoinTable,
+  Index,
+} from 'typeorm';
 import { UserOrmEntity } from '../users/user.orm-entity';
 import { ModalityOrmEntity } from './modality.orm-entity';
 
@@ -20,11 +29,17 @@ export class CareerOrmEntity {
   @JoinTable({
     name: 'career_modalities',
     joinColumn: { name: 'career_id', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'modality_id', referencedColumnName: 'id' }
+    inverseJoinColumn: { name: 'modality_id', referencedColumnName: 'id' },
   })
   modalities: ModalityOrmEntity[];
 
-  @Column({ type: 'varchar', length: 20, name: 'coordinator_id', nullable: true })
+  @Index()
+  @Column({
+    type: 'varchar',
+    length: 20,
+    name: 'coordinator_id',
+    nullable: true,
+  })
   coordinatorId?: string;
 
   @ManyToOne(() => UserOrmEntity)

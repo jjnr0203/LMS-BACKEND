@@ -1,4 +1,11 @@
-import { Entity, Column, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryColumn,
+  ManyToOne,
+  JoinColumn,
+  Index,
+} from 'typeorm';
 import { RefreshTokenEntity } from '@domain/entities/auth/refresh-token.entity';
 import { UserOrmEntity } from '../users/user.orm-entity';
 
@@ -10,6 +17,7 @@ export class RefreshTokenOrmEntity {
   @Column({ type: 'varchar', length: 500 })
   token: string;
 
+  @Index()
   @Column({ type: 'varchar', length: 20, name: 'user_id' })
   userId: string;
 

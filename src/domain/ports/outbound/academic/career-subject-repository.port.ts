@@ -6,7 +6,13 @@ export interface CareerSubjectRepositoryPort {
   save(careerSubject: CareerSubject): Promise<CareerSubject>;
   deleteByCareerAndSubject(careerId: string, subjectId: string): Promise<void>;
   findByCareer(careerId: string): Promise<CareerSubject[]>;
+  findByCareerIds(careerIds: string[]): Promise<CareerSubject[]>;
   findBySubject(subjectId: string): Promise<CareerSubject[]>;
-  findByCareerAndSubject(careerId: string, subjectId: string): Promise<CareerSubject | null>;
+  findBySubjectIds(subjectIds: string[]): Promise<CareerSubject[]>;
+  findByCareerAndSubject(
+    careerId: string,
+    subjectId: string,
+  ): Promise<CareerSubject | null>;
   deleteBySubject(subjectId: string): Promise<void>;
+  findByCurriculum(curriculumId: string): Promise<CareerSubject[]>;
 }

@@ -27,12 +27,15 @@ export class AssignTeacherUseCase implements AssignTeacherUseCasePort {
       throw new NotFoundException('Docente no encontrado');
     }
 
-    const existingRelation = await this.teacherSubjectRepository.findByTeacherAndSubject(
-      command.teacherId,
-      command.subjectId,
-    );
+    const existingRelation =
+      await this.teacherSubjectRepository.findByTeacherAndSubject(
+        command.teacherId,
+        command.subjectId,
+      );
     if (existingRelation) {
-      throw new BadRequestException('El docente ya está asignado a esta materia');
+      throw new BadRequestException(
+        'El docente ya está asignado a esta materia',
+      );
     }
 
     const relation = new TeacherSubjectEntity(

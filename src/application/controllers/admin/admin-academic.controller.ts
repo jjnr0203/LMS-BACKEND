@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '@infrastructure/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@infrastructure/auth/guards/roles.guard';
 import { Roles } from '@infrastructure/auth/decorators/roles.decorator';
@@ -9,14 +20,16 @@ import { ManageCareersUseCase } from '@domain/services/admin/academic/manage-car
 import { ManageSubjectsUseCase } from '@domain/services/admin/academic/manage-subjects.use-case';
 import { BulkCreateSubjectsUseCase } from '@domain/services/admin/academic/bulk-create-subjects.use-case';
 import { ManageSemesterColorsUseCase } from '@domain/services/admin/manage-semester-colors.use-case';
+import { ManageCurriculumsUseCase } from '@domain/services/admin/academic/manage-curriculums.use-case';
 
-import { 
-  CreateAcademicTermDto, 
-  CreateModalityDto, 
-  CreateCareerDto, 
-  AssignSubjectsDto, 
+import {
+  CreateAcademicTermDto,
+  CreateModalityDto,
+  CreateCareerDto,
+  AssignSubjectsDto,
   CreateSubjectDto,
-  BulkSubjectsDto
+  BulkSubjectsDto,
+  CreateCurriculumDto,
 } from '../../dto/admin/academic.dto';
 
 @Controller('admin/academic')
@@ -30,6 +43,7 @@ export class AdminAcademicController {
     private readonly manageSubjectsUC: ManageSubjectsUseCase,
     private readonly bulkCreateSubjectsUC: BulkCreateSubjectsUseCase,
     private readonly manageSemesterColorsUC: ManageSemesterColorsUseCase,
+    private readonly manageCurriculumsUC: ManageCurriculumsUseCase,
   ) {}
 
   // --- SEMESTER COLORS ---
@@ -56,7 +70,10 @@ export class AdminAcademicController {
   }
 
   @Put('terms/:id')
-  async updateTerm(@Param('id') id: string, @Body() dto: Partial<CreateAcademicTermDto>) {
+  async updateTerm(
+    @Param('id') id: string,
+    @Body() dto: Partial<CreateAcademicTermDto>,
+  ) {
     const res = await this.manageTermsUC.update(id, dto);
     if (!res) throw new HttpException('Term not found', HttpStatus.NOT_FOUND);
     return res;
@@ -80,9 +97,13 @@ export class AdminAcademicController {
   }
 
   @Put('modalities/:id')
-  async updateModality(@Param('id') id: string, @Body() dto: Partial<CreateModalityDto>) {
+  async updateModality(
+    @Param('id') id: string,
+    @Body() dto: Partial<CreateModalityDto>,
+  ) {
     const res = await this.manageModalitiesUC.update(id, dto);
-    if (!res) throw new HttpException('Modality not found', HttpStatus.NOT_FOUND);
+    if (!res)
+      throw new HttpException('Modality not found', HttpStatus.NOT_FOUND);
     return res;
   }
 
@@ -104,7 +125,10 @@ export class AdminAcademicController {
   }
 
   @Put('careers/:id')
-  async updateCareer(@Param('id') id: string, @Body() dto: Partial<CreateCareerDto>) {
+  async updateCareer(
+    @Param('id') id: string,
+    @Body() dto: Partial<CreateCareerDto>,
+  ) {
     const res = await this.manageCareersUC.update(id, dto);
     if (!res) throw new HttpException('Career not found', HttpStatus.NOT_FOUND);
     return res;
@@ -123,9 +147,49 @@ export class AdminAcademicController {
   }
 
   @Put('careers/:id/subjects')
-  async assignSubjects(@Param('id') id: string, @Body() dto: AssignSubjectsDto) {
+  async assignSubjects(
+    @Param('id') id: string,
+    @Body() dto: AssignSubjectsDto,
+  ) {
     await this.manageCareersUC.assignSubjects(id, dto);
     return { success: true };
+  }
+
+  // --- CURRICULUMS ---
+  @Get('careers/:careerId/curriculums')
+  async getCurriculumsByCareer(@Param('careerId') careerId: string) {
+    return this.manageCurriculumsUC.findAllByCareer(careerId);
+  }
+
+  @Post('careers/:careerId/curriculums')
+  async createCurriculum(
+    @Param('careerId') careerId: string,
+    @Body() dto: CreateCurriculumDto,
+  ) {
+    return this.manageCurriculumsUC.create({ ...dto, careerId });
+  }
+
+  @Put('curriculums/:id')
+  async updateCurriculum(
+    @Param('id') id: string,
+    @Body() dto: Partial<CreateCurriculumDto>,
+  ) {
+    const res = await this.manageCurriculumsUC.update(id, dto);
+    if (!res)
+      throw new HttpException('Curriculum not found', HttpStatus.NOT_FOUND);
+    return res;
+  }
+
+  @Delete('curriculums/:id')
+  async deleteCurriculum(@Param('id') id: string) {
+    await this.manageCurriculumsUC.delete(id);
+    return { success: true };
+  }
+
+  @Get('curriculums/:id/subjects')
+  async getCurriculumSubjects(@Param('id') id: string) {
+    const subjects = await this.manageCurriculumsUC.getSubjectsByCurriculum(id);
+    return subjects;
   }
 
   // --- SUBJECTS ---
@@ -146,10 +210,20 @@ export class AdminAcademicController {
   }
 
   @Put('subjects/:id')
-  async updateSubject(@Param('id') id: string, @Body() dto: Partial<CreateSubjectDto>) {
+  async updateSubject(
+    @Param('id') id: string,
+    @Body() dto: Partial<CreateSubjectDto>,
+  ) {
     const res = await this.manageSubjectsUC.update(id, dto);
-    if (!res) throw new HttpException('Subject not found', HttpStatus.NOT_FOUND);
+    if (!res)
+      throw new HttpException('Subject not found', HttpStatus.NOT_FOUND);
     return res;
+  }
+
+  @Delete('subjects/clear-all')
+  async deleteAllSubjects() {
+    await this.manageSubjectsUC.deleteAll();
+    return { success: true };
   }
 
   @Delete('subjects/:id')

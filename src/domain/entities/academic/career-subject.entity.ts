@@ -4,5 +4,6 @@ export class CareerSubject {
     public careerId: string,
     public subjectId: string,
     public semester: number,
+    public curriculumId?: string,
   ) {}
 }

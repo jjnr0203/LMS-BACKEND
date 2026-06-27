@@ -1,4 +1,13 @@
-import { Entity, Column, PrimaryColumn, ManyToOne, JoinColumn, ManyToMany, JoinTable } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryColumn,
+  ManyToOne,
+  JoinColumn,
+  ManyToMany,
+  JoinTable,
+  Index,
+} from 'typeorm';
 import { UserOrmEntity } from '../users/user.orm-entity';
 import { ModalityOrmEntity } from './modality.orm-entity';
 
@@ -16,6 +25,7 @@ export class SubjectOrmEntity {
   @Column({ type: 'int' })
   credits: number;
 
+  @Index()
   @Column({ type: 'varchar', length: 20, name: 'teacher_id', nullable: true })
   teacherId: string;
 
@@ -30,7 +40,7 @@ export class SubjectOrmEntity {
   @JoinTable({
     name: 'subject_modalities',
     joinColumn: { name: 'subject_id', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'modality_id', referencedColumnName: 'id' }
+    inverseJoinColumn: { name: 'modality_id', referencedColumnName: 'id' },
   })
   modalities: ModalityOrmEntity[];
 }

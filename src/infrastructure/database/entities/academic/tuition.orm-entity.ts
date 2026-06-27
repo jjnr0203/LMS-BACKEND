@@ -1,4 +1,11 @@
-import { Entity, Column, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryColumn,
+  ManyToOne,
+  JoinColumn,
+  Index,
+} from 'typeorm';
 import { UserOrmEntity } from '../users/user.orm-entity';
 
 @Entity('tuitions')
@@ -6,6 +13,7 @@ export class TuitionOrmEntity {
   @PrimaryColumn({ type: 'uuid' })
   id: string;
 
+  @Index()
   @Column({ type: 'varchar', length: 20, name: 'student_id' })
   studentId: string;
 

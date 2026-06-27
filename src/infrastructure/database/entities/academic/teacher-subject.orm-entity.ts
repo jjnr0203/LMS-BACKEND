@@ -1,4 +1,11 @@
-import { Entity, Column, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryColumn,
+  ManyToOne,
+  JoinColumn,
+  Index,
+} from 'typeorm';
 import { UserOrmEntity } from '../users/user.orm-entity';
 import { SubjectOrmEntity } from './subject.orm-entity';
 
@@ -7,6 +14,7 @@ export class TeacherSubjectOrmEntity {
   @PrimaryColumn({ type: 'uuid' })
   id: string;
 
+  @Index()
   @Column({ type: 'varchar', length: 20, name: 'teacher_id' })
   teacherId: string;
 
@@ -14,6 +22,7 @@ export class TeacherSubjectOrmEntity {
   @JoinColumn({ name: 'teacher_id' })
   teacher: UserOrmEntity;
 
+  @Index()
   @Column({ type: 'uuid', name: 'subject_id' })
   subjectId: string;
 
@@ -21,6 +30,10 @@ export class TeacherSubjectOrmEntity {
   @JoinColumn({ name: 'subject_id' })
   subject: SubjectOrmEntity;
 
-  @Column({ type: 'timestamp', name: 'assigned_at', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({
+    type: 'timestamp',
+    name: 'assigned_at',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   assignedAt: Date;
 }

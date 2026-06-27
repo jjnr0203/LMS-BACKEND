@@ -44,7 +44,11 @@ import { RepositoryProvidersModule } from './repository-providers.module';
         userRepo: UserRepositoryPort,
         teacherSubjectRepo: TeacherSubjectRepositoryPort,
       ) => new AssignTeacherUseCase(subjectRepo, userRepo, teacherSubjectRepo),
-      inject: [SubjectRepositoryPort, UserRepositoryPort, TeacherSubjectRepositoryPort],
+      inject: [
+        SubjectRepositoryPort,
+        UserRepositoryPort,
+        TeacherSubjectRepositoryPort,
+      ],
     },
   ],
 })

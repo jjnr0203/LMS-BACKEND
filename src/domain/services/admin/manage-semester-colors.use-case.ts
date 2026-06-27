@@ -2,7 +2,9 @@ import { ManageSemesterColorsUseCasePort } from '../../ports/inbound/admin/manag
 import { SemesterColorRepositoryPort } from '../../ports/outbound/academic/semester-color-repository.port';
 
 export class ManageSemesterColorsUseCase implements ManageSemesterColorsUseCasePort {
-  constructor(private readonly semesterColorRepository: SemesterColorRepositoryPort) {}
+  constructor(
+    private readonly semesterColorRepository: SemesterColorRepositoryPort,
+  ) {}
 
   async getColors(): Promise<{ semester: number; color: string }[]> {
     return this.semesterColorRepository.findAll();

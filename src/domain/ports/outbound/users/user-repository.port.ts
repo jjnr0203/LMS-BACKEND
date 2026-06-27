@@ -2,6 +2,7 @@ import { UserEntity } from '../../../entities/users/user.entity';
 
 export abstract class UserRepositoryPort {
   abstract findById(id: string): Promise<UserEntity | null>;
+  abstract findByIds(ids: string[]): Promise<UserEntity[]>;
   abstract findByEmail(email: string): Promise<UserEntity | null>;
   abstract save(user: UserEntity): Promise<UserEntity>;
   abstract findPaginated(

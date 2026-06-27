@@ -80,7 +80,10 @@ export class UsersController {
 
   @Get(':id')
   @Roles('admin', 'treasury')
-  async findOne(@Param('id') id: string, @ReqDecorator() req: AuthenticatedRequest) {
+  async findOne(
+    @Param('id') id: string,
+    @ReqDecorator() req: AuthenticatedRequest,
+  ) {
     const user = await this.getUserByIdUseCase.execute(id);
     if (req.user.role === 'treasury' && user.roleName !== 'student') {
       throw new BadRequestException('Unauthorized to view this user');
@@ -142,7 +145,10 @@ export class UsersController {
 
   @Delete(':id')
   @Roles('admin', 'treasury')
-  async remove(@Param('id') id: string, @ReqDecorator() req: AuthenticatedRequest) {
+  async remove(
+    @Param('id') id: string,
+    @ReqDecorator() req: AuthenticatedRequest,
+  ) {
     if (req.user.role === 'treasury') {
       const targetUser = await this.getUserByIdUseCase.execute(id);
       if (targetUser.roleName !== 'student') {

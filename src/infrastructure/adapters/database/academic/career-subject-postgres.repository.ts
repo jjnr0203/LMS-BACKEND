@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { CareerSubjectRepositoryPort } from '@domain/ports/outbound/academic/career-subject-repository.port';
 import { CareerSubjectOrmEntity } from '../../../database/entities/academic/career-subject.orm-entity';
 import { CareerSubject } from '@domain/entities/academic/career-subject.entity';
@@ -18,6 +18,7 @@ export class CareerSubjectPostgresRepository implements CareerSubjectRepositoryP
       ormEntity.careerId,
       ormEntity.subjectId,
       ormEntity.semester,
+      ormEntity.curriculumId,
     );
   }
 
@@ -27,6 +28,7 @@ export class CareerSubjectPostgresRepository implements CareerSubjectRepositoryP
     ormEntity.careerId = domainEntity.careerId;
     ormEntity.subjectId = domainEntity.subjectId;
     ormEntity.semester = domainEntity.semester;
+    ormEntity.curriculumId = domainEntity.curriculumId;
     return ormEntity;
   }
 
@@ -35,27 +37,63 @@ export class CareerSubjectPostgresRepository implements CareerSubjectRepositoryP
     return this.mapToDomain(saved);
   }
 
-  async deleteByCareerAndSubject(careerId: string, subjectId: string): Promise<void> {
+  async deleteByCareerAndSubject(
+    careerId: string,
+    subjectId: string,
+  ): Promise<void> {
     await this.repository.delete({ careerId, subjectId });
   }
 
   async findByCareer(careerId: string): Promise<CareerSubject[]> {
-    const found = await this.repository.find({ where: { careerId }, relations: ['subject'] });
-    return found.map(f => this.mapToDomain(f));
+    const found = await this.repository.find({
+      where: { careerId },
+      relations: ['subject'],
+    });
+    return found.map((f) => this.mapToDomain(f));
   }
 
-  async findByCareerAndSubject(careerId: string, subjectId: string): Promise<CareerSubject | null> {
-    const found = await this.repository.findOne({ where: { careerId, subjectId } });
+  async findByCareerIds(careerIds: string[]): Promise<CareerSubject[]> {
+    if (careerIds.length === 0) return [];
+    const found = await this.repository.find({
+      where: { careerId: In(careerIds) },
+      relations: ['subject'],
+    });
+    return found.map((f) => this.mapToDomain(f));
+  }
+
+  async findBySubjectIds(subjectIds: string[]): Promise<CareerSubject[]> {
+    if (subjectIds.length === 0) return [];
+    const found = await this.repository.find({
+      where: { subjectId: In(subjectIds) },
+    });
+    return found.map((f) => this.mapToDomain(f));
+  }
+
+  async findByCareerAndSubject(
+    careerId: string,
+    subjectId: string,
+  ): Promise<CareerSubject | null> {
+    const found = await this.repository.findOne({
+      where: { careerId, subjectId },
+    });
     if (!found) return null;
     return this.mapToDomain(found);
   }
 
   async findBySubject(subjectId: string): Promise<CareerSubject[]> {
     const found = await this.repository.find({ where: { subjectId } });
-    return found.map(f => this.mapToDomain(f));
+    return found.map((f) => this.mapToDomain(f));
   }
 
   async deleteBySubject(subjectId: string): Promise<void> {
     await this.repository.delete({ subjectId });
+  }
+
+  async findByCurriculum(curriculumId: string): Promise<CareerSubject[]> {
+    const found = await this.repository.find({
+      where: { curriculumId },
+      relations: ['subject'],
+    });
+    return found.map((f) => this.mapToDomain(f));
   }
 }

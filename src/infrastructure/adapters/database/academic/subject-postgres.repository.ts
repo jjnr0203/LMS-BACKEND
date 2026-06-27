@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { SubjectRepositoryPort } from '@domain/ports/outbound/academic/subject-repository.port';
 import { SubjectEntity } from '@domain/entities/academic/subject.entity';
 import { SubjectOrmEntity } from '../../../database/entities/academic/subject.orm-entity';
@@ -15,13 +15,37 @@ export class SubjectPostgresRepository implements SubjectRepositoryPort {
   ) {}
 
   async findById(id: string): Promise<SubjectEntity | null> {
-    const orm = await this.repository.findOne({ where: { id }, relations: ['modalities'] });
+    const orm = await this.repository.findOne({
+      where: { id },
+      relations: ['modalities'],
+    });
     return orm ? this.toDomain(orm) : null;
   }
 
+  async findByIds(ids: string[]): Promise<SubjectEntity[]> {
+    if (ids.length === 0) return [];
+    const orms = await this.repository.find({
+      where: { id: In(ids) },
+      relations: ['modalities'],
+    });
+    return orms.map((o) => this.toDomain(o));
+  }
+
   async findByCode(code: string): Promise<SubjectEntity | null> {
-    const orm = await this.repository.findOne({ where: { code }, relations: ['modalities'] });
+    const orm = await this.repository.findOne({
+      where: { code },
+      relations: ['modalities'],
+    });
     return orm ? this.toDomain(orm) : null;
+  }
+
+  async findByCodes(codes: string[]): Promise<SubjectEntity[]> {
+    if (codes.length === 0) return [];
+    const orms = await this.repository.find({
+      where: { code: In(codes) },
+      relations: ['modalities'],
+    });
+    return orms.map((o) => this.toDomain(o));
   }
 
   async save(subject: SubjectEntity): Promise<SubjectEntity> {
@@ -36,14 +60,25 @@ export class SubjectPostgresRepository implements SubjectRepositoryPort {
   }
 
   async findByTeacherId(teacherId: string): Promise<SubjectEntity[]> {
-    const orms = await this.repository.find({ where: { teacherId }, relations: ['modalities'] });
+    const orms = await this.repository.find({
+      where: { teacherId },
+      relations: ['modalities'],
+    });
     return orms.map((o) => this.toDomain(o));
   }
 
   async delete(id: string): Promise<void> {
-    await this.repository.manager.query('DELETE FROM teacher_subjects WHERE subject_id = $1', [id]);
-    await this.repository.manager.query('DELETE FROM student_subjects WHERE subject_id = $1', [id]);
-    await this.repository.manager.delete(CareerSubjectOrmEntity, { subjectId: id });
+    await this.repository.manager.query(
+      'DELETE FROM teacher_subjects WHERE subject_id = $1',
+      [id],
+    );
+    await this.repository.manager.query(
+      'DELETE FROM student_subjects WHERE subject_id = $1',
+      [id],
+    );
+    await this.repository.manager.delete(CareerSubjectOrmEntity, {
+      subjectId: id,
+    });
     await this.repository.delete(id);
   }
 
@@ -53,7 +88,7 @@ export class SubjectPostgresRepository implements SubjectRepositoryPort {
       orm.name,
       orm.code,
       orm.credits,
-      orm.modalities ? orm.modalities.map(m => m.id) : [],
+      orm.modalities ? orm.modalities.map((m) => m.id) : [],
       orm.teacherId,
       orm.description,
     );
@@ -66,7 +101,7 @@ export class SubjectPostgresRepository implements SubjectRepositoryPort {
     orm.code = entity.code;
     orm.credits = entity.credits;
     if (entity.modalityIds && entity.modalityIds.length > 0) {
-      orm.modalities = entity.modalityIds.map(id => {
+      orm.modalities = entity.modalityIds.map((id) => {
         const m = new ModalityOrmEntity();
         m.id = id;
         return m;

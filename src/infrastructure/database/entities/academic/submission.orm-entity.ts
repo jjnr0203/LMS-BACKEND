@@ -5,6 +5,7 @@ import {
   ManyToOne,
   JoinColumn,
   CreateDateColumn,
+  Index,
 } from 'typeorm';
 import { UserOrmEntity } from '../users/user.orm-entity';
 import { AssignmentOrmEntity } from './assignment.orm-entity';
@@ -14,6 +15,7 @@ export class SubmissionOrmEntity {
   @PrimaryColumn({ type: 'uuid' })
   id: string;
 
+  @Index()
   @Column({ type: 'uuid', name: 'assignment_id' })
   assignmentId: string;
 
@@ -21,6 +23,7 @@ export class SubmissionOrmEntity {
   @JoinColumn({ name: 'assignment_id' })
   assignment: AssignmentOrmEntity;
 
+  @Index()
   @Column({ type: 'varchar', length: 20, name: 'student_id' })
   studentId: string;
 

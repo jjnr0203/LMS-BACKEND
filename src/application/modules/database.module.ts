@@ -16,6 +16,7 @@ import { ModalityOrmEntity } from '@infrastructure/database/entities/academic/mo
 import { CareerOrmEntity } from '@infrastructure/database/entities/academic/career.orm-entity';
 import { CareerSubjectOrmEntity } from '@infrastructure/database/entities/academic/career-subject.orm-entity';
 import { SemesterColorOrmEntity } from '@infrastructure/database/entities/academic/semester-color.orm-entity';
+import { CurriculumOrmEntity } from '@infrastructure/database/entities/academic/curriculum.orm-entity';
 
 @Module({
   imports: [
@@ -29,7 +30,10 @@ import { SemesterColorOrmEntity } from '@infrastructure/database/entities/academ
         username: configService.get<string>('DB_USERNAME', 'postgres'),
         password: configService.get<string>('DB_PASSWORD', '12345'),
         database: configService.get<string>('DB_DATABASE', 'lms_db'),
-        ssl: configService.get<string>('DB_SSL') === 'true' ? { rejectUnauthorized: false } : false,
+        ssl:
+          configService.get<string>('DB_SSL') === 'true'
+            ? { rejectUnauthorized: false }
+            : false,
         entities: [
           UserOrmEntity,
           RoleOrmEntity,
@@ -46,8 +50,14 @@ import { SemesterColorOrmEntity } from '@infrastructure/database/entities/academ
           CareerOrmEntity,
           CareerSubjectOrmEntity,
           SemesterColorOrmEntity,
+          CurriculumOrmEntity,
         ],
         synchronize: true,
+        extra: {
+          max: 25,
+          idleTimeoutMillis: 30000,
+          connectionTimeoutMillis: 5000,
+        },
       }),
     }),
     TypeOrmModule.forFeature([
@@ -66,6 +76,7 @@ import { SemesterColorOrmEntity } from '@infrastructure/database/entities/academ
       CareerOrmEntity,
       CareerSubjectOrmEntity,
       SemesterColorOrmEntity,
+      CurriculumOrmEntity,
     ]),
   ],
   exports: [TypeOrmModule],

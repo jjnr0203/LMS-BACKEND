@@ -7,6 +7,7 @@ import {
   DeleteDateColumn,
   ManyToOne,
   JoinColumn,
+  Index,
 } from 'typeorm';
 import { UserEntity } from '@domain/entities/users/user.entity';
 import { RoleOrmEntity } from './role.orm-entity';
@@ -40,6 +41,7 @@ export class UserOrmEntity {
   @Column({ type: 'boolean', name: 'is_active', default: true })
   isActive: boolean;
 
+  @Index()
   @Column({ type: 'uuid', name: 'role_id' })
   roleId: string;
 

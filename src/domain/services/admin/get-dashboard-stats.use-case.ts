@@ -15,68 +15,81 @@ export class GetDashboardStatsUseCase {
 
   async execute(): Promise<any> {
     const counts = await this.userRepository.getCountsByRole();
-    
-    // Academic Stats
     const allCareers = await this.careerRepository.findAll();
     const allSubjects = await this.subjectRepository.findAll();
-    
-    const careersDetails = await Promise.all(
-      allCareers.map(async (career) => {
-        let coordinatorName: string | null = null;
-        if (career.coordinatorId) {
-          const user = await this.userRepository.findById(career.coordinatorId);
-          if (user) coordinatorName = `${user.firstName} ${user.lastName}`;
-        }
-        
-        let modalityNames: string[] = [];
-        if (career.modalityIds && career.modalityIds.length > 0) {
-          const modalities = await Promise.all(
-            career.modalityIds.map(id => this.modalityRepository.findById(id))
-          );
-          modalityNames = modalities.filter(m => m !== null).map(m => m!.name);
-        }
+    const allModalities = await this.modalityRepository.findAll();
+    const modalityMap = new Map(allModalities.map((m) => [m.id, m.name]));
 
-        const allModalities = await this.modalityRepository.findAll();
-        
-        const careerSubjects = await this.careerSubjectRepository.findByCareer(career.id);
-        const mappedSubjects = await Promise.all(careerSubjects.map(async cs => {
-          const subjectDetail = allSubjects.find(s => s.id === cs.subjectId);
-          let subjModalityNames: string[] = [];
-          let teacherName: string | null = null;
-          
-          if (subjectDetail) {
-            if (subjectDetail.modalityIds && subjectDetail.modalityIds.length > 0) {
-              subjModalityNames = subjectDetail.modalityIds
-                .map(id => allModalities.find(m => m.id === id)?.name)
-                .filter((n): n is string => n !== undefined);
-            }
-            if (subjectDetail.teacherId) {
-              const teacher = await this.userRepository.findById(subjectDetail.teacherId);
-              if (teacher) teacherName = `${teacher.firstName} ${teacher.lastName}`;
-            }
-          }
-          
-          return {
-            id: cs.subjectId,
-            name: subjectDetail ? subjectDetail.name : 'Desconocida',
-            semester: cs.semester,
-            modalityNames: subjModalityNames,
-            teacherName: teacherName
-          };
-        }));
-        
-        mappedSubjects.sort((a, b) => a.semester - b.semester);
+    const careerIds = allCareers.map((c) => c.id);
+    const allCareerSubjects =
+      careerIds.length > 0
+        ? await this.careerSubjectRepository.findByCareerIds(careerIds)
+        : [];
+
+    const teacherIds = allSubjects
+      .map((s) => s.teacherId)
+      .filter((id): id is string => !!id);
+    const coordinatorIds = allCareers
+      .map((c) => c.coordinatorId)
+      .filter((id): id is string => !!id);
+    const allUserIds = [...new Set([...teacherIds, ...coordinatorIds])];
+    const users =
+      allUserIds.length > 0
+        ? await this.userRepository.findByIds(allUserIds)
+        : [];
+    const userMap = new Map(
+      users.map((u) => [u.id, `${u.firstName} ${u.lastName}`]),
+    );
+
+    const careerSubjectsMap = new Map<string, typeof allCareerSubjects>();
+    for (const cs of allCareerSubjects) {
+      if (!careerSubjectsMap.has(cs.careerId)) {
+        careerSubjectsMap.set(cs.careerId, []);
+      }
+      careerSubjectsMap.get(cs.careerId)!.push(cs);
+    }
+
+    const subjectMap = new Map(allSubjects.map((s) => [s.id, s]));
+
+    const careersDetails = allCareers.map((career) => {
+      const coordinatorName = career.coordinatorId
+        ? userMap.get(career.coordinatorId) || null
+        : null;
+
+      const modalityNames = (career.modalityIds || [])
+        .map((id) => modalityMap.get(id))
+        .filter((n): n is string => n !== undefined);
+
+      const careerSubjects = careerSubjectsMap.get(career.id) || [];
+      const mappedSubjects = careerSubjects.map((cs) => {
+        const subjectDetail = subjectMap.get(cs.subjectId);
+        const subjModalityNames = (subjectDetail?.modalityIds || [])
+          .map((id) => modalityMap.get(id))
+          .filter((n): n is string => n !== undefined);
+        const teacherName = subjectDetail?.teacherId
+          ? userMap.get(subjectDetail.teacherId) || null
+          : null;
 
         return {
-          id: career.id,
-          name: career.name,
-          coordinatorName,
-          modalityNames,
-          durationSemesters: career.durationSemesters,
-          subjects: mappedSubjects
+          id: cs.subjectId,
+          name: subjectDetail ? subjectDetail.name : 'Desconocida',
+          semester: cs.semester,
+          modalityNames: subjModalityNames,
+          teacherName,
         };
-      })
-    );
+      });
+
+      mappedSubjects.sort((a, b) => a.semester - b.semester);
+
+      return {
+        id: career.id,
+        name: career.name,
+        coordinatorName,
+        modalityNames,
+        durationSemesters: career.durationSemesters,
+        subjects: mappedSubjects,
+      };
+    });
 
     return {
       users: {
@@ -89,8 +102,8 @@ export class GetDashboardStatsUseCase {
       academic: {
         totalCareers: allCareers.length,
         totalSubjects: allSubjects.length,
-        careers: careersDetails
-      }
+        careers: careersDetails,
+      },
     };
   }
 }

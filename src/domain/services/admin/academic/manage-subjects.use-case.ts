@@ -13,6 +13,7 @@ export interface CreateSubjectDto {
   careerId?: string;
   semester?: number;
   modalityIds?: string[];
+  curriculumId?: string;
 }
 
 export interface UpdateSubjectDto {
@@ -24,6 +25,7 @@ export interface UpdateSubjectDto {
   careerId?: string;
   semester?: number;
   modalityIds?: string[];
+  curriculumId?: string;
 }
 
 export class ManageSubjectsUseCase {
@@ -45,14 +47,23 @@ export class ManageSubjectsUseCase {
     const savedSubject = await this.repository.save(subject);
 
     if (data.careerId && data.semester) {
-      const relation = new CareerSubject(uuidv4(), data.careerId, savedSubject.id, data.semester);
+      const relation = new CareerSubject(
+        uuidv4(),
+        data.careerId,
+        savedSubject.id,
+        data.semester,
+        data.curriculumId,
+      );
       await this.careerSubjectRepository.save(relation);
     }
 
     return savedSubject;
   }
 
-  async update(id: string, data: Partial<CreateSubjectDto>): Promise<SubjectEntity | null> {
+  async update(
+    id: string,
+    data: Partial<CreateSubjectDto>,
+  ): Promise<SubjectEntity | null> {
     const subject = await this.repository.findById(id);
     if (!subject) return null;
 
@@ -65,63 +76,107 @@ export class ManageSubjectsUseCase {
 
     const savedSubject = await this.repository.save(subject);
 
-    if (data.careerId !== undefined || data.semester !== undefined) {
-      const existingRelations = await this.careerSubjectRepository.findBySubject(savedSubject.id);
-      
-      // We assume 1-to-1 for subjects to careers in UI
+    if (
+      data.careerId !== undefined ||
+      data.semester !== undefined ||
+      data.curriculumId !== undefined
+    ) {
+      const existingRelations =
+        await this.careerSubjectRepository.findBySubject(savedSubject.id);
+
       if (existingRelations.length > 0) {
         const rel = existingRelations[0];
-        // If careerId changed, we might need to delete and recreate or just update
         if (data.careerId !== undefined && data.careerId !== rel.careerId) {
           await this.careerSubjectRepository.deleteBySubject(savedSubject.id);
           if (data.careerId) {
-             const newRel = new CareerSubject(uuidv4(), data.careerId, savedSubject.id, data.semester !== undefined ? data.semester : rel.semester);
-             await this.careerSubjectRepository.save(newRel);
+            const newRel = new CareerSubject(
+              uuidv4(),
+              data.careerId,
+              savedSubject.id,
+              data.semester !== undefined ? data.semester : rel.semester,
+              data.curriculumId !== undefined
+                ? data.curriculumId
+                : rel.curriculumId,
+            );
+            await this.careerSubjectRepository.save(newRel);
           }
         } else {
-          // Career didn't change, just update semester
           if (data.semester !== undefined) {
             rel.semester = data.semester;
+          }
+          if (data.curriculumId !== undefined) {
+            rel.curriculumId = data.curriculumId;
+          }
+          if (data.semester !== undefined || data.curriculumId !== undefined) {
             await this.careerSubjectRepository.save(rel);
           }
         }
       } else {
-        // No existing relation
         if (data.careerId && data.semester !== undefined) {
-          const relation = new CareerSubject(uuidv4(), data.careerId, savedSubject.id, data.semester);
+          const relation = new CareerSubject(
+            uuidv4(),
+            data.careerId,
+            savedSubject.id,
+            data.semester,
+            data.curriculumId,
+          );
           await this.careerSubjectRepository.save(relation);
         }
       }
     }
-    
+
     return savedSubject;
   }
 
   async findAll(): Promise<any[]> {
     const subjects = await this.repository.findAll();
-    const result: any[] = [];
-    for (const subject of subjects) {
-      const relations = await this.careerSubjectRepository.findBySubject(subject.id);
-      if (relations.length > 0) {
-        // Just take the first one since it's 1-to-1 in UI
-        const rel = relations[0];
-        result.push({
-          ...subject,
-          careerId: rel.careerId,
-          semester: rel.semester
-        });
-      } else {
-        result.push({
-          ...subject,
-          careerId: null,
-          semester: null
-        });
+    if (subjects.length === 0) return [];
+
+    const subjectIds = subjects.map((s) => s.id);
+    const allRelations =
+      await this.careerSubjectRepository.findBySubjectIds(subjectIds);
+    const relMap = new Map<string, CareerSubject>();
+    for (const rel of allRelations) {
+      if (!relMap.has(rel.subjectId)) {
+        relMap.set(rel.subjectId, rel);
       }
     }
-    return result;
+
+    return subjects.map((subject) => {
+      const rel = relMap.get(subject.id);
+      return {
+        ...subject,
+        careerId: rel?.careerId || null,
+        semester: rel?.semester || null,
+        curriculumId: rel?.curriculumId || null,
+      };
+    });
   }
 
   async delete(id: string): Promise<void> {
+    const existing = await this.careerSubjectRepository.findBySubject(id);
+    for (const rel of existing) {
+      await this.careerSubjectRepository.deleteByCareerAndSubject(
+        rel.careerId,
+        rel.subjectId,
+      );
+    }
     await this.repository.delete(id);
+  }
+
+  async deleteAll(): Promise<void> {
+    const allSubjects = await this.repository.findAll();
+    for (const subject of allSubjects) {
+      const relations = await this.careerSubjectRepository.findBySubject(
+        subject.id,
+      );
+      for (const rel of relations) {
+        await this.careerSubjectRepository.deleteByCareerAndSubject(
+          rel.careerId,
+          rel.subjectId,
+        );
+      }
+      await this.repository.delete(subject.id);
+    }
   }
 }

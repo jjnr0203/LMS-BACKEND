@@ -12,11 +12,17 @@ export class BulkCreateSubjectsUseCase {
   ) {}
 
   async execute(dto: BulkSubjectsDto): Promise<void> {
+    const codes = dto.subjects.map((item) => item.code);
+    const existingSubjects = await this.subjectRepository.findByCodes(codes);
+    const existingByCode = new Map<string, SubjectEntity>();
+    for (const sub of existingSubjects) {
+      existingByCode.set(sub.code, sub);
+    }
+
     for (const item of dto.subjects) {
-      let subject = await this.subjectRepository.findByCode(item.code);
-      
+      let subject = existingByCode.get(item.code);
+
       if (subject) {
-        // Update name and credits if changed
         subject.name = item.name;
         subject.credits = item.credits;
         if (item.modalityIds) {
@@ -24,28 +30,32 @@ export class BulkCreateSubjectsUseCase {
         }
         await this.subjectRepository.save(subject);
       } else {
-        // Create new subject
         subject = new SubjectEntity(
           uuidv4(),
           item.name,
           item.code,
           item.credits,
-          item.modalityIds || []
+          item.modalityIds || [],
         );
         await this.subjectRepository.save(subject);
       }
 
-      // Assign to career
-      const existingRelation = await this.careerSubjectRepository.findByCareerAndSubject(dto.careerId, subject.id);
+      const existingRelation =
+        await this.careerSubjectRepository.findByCareerAndSubject(
+          dto.careerId,
+          subject.id,
+        );
       if (existingRelation) {
         existingRelation.semester = item.semester;
+        existingRelation.curriculumId = item.curriculumId || dto.curriculumId;
         await this.careerSubjectRepository.save(existingRelation);
       } else {
         const relation = new CareerSubject(
           uuidv4(),
           dto.careerId,
           subject.id,
-          item.semester
+          item.semester,
+          item.curriculumId || dto.curriculumId,
         );
         await this.careerSubjectRepository.save(relation);
       }
