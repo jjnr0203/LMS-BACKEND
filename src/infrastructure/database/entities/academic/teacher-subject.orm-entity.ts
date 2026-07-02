@@ -30,6 +30,9 @@ export class TeacherSubjectOrmEntity {
   @JoinColumn({ name: 'subject_id' })
   subject: SubjectOrmEntity;
 
+  @Column({ type: 'uuid', name: 'curriculum_id', nullable: true })
+  curriculumId?: string;
+
   @Column({
     type: 'timestamp',
     name: 'assigned_at',

@@ -6,5 +6,6 @@ export interface CareerRepositoryPort {
   save(career: Career): Promise<Career>;
   findById(id: string): Promise<Career | null>;
   findAll(): Promise<Career[]>;
+  findByCoordinatorId(coordinatorId: string): Promise<Career[]>;
   delete(id: string): Promise<void>;
 }

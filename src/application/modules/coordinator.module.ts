@@ -4,6 +4,11 @@ import { CreateSubjectUseCase } from '@domain/services/coordinator/create-subjec
 import { EnrollStudentUseCase } from '@domain/services/coordinator/enroll-student.use-case';
 import { AssignTeacherUseCase } from '@domain/services/coordinator/assign-teacher.use-case';
 import { ListSubjectsUseCase } from '@domain/services/coordinator/list-subjects.use-case';
+import { RegisterTeacherUseCase } from '@domain/services/coordinator/register-teacher.use-case';
+import { GetCoordinatorDashboardUseCase } from '@domain/services/coordinator/get-coordinator-dashboard.use-case';
+import { GetCareerDetailUseCase } from '@domain/services/coordinator/get-career-detail.use-case';
+import { UnassignTeacherUseCase } from '@domain/services/coordinator/unassign-teacher.use-case';
+import { RegisterTeacherUseCasePort } from '@domain/ports/inbound/coordinator/register-teacher.use-case.port';
 import { UserRepositoryPort } from '@domain/ports/outbound/users/user-repository.port';
 import { RoleRepositoryPort } from '@domain/ports/outbound/users/role-repository.port';
 import { PasswordHasherPort } from '@domain/ports/outbound/auth/password-hasher.port';
@@ -11,6 +16,22 @@ import { TuitionRepositoryPort } from '@domain/ports/outbound/academic/tuition-r
 import { SubjectRepositoryPort } from '@domain/ports/outbound/academic/subject-repository.port';
 import { EnrollmentRepositoryPort } from '@domain/ports/outbound/academic/enrollment-repository.port';
 import { TeacherSubjectRepositoryPort } from '@domain/ports/outbound/academic/teacher-subject-repository.port';
+import {
+  CareerRepositoryPort,
+  CAREER_REPOSITORY,
+} from '@domain/ports/outbound/academic/career-repository.port';
+import {
+  ModalityRepositoryPort,
+  MODALITY_REPOSITORY,
+} from '@domain/ports/outbound/academic/modality-repository.port';
+import {
+  CurriculumRepositoryPort,
+  CURRICULUM_REPOSITORY,
+} from '@domain/ports/outbound/academic/curriculum-repository.port';
+import {
+  CareerSubjectRepositoryPort,
+  CAREER_SUBJECT_REPOSITORY,
+} from '@domain/ports/outbound/academic/career-subject-repository.port';
 import { RepositoryProvidersModule } from './repository-providers.module';
 
 @Module({
@@ -48,6 +69,67 @@ import { RepositoryProvidersModule } from './repository-providers.module';
         SubjectRepositoryPort,
         UserRepositoryPort,
         TeacherSubjectRepositoryPort,
+      ],
+    },
+    {
+      provide: RegisterTeacherUseCasePort,
+      useFactory: (
+        userRepo: UserRepositoryPort,
+        roleRepo: RoleRepositoryPort,
+        hasher: PasswordHasherPort,
+      ) => new RegisterTeacherUseCase(userRepo, roleRepo, hasher),
+      inject: [UserRepositoryPort, RoleRepositoryPort, PasswordHasherPort],
+    },
+    {
+      provide: GetCoordinatorDashboardUseCase,
+      useFactory: (
+        careerRepo: CareerRepositoryPort,
+        subjectRepo: SubjectRepositoryPort,
+        modalityRepo: ModalityRepositoryPort,
+      ) =>
+        new GetCoordinatorDashboardUseCase(
+          careerRepo,
+          subjectRepo,
+          modalityRepo,
+        ),
+      inject: [CAREER_REPOSITORY, SubjectRepositoryPort, MODALITY_REPOSITORY],
+    },
+    {
+      provide: UnassignTeacherUseCase,
+      useFactory: (
+        subjectRepo: SubjectRepositoryPort,
+        teacherSubjectRepo: TeacherSubjectRepositoryPort,
+      ) => new UnassignTeacherUseCase(subjectRepo, teacherSubjectRepo),
+      inject: [SubjectRepositoryPort, TeacherSubjectRepositoryPort],
+    },
+    {
+      provide: GetCareerDetailUseCase,
+      useFactory: (
+        careerRepo: CareerRepositoryPort,
+        modalityRepo: ModalityRepositoryPort,
+        curriculumRepo: CurriculumRepositoryPort,
+        subjectRepo: SubjectRepositoryPort,
+        careerSubjectRepo: CareerSubjectRepositoryPort,
+        teacherSubjectRepo: TeacherSubjectRepositoryPort,
+        userRepo: UserRepositoryPort,
+      ) =>
+        new GetCareerDetailUseCase(
+          careerRepo,
+          modalityRepo,
+          curriculumRepo,
+          subjectRepo,
+          careerSubjectRepo,
+          teacherSubjectRepo,
+          userRepo,
+        ),
+      inject: [
+        CAREER_REPOSITORY,
+        MODALITY_REPOSITORY,
+        CURRICULUM_REPOSITORY,
+        SubjectRepositoryPort,
+        CAREER_SUBJECT_REPOSITORY,
+        TeacherSubjectRepositoryPort,
+        UserRepositoryPort,
       ],
     },
   ],

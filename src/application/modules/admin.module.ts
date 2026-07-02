@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { AdminController } from '../controllers/admin/admin.controller';
 import { CreateUserUseCase } from '@domain/services/admin/create-user.use-case';
 import { GetDashboardStatsUseCase } from '@domain/services/admin/get-dashboard-stats.use-case';
+import { GetCareerBreakdownUseCase } from '@domain/services/admin/academic/get-career-breakdown.use-case';
 import { UserRepositoryPort } from '@domain/ports/outbound/users/user-repository.port';
 import { RoleRepositoryPort } from '@domain/ports/outbound/users/role-repository.port';
 import { PasswordHasherPort } from '@domain/ports/outbound/auth/password-hasher.port';
@@ -54,23 +55,23 @@ import { SubjectRepositoryPort } from '@domain/ports/outbound/academic/subject-r
       useFactory: (
         userRepo: UserRepositoryPort,
         careerRepo: CareerRepositoryPort,
-        subjectRepo: SubjectRepositoryPort,
-        careerSubjectRepo: CareerSubjectRepositoryPort,
         modalityRepo: ModalityRepositoryPort,
+        curriculumRepo: CurriculumRepositoryPort,
+        subjectRepo: SubjectRepositoryPort,
       ) =>
         new GetDashboardStatsUseCase(
           userRepo,
           careerRepo,
-          subjectRepo,
-          careerSubjectRepo,
           modalityRepo,
+          curriculumRepo,
+          subjectRepo,
         ),
       inject: [
         UserRepositoryPort,
         CAREER_REPOSITORY,
-        SubjectRepositoryPort,
-        CAREER_SUBJECT_REPOSITORY,
         MODALITY_REPOSITORY,
+        CURRICULUM_REPOSITORY,
+        SubjectRepositoryPort,
       ],
     },
     {
@@ -135,6 +136,33 @@ import { SubjectRepositoryPort } from '@domain/ports/outbound/academic/subject-r
         CURRICULUM_REPOSITORY,
         CAREER_SUBJECT_REPOSITORY,
         SubjectRepositoryPort,
+      ],
+    },
+    {
+      provide: GetCareerBreakdownUseCase,
+      useFactory: (
+        careerRepo: CareerRepositoryPort,
+        curriculumRepo: CurriculumRepositoryPort,
+        careerSubjRepo: CareerSubjectRepositoryPort,
+        subjectRepo: SubjectRepositoryPort,
+        modalityRepo: ModalityRepositoryPort,
+        userRepo: UserRepositoryPort,
+      ) =>
+        new GetCareerBreakdownUseCase(
+          careerRepo,
+          curriculumRepo,
+          careerSubjRepo,
+          subjectRepo,
+          modalityRepo,
+          userRepo,
+        ),
+      inject: [
+        CAREER_REPOSITORY,
+        CURRICULUM_REPOSITORY,
+        CAREER_SUBJECT_REPOSITORY,
+        SubjectRepositoryPort,
+        MODALITY_REPOSITORY,
+        UserRepositoryPort,
       ],
     },
   ],

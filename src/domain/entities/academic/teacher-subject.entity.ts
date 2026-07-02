@@ -4,5 +4,6 @@ export class TeacherSubjectEntity {
     public readonly teacherId: string,
     public readonly subjectId: string,
     public readonly assignedAt: Date,
+    public readonly curriculumId?: string,
   ) {}
 }

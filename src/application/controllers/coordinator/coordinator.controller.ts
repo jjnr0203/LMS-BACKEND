@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Param,
   Body,
   UseGuards,
   Request as ReqDecorator,
@@ -14,7 +15,12 @@ import { CreateSubjectUseCase } from '@domain/services/coordinator/create-subjec
 import { EnrollStudentUseCase } from '@domain/services/coordinator/enroll-student.use-case';
 import { AssignTeacherUseCase } from '@domain/services/coordinator/assign-teacher.use-case';
 import { ListSubjectsUseCase } from '@domain/services/coordinator/list-subjects.use-case';
+import { RegisterTeacherUseCasePort } from '@domain/ports/inbound/coordinator/register-teacher.use-case.port';
+import { GetCoordinatorDashboardUseCase } from '@domain/services/coordinator/get-coordinator-dashboard.use-case';
+import { GetCareerDetailUseCase } from '@domain/services/coordinator/get-career-detail.use-case';
+import { UnassignTeacherUseCase } from '@domain/services/coordinator/unassign-teacher.use-case';
 import { CreateSubjectDto } from '../../dto/coordinator/create-subject.dto';
+import { RegisterTeacherDto } from '../../dto/coordinator/register-teacher.dto';
 
 interface AuthenticatedRequest extends Request {
   user: { id: string; email: string; role: string };
@@ -29,15 +35,33 @@ export class CoordinatorController {
     private readonly enrollStudentUseCase: EnrollStudentUseCase,
     private readonly assignTeacherUseCase: AssignTeacherUseCase,
     private readonly listSubjectsUseCase: ListSubjectsUseCase,
+    private readonly registerTeacherUseCase: RegisterTeacherUseCasePort,
+    private readonly getCoordinatorDashboardUseCase: GetCoordinatorDashboardUseCase,
+    private readonly getCareerDetailUseCase: GetCareerDetailUseCase,
+    private readonly unassignTeacherUseCase: UnassignTeacherUseCase,
   ) {}
 
   @Post('asignar-docente')
-  async assignTeacher(@Body() body: { teacherId: string; subjectId: string }) {
+  async assignTeacher(
+    @Body() body: { teacherId: string; subjectId: string; curriculumId?: string },
+  ) {
     await this.assignTeacherUseCase.execute({
       teacherId: body.teacherId,
       subjectId: body.subjectId,
+      curriculumId: body.curriculumId,
     });
     return { message: 'Docente asignado a la materia exitosamente' };
+  }
+
+  @Post('quitar-docente')
+  async unassignTeacher(
+    @Body() body: { subjectId: string; curriculumId?: string },
+  ) {
+    await this.unassignTeacherUseCase.execute(
+      body.subjectId,
+      body.curriculumId,
+    );
+    return { message: 'Docente retirado de la materia exitosamente' };
   }
 
   @Roles('coordinator', 'teacher', 'admin')
@@ -71,5 +95,29 @@ export class CoordinatorController {
       message: 'Estudiante matriculado en la carrera exitosamente',
       enrollment,
     };
+  }
+
+  @Get('dashboard')
+  async getDashboard(@ReqDecorator() req: AuthenticatedRequest) {
+    return this.getCoordinatorDashboardUseCase.execute(req.user.id);
+  }
+
+  @Get('carrera/:id')
+  async getCareerDetail(@Param('id') id: string) {
+    return this.getCareerDetailUseCase.execute(id);
+  }
+
+  @Post('register-teacher')
+  async registerTeacher(@Body() dto: RegisterTeacherDto) {
+    const { user } = await this.registerTeacherUseCase.execute({
+      id: dto.id,
+      firstName: dto.firstName,
+      lastName: dto.lastName,
+      email: dto.email,
+      password: dto.password,
+      birthDate: dto.birthDate,
+      phone: dto.phone,
+    });
+    return { message: 'Docente creado exitosamente', user };
   }
 }

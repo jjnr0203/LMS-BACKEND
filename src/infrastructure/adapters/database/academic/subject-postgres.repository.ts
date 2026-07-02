@@ -59,6 +59,10 @@ export class SubjectPostgresRepository implements SubjectRepositoryPort {
     return orms.map((o) => this.toDomain(o));
   }
 
+  async count(): Promise<number> {
+    return this.repository.count();
+  }
+
   async findByTeacherId(teacherId: string): Promise<SubjectEntity[]> {
     const orms = await this.repository.find({
       where: { teacherId },

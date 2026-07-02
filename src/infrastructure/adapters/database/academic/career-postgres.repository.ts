@@ -67,6 +67,15 @@ export class CareerPostgresRepository implements CareerRepositoryPort {
     return all.map((o) => this.mapToDomain(o));
   }
 
+  async findByCoordinatorId(coordinatorId: string): Promise<Career[]> {
+    const all = await this.repository.find({
+      where: { coordinatorId },
+      order: { name: 'ASC' },
+      relations: ['modalities', 'coordinator'],
+    });
+    return all.map((o) => this.mapToDomain(o));
+  }
+
   async delete(id: string): Promise<void> {
     await this.repository.delete(id);
   }

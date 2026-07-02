@@ -6,7 +6,7 @@ import { SubjectRepositoryPort } from '../../ports/outbound/academic/subject-rep
 import { TeacherSubjectRepositoryPort } from '../../ports/outbound/academic/teacher-subject-repository.port';
 import { UserRepositoryPort } from '../../ports/outbound/users/user-repository.port';
 import { TeacherSubjectEntity } from '../../entities/academic/teacher-subject.entity';
-import { NotFoundException, BadRequestException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import * as crypto from 'crypto';
 
 export class AssignTeacherUseCase implements AssignTeacherUseCasePort {
@@ -27,14 +27,14 @@ export class AssignTeacherUseCase implements AssignTeacherUseCasePort {
       throw new NotFoundException('Docente no encontrado');
     }
 
-    const existingRelation =
-      await this.teacherSubjectRepository.findByTeacherAndSubject(
-        command.teacherId,
+    const existing = await this.teacherSubjectRepository.findBySubjectId(
+      command.subjectId,
+      command.curriculumId,
+    );
+    if (existing.length > 0) {
+      await this.teacherSubjectRepository.deleteBySubjectId(
         command.subjectId,
-      );
-    if (existingRelation) {
-      throw new BadRequestException(
-        'El docente ya está asignado a esta materia',
+        command.curriculumId,
       );
     }
 
@@ -43,6 +43,7 @@ export class AssignTeacherUseCase implements AssignTeacherUseCasePort {
       command.teacherId,
       command.subjectId,
       new Date(),
+      command.curriculumId,
     );
 
     await this.teacherSubjectRepository.save(relation);
