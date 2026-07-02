@@ -7,6 +7,7 @@ export abstract class SubjectRepositoryPort {
   abstract findByCodes(codes: string[]): Promise<SubjectEntity[]>;
   abstract save(subject: SubjectEntity): Promise<SubjectEntity>;
   abstract findAll(): Promise<SubjectEntity[]>;
+  abstract count(): Promise<number>;
   abstract findByTeacherId(teacherId: string): Promise<SubjectEntity[]>;
   abstract delete(id: string): Promise<void>;
 }

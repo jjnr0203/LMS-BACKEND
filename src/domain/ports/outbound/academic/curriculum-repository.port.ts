@@ -6,5 +6,6 @@ export interface CurriculumRepositoryPort {
   save(curriculum: Curriculum): Promise<Curriculum>;
   findById(id: string): Promise<Curriculum | null>;
   findByCareer(careerId: string): Promise<Curriculum[]>;
+  findByCareerIds(careerIds: string[]): Promise<Curriculum[]>;
   delete(id: string): Promise<void>;
 }

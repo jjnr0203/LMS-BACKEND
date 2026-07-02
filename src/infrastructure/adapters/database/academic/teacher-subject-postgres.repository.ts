@@ -6,7 +6,9 @@ import { TeacherSubjectEntity } from '../../../../domain/entities/academic/teach
 import { TeacherSubjectOrmEntity } from '../../../database/entities/academic/teacher-subject.orm-entity';
 
 @Injectable()
-export class TeacherSubjectPostgresRepository implements TeacherSubjectRepositoryPort {
+export class TeacherSubjectPostgresRepository
+  implements TeacherSubjectRepositoryPort
+{
   constructor(
     @InjectRepository(TeacherSubjectOrmEntity)
     private readonly repository: Repository<TeacherSubjectOrmEntity>,
@@ -17,6 +19,7 @@ export class TeacherSubjectPostgresRepository implements TeacherSubjectRepositor
       id: relation.id,
       teacherId: relation.teacherId,
       subjectId: relation.subjectId,
+      curriculumId: relation.curriculumId,
       assignedAt: relation.assignedAt,
     });
     const saved = await this.repository.save(ormEntity);
@@ -25,6 +28,7 @@ export class TeacherSubjectPostgresRepository implements TeacherSubjectRepositor
       saved.teacherId,
       saved.subjectId,
       saved.assignedAt,
+      saved.curriculumId,
     );
   }
 
@@ -41,16 +45,39 @@ export class TeacherSubjectPostgresRepository implements TeacherSubjectRepositor
       found.teacherId,
       found.subjectId,
       found.assignedAt,
+      found.curriculumId,
     );
   }
 
-  async findBySubjectId(subjectId: string): Promise<TeacherSubjectEntity[]> {
-    const found = await this.repository.find({
-      where: { subjectId },
-    });
+  async findBySubjectId(
+    subjectId: string,
+    curriculumId?: string,
+  ): Promise<TeacherSubjectEntity[]> {
+    const where: any = { subjectId };
+    if (curriculumId !== undefined) {
+      where.curriculumId = curriculumId;
+    }
+    const found = await this.repository.find({ where });
     return found.map(
       (f) =>
-        new TeacherSubjectEntity(f.id, f.teacherId, f.subjectId, f.assignedAt),
+        new TeacherSubjectEntity(
+          f.id,
+          f.teacherId,
+          f.subjectId,
+          f.assignedAt,
+          f.curriculumId,
+        ),
     );
+  }
+
+  async deleteBySubjectId(
+    subjectId: string,
+    curriculumId?: string,
+  ): Promise<void> {
+    const where: any = { subjectId };
+    if (curriculumId !== undefined) {
+      where.curriculumId = curriculumId;
+    }
+    await this.repository.delete(where);
   }
 }

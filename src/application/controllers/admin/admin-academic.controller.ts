@@ -21,6 +21,7 @@ import { ManageSubjectsUseCase } from '@domain/services/admin/academic/manage-su
 import { BulkCreateSubjectsUseCase } from '@domain/services/admin/academic/bulk-create-subjects.use-case';
 import { ManageSemesterColorsUseCase } from '@domain/services/admin/manage-semester-colors.use-case';
 import { ManageCurriculumsUseCase } from '@domain/services/admin/academic/manage-curriculums.use-case';
+import { GetCareerBreakdownUseCase } from '@domain/services/admin/academic/get-career-breakdown.use-case';
 
 import {
   CreateAcademicTermDto,
@@ -44,6 +45,7 @@ export class AdminAcademicController {
     private readonly bulkCreateSubjectsUC: BulkCreateSubjectsUseCase,
     private readonly manageSemesterColorsUC: ManageSemesterColorsUseCase,
     private readonly manageCurriculumsUC: ManageCurriculumsUseCase,
+    private readonly getCareerBreakdownUC: GetCareerBreakdownUseCase,
   ) {}
 
   // --- SEMESTER COLORS ---
@@ -190,6 +192,15 @@ export class AdminAcademicController {
   async getCurriculumSubjects(@Param('id') id: string) {
     const subjects = await this.manageCurriculumsUC.getSubjectsByCurriculum(id);
     return subjects;
+  }
+
+  // --- CAREER BREAKDOWN (desglose academico detail) ---
+  @Get('careers/:id/breakdown')
+  async getCareerBreakdown(@Param('id') id: string): Promise<object> {
+    const breakdown = await this.getCareerBreakdownUC.execute(id);
+    if (!breakdown)
+      throw new HttpException('Career not found', HttpStatus.NOT_FOUND);
+    return breakdown;
   }
 
   // --- SUBJECTS ---

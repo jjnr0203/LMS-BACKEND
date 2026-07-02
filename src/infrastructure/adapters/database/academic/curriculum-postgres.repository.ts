@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { CurriculumRepositoryPort } from '@domain/ports/outbound/academic/curriculum-repository.port';
 import { CurriculumOrmEntity } from '../../../database/entities/academic/curriculum.orm-entity';
 import { Curriculum } from '@domain/entities/academic/curriculum.entity';
@@ -47,6 +47,15 @@ export class CurriculumPostgresRepository implements CurriculumRepositoryPort {
   async findByCareer(careerId: string): Promise<Curriculum[]> {
     const found = await this.repository.find({
       where: { careerId },
+      order: { createdAt: 'DESC' },
+    });
+    return found.map((o) => this.toDomain(o));
+  }
+
+  async findByCareerIds(careerIds: string[]): Promise<Curriculum[]> {
+    if (careerIds.length === 0) return [];
+    const found = await this.repository.find({
+      where: { careerId: In(careerIds) },
       order: { createdAt: 'DESC' },
     });
     return found.map((o) => this.toDomain(o));
