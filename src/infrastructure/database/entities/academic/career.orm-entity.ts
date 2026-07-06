@@ -42,6 +42,9 @@ export class CareerOrmEntity {
   })
   coordinatorId?: string;
 
+  @Column({ type: 'uuid', name: 'faculty_id', nullable: true })
+  facultyId?: string;
+
   @ManyToOne(() => UserOrmEntity)
   @JoinColumn({ name: 'coordinator_id' })
   coordinator: UserOrmEntity;

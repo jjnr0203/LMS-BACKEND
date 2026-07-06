@@ -7,5 +7,6 @@ export class Career {
     public modalityIds: string[],
     public coordinatorId?: string,
     public isActive: boolean = true,
+    public facultyId?: string,
   ) {}
 }

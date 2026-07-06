@@ -17,6 +17,9 @@ import { CareerOrmEntity } from '@infrastructure/database/entities/academic/care
 import { CareerSubjectOrmEntity } from '@infrastructure/database/entities/academic/career-subject.orm-entity';
 import { SemesterColorOrmEntity } from '@infrastructure/database/entities/academic/semester-color.orm-entity';
 import { CurriculumOrmEntity } from '@infrastructure/database/entities/academic/curriculum.orm-entity';
+import { FacultyOrmEntity } from '@infrastructure/database/entities/academic/faculty.orm-entity';
+import { PermissionOrmEntity } from '@infrastructure/database/entities/academic/permission.orm-entity';
+import { RolePermissionOrmEntity } from '@infrastructure/database/entities/academic/role-permission.orm-entity';
 
 @Module({
   imports: [
@@ -51,6 +54,9 @@ import { CurriculumOrmEntity } from '@infrastructure/database/entities/academic/
           CareerSubjectOrmEntity,
           SemesterColorOrmEntity,
           CurriculumOrmEntity,
+          FacultyOrmEntity,
+          PermissionOrmEntity,
+          RolePermissionOrmEntity,
         ],
         synchronize: true,
         extra: {
@@ -77,6 +83,9 @@ import { CurriculumOrmEntity } from '@infrastructure/database/entities/academic/
       CareerSubjectOrmEntity,
       SemesterColorOrmEntity,
       CurriculumOrmEntity,
+      FacultyOrmEntity,
+      PermissionOrmEntity,
+      RolePermissionOrmEntity,
     ]),
   ],
   exports: [TypeOrmModule],

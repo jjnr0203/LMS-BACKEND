@@ -22,6 +22,7 @@ export class CareerPostgresRepository implements CareerRepositoryPort {
       ormEntity.modalities ? ormEntity.modalities.map((m) => m.id) : [],
       ormEntity.coordinatorId,
       ormEntity.isActive,
+      ormEntity.facultyId,
     );
   }
 
@@ -42,6 +43,8 @@ export class CareerPostgresRepository implements CareerRepositoryPort {
     }
     if (domainEntity.coordinatorId)
       ormEntity.coordinatorId = domainEntity.coordinatorId;
+    if (domainEntity.facultyId)
+      ormEntity.facultyId = domainEntity.facultyId;
     ormEntity.isActive = domainEntity.isActive;
     return ormEntity;
   }

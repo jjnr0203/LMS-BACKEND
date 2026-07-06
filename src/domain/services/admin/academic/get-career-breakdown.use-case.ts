@@ -73,69 +73,72 @@ export class GetCareerBreakdownUseCase {
       .filter((n): n is string => n !== undefined);
 
     const curriculums = await this.curriculumRepository.findByCareer(careerId);
-    const curriculumsBreakdown = await Promise.all(
-      curriculums.map(async (curriculum) => {
-        const relations = await this.careerSubjectRepository.findByCurriculum(
-          curriculum.id,
-        );
-        const subjectIds = relations.map((r) => r.subjectId);
-        const subjects =
-          subjectIds.length > 0
-            ? await this.subjectRepository.findByIds(subjectIds)
-            : [];
-        const subjectMap = new Map(subjects.map((s) => [s.id, s]));
+    const allCareerSubjects =
+      await this.careerSubjectRepository.findByCareer(careerId);
+    const subjectIds = [...new Set(allCareerSubjects.map((cs) => cs.subjectId))];
+    const subjects =
+      subjectIds.length > 0
+        ? await this.subjectRepository.findByIds(subjectIds)
+        : [];
+    const subjectMap = new Map(subjects.map((s) => [s.id, s]));
 
-        const teacherIds = subjects
-          .map((s) => s.teacherId)
-          .filter((id): id is string => !!id);
-        const teacherNames =
-          teacherIds.length > 0
-            ? await this.userRepository.findByIds(teacherIds)
-            : [];
-        const teacherMap = new Map(
-          teacherNames.map((u) => [u.id, `${u.firstName} ${u.lastName}`]),
-        );
-
-        const semesterMap = new Map<number, SubjectBreakdown[]>();
-        for (const rel of relations) {
-          const sub = subjectMap.get(rel.subjectId);
-          if (!sub) continue;
-          const sem = rel.semester || 1;
-          if (!semesterMap.has(sem)) {
-            semesterMap.set(sem, []);
-          }
-          semesterMap.get(sem)!.push({
-            id: rel.subjectId,
-            code: sub.code,
-            name: sub.name,
-            credits: sub.credits,
-            semester: sem,
-            modalityNames: (sub.modalityIds || [])
-              .map((id) => modalityMap.get(id))
-              .filter((n): n is string => n !== undefined),
-            teacherName: sub.teacherId
-              ? teacherMap.get(sub.teacherId) || null
-              : null,
-          });
-        }
-
-        const semesters = Array.from(semesterMap.entries())
-          .map(([semester, subjects]) => ({
-            semester,
-            subjects: subjects.sort((a, b) => a.name.localeCompare(b.name)),
-          }))
-          .sort((a, b) => a.semester - b.semester);
-
-        return {
-          id: curriculum.id,
-          name: curriculum.name,
-          description: curriculum.description,
-          isActive: curriculum.isActive,
-          createdAt: curriculum.createdAt,
-          semesters,
-        };
-      }),
+    const teacherIds = subjects
+      .map((s) => s.teacherId)
+      .filter((id): id is string => !!id);
+    const teacherNames =
+      teacherIds.length > 0
+        ? await this.userRepository.findByIds(teacherIds)
+        : [];
+    const teacherMap = new Map(
+      teacherNames.map((u) => [u.id, `${u.firstName} ${u.lastName}`]),
     );
+
+    const curriculumsBreakdown = curriculums.map((curriculum) => {
+      const relations = allCareerSubjects.filter(
+        (cs) => cs.curriculumId === curriculum.id || !cs.curriculumId,
+      );
+
+      const semesterMap = new Map<number, SubjectBreakdown[]>();
+      for (const rel of relations) {
+        const sub = subjectMap.get(rel.subjectId);
+        if (!sub) continue;
+        const sem = rel.semester || 1;
+        if (!semesterMap.has(sem)) {
+          semesterMap.set(sem, []);
+        }
+        semesterMap.get(sem)!.push({
+          id: rel.subjectId,
+          code: sub.code,
+          name: sub.name,
+          credits: sub.credits,
+          semester: sem,
+          modalityNames: (sub.modalityIds || [])
+            .map((id) => modalityMap.get(id))
+            .filter((n): n is string => n !== undefined),
+          teacherName: sub.teacherId
+            ? teacherMap.get(sub.teacherId) || null
+            : null,
+        });
+      }
+
+      const semesters = Array.from(semesterMap.entries())
+        .map(([semester, semesterSubjects]) => ({
+          semester,
+          subjects: semesterSubjects.sort((a, b) =>
+            a.name.localeCompare(b.name),
+          ),
+        }))
+        .sort((a, b) => a.semester - b.semester);
+
+      return {
+        id: curriculum.id,
+        name: curriculum.name,
+        description: curriculum.description,
+        isActive: curriculum.isActive,
+        createdAt: curriculum.createdAt,
+        semesters,
+      };
+    });
 
     return {
       career: {

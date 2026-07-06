@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { DatabaseModule } from './database.module';
 import { UserRepositoryPort } from '@domain/ports/outbound/users/user-repository.port';
 import { RoleRepositoryPort } from '@domain/ports/outbound/users/role-repository.port';
@@ -30,6 +31,18 @@ import {
 } from '@domain/ports/outbound/academic/career-subject-repository.port';
 import { SemesterColorRepositoryPort } from '@domain/ports/outbound/academic/semester-color-repository.port';
 import {
+  FacultyRepositoryPort,
+  FACULTY_REPOSITORY,
+} from '@domain/ports/outbound/academic/faculty-repository.port';
+import {
+  PermissionRepositoryPort,
+  PERMISSION_REPOSITORY,
+} from '@domain/ports/outbound/academic/permission-repository.port';
+import {
+  RolePermissionRepositoryPort,
+  ROLE_PERMISSION_REPOSITORY,
+} from '@domain/ports/outbound/academic/role-permission-repository.port';
+import {
   CurriculumRepositoryPort,
   CURRICULUM_REPOSITORY,
 } from '@domain/ports/outbound/academic/curriculum-repository.port';
@@ -49,6 +62,9 @@ import { CareerPostgresRepository } from '@infrastructure/adapters/database/acad
 import { CareerSubjectPostgresRepository } from '@infrastructure/adapters/database/academic/career-subject-postgres.repository';
 import { SemesterColorPostgresRepository } from '@infrastructure/adapters/database/academic/semester-color-postgres.repository';
 import { CurriculumPostgresRepository } from '@infrastructure/adapters/database/academic/curriculum-postgres.repository';
+import { FacultyPostgresRepository } from '@infrastructure/adapters/database/academic/faculty-postgres.repository';
+import { PermissionPostgresRepository } from '@infrastructure/adapters/database/academic/permission-postgres.repository';
+import { RolePermissionPostgresRepository } from '@infrastructure/adapters/database/academic/role-permission-postgres.repository';
 import { BcryptPasswordHasher } from '@infrastructure/adapters/auth/bcrypt-password-hasher';
 import { JwtTokenGenerator } from '@infrastructure/adapters/auth/jwt-token-generator';
 import { JwtModule, JwtService } from '@nestjs/jwt';
@@ -141,6 +157,18 @@ import { RolesGuard } from '@infrastructure/auth/guards/roles.guard';
       useClass: CareerSubjectPostgresRepository,
     },
     {
+      provide: FACULTY_REPOSITORY,
+      useClass: FacultyPostgresRepository,
+    },
+    {
+      provide: PERMISSION_REPOSITORY,
+      useClass: PermissionPostgresRepository,
+    },
+    {
+      provide: ROLE_PERMISSION_REPOSITORY,
+      useClass: RolePermissionPostgresRepository,
+    },
+    {
       provide: 'SEMESTER_COLOR_REPOSITORY',
       useClass: SemesterColorPostgresRepository,
     },
@@ -148,7 +176,16 @@ import { RolesGuard } from '@infrastructure/auth/guards/roles.guard';
       provide: CURRICULUM_REPOSITORY,
       useClass: CurriculumPostgresRepository,
     },
-    RolesGuard,
+    {
+      provide: RolesGuard,
+      useFactory: (
+        reflector: Reflector,
+        userRepo: UserRepositoryPort,
+        roleRepo: RoleRepositoryPort,
+        rolePermRepo: RolePermissionRepositoryPort,
+      ) => new RolesGuard(reflector, userRepo, roleRepo, rolePermRepo),
+      inject: [Reflector, UserRepositoryPort, RoleRepositoryPort, ROLE_PERMISSION_REPOSITORY],
+    },
   ],
   exports: [
     UserRepositoryPort,
@@ -169,6 +206,9 @@ import { RolesGuard } from '@infrastructure/auth/guards/roles.guard';
     CAREER_SUBJECT_REPOSITORY,
     'SEMESTER_COLOR_REPOSITORY',
     CURRICULUM_REPOSITORY,
+    FACULTY_REPOSITORY,
+    PERMISSION_REPOSITORY,
+    ROLE_PERMISSION_REPOSITORY,
     RolesGuard,
   ],
 })

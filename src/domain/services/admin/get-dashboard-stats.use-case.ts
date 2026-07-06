@@ -3,6 +3,7 @@ import { CareerRepositoryPort } from '../../ports/outbound/academic/career-repos
 import { ModalityRepositoryPort } from '../../ports/outbound/academic/modality-repository.port';
 import { CurriculumRepositoryPort } from '../../ports/outbound/academic/curriculum-repository.port';
 import { SubjectRepositoryPort } from '../../ports/outbound/academic/subject-repository.port';
+import { FacultyRepositoryPort } from '../../ports/outbound/academic/faculty-repository.port';
 
 export class GetDashboardStatsUseCase {
   constructor(
@@ -11,6 +12,7 @@ export class GetDashboardStatsUseCase {
     private readonly modalityRepository: ModalityRepositoryPort,
     private readonly curriculumRepository: CurriculumRepositoryPort,
     private readonly subjectRepository: SubjectRepositoryPort,
+    private readonly facultyRepository: FacultyRepositoryPort,
   ) {}
 
   async execute(): Promise<any> {
@@ -70,6 +72,8 @@ export class GetDashboardStatsUseCase {
       };
     });
 
+    const allFaculties = await this.facultyRepository.findAll();
+
     return {
       users: {
         student: counts['student'] || 0,
@@ -81,6 +85,7 @@ export class GetDashboardStatsUseCase {
       academic: {
         totalCareers: allCareers.length,
         totalSubjects: await this.subjectRepository.count(),
+        totalFaculties: allFaculties.length,
         careers: careersDetails,
       },
     };

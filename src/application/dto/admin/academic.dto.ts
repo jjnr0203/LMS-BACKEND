@@ -58,6 +58,10 @@ export class CreateCareerDto {
   @IsString()
   coordinatorId: string;
 
+  @IsOptional()
+  @IsString()
+  facultyId?: string;
+
   @Type(() => Number)
   @IsNumber()
   durationSemesters: number;
@@ -165,4 +169,45 @@ export class CreateCurriculumDto {
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;
+}
+
+export class CreateFacultyDto {
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @IsString()
+  @IsNotEmpty()
+  code: string;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @IsBoolean()
+  isActive: boolean;
+}
+
+export class CreatePermissionDto {
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @IsString()
+  @IsNotEmpty()
+  code: string;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @IsString()
+  @IsNotEmpty()
+  resource: string;
+}
+
+export class AssignPermissionsDto {
+  @IsArray()
+  @IsString({ each: true })
+  permissionIds: string[];
 }
