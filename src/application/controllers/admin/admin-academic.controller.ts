@@ -22,6 +22,7 @@ import { BulkCreateSubjectsUseCase } from '@domain/services/admin/academic/bulk-
 import { ManageSemesterColorsUseCase } from '@domain/services/admin/manage-semester-colors.use-case';
 import { ManageCurriculumsUseCase } from '@domain/services/admin/academic/manage-curriculums.use-case';
 import { GetCareerBreakdownUseCase } from '@domain/services/admin/academic/get-career-breakdown.use-case';
+import { ManageFacultiesUseCase } from '@domain/services/admin/academic/manage-faculties.use-case';
 
 import {
   CreateAcademicTermDto,
@@ -31,6 +32,7 @@ import {
   CreateSubjectDto,
   BulkSubjectsDto,
   CreateCurriculumDto,
+  CreateFacultyDto,
 } from '../../dto/admin/academic.dto';
 
 @Controller('admin/academic')
@@ -46,6 +48,7 @@ export class AdminAcademicController {
     private readonly manageSemesterColorsUC: ManageSemesterColorsUseCase,
     private readonly manageCurriculumsUC: ManageCurriculumsUseCase,
     private readonly getCareerBreakdownUC: GetCareerBreakdownUseCase,
+    private readonly manageFacultiesUC: ManageFacultiesUseCase,
   ) {}
 
   // --- SEMESTER COLORS ---
@@ -201,6 +204,34 @@ export class AdminAcademicController {
     if (!breakdown)
       throw new HttpException('Career not found', HttpStatus.NOT_FOUND);
     return breakdown;
+  }
+
+  // --- FACULTIES ---
+  @Get('faculties')
+  async getFaculties() {
+    return this.manageFacultiesUC.findAll();
+  }
+
+  @Post('faculties')
+  async createFaculty(@Body() dto: CreateFacultyDto) {
+    return this.manageFacultiesUC.create(dto);
+  }
+
+  @Put('faculties/:id')
+  async updateFaculty(
+    @Param('id') id: string,
+    @Body() dto: Partial<CreateFacultyDto>,
+  ) {
+    const res = await this.manageFacultiesUC.update(id, dto);
+    if (!res)
+      throw new HttpException('Faculty not found', HttpStatus.NOT_FOUND);
+    return res;
+  }
+
+  @Delete('faculties/:id')
+  async deleteFaculty(@Param('id') id: string) {
+    await this.manageFacultiesUC.delete(id);
+    return { success: true };
   }
 
   // --- SUBJECTS ---

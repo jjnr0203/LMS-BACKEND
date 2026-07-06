@@ -48,6 +48,7 @@ export class CreateUserUseCase implements CreateUserUseCasePort {
     );
 
     const savedUser = await this.userRepository.save(user);
+
     return { user: savedUser };
   }
 }

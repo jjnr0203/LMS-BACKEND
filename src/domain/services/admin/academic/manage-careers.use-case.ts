@@ -12,6 +12,7 @@ export interface CreateCareerDto {
   coordinatorId?: string;
   durationSemesters: number;
   isActive: boolean;
+  facultyId?: string;
 }
 
 export class AssignSubjectsDto {
@@ -34,6 +35,7 @@ export class ManageCareersUseCase {
       data.modalityIds || [],
       data.coordinatorId,
       data.isActive,
+      data.facultyId,
     );
     return this.careerRepository.save(career);
   }
@@ -52,6 +54,8 @@ export class ManageCareersUseCase {
     if (data.modalityIds !== undefined) career.modalityIds = data.modalityIds;
     if (data.coordinatorId !== undefined)
       career.coordinatorId = data.coordinatorId;
+    if (data.facultyId !== undefined)
+      career.facultyId = data.facultyId;
     if (data.isActive !== undefined) career.isActive = data.isActive;
 
     return this.careerRepository.save(career);

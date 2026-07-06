@@ -31,10 +31,15 @@ import {
   CAREER_SUBJECT_REPOSITORY,
 } from '@domain/ports/outbound/academic/career-subject-repository.port';
 import { ManageCurriculumsUseCase } from '@domain/services/admin/academic/manage-curriculums.use-case';
+import { ManageFacultiesUseCase } from '@domain/services/admin/academic/manage-faculties.use-case';
 import {
   CurriculumRepositoryPort,
   CURRICULUM_REPOSITORY,
 } from '@domain/ports/outbound/academic/curriculum-repository.port';
+import {
+  FacultyRepositoryPort,
+  FACULTY_REPOSITORY,
+} from '@domain/ports/outbound/academic/faculty-repository.port';
 import { SubjectRepositoryPort } from '@domain/ports/outbound/academic/subject-repository.port';
 
 @Module({
@@ -58,6 +63,7 @@ import { SubjectRepositoryPort } from '@domain/ports/outbound/academic/subject-r
         modalityRepo: ModalityRepositoryPort,
         curriculumRepo: CurriculumRepositoryPort,
         subjectRepo: SubjectRepositoryPort,
+        facultyRepo: FacultyRepositoryPort,
       ) =>
         new GetDashboardStatsUseCase(
           userRepo,
@@ -65,6 +71,7 @@ import { SubjectRepositoryPort } from '@domain/ports/outbound/academic/subject-r
           modalityRepo,
           curriculumRepo,
           subjectRepo,
+          facultyRepo,
         ),
       inject: [
         UserRepositoryPort,
@@ -72,6 +79,7 @@ import { SubjectRepositoryPort } from '@domain/ports/outbound/academic/subject-r
         MODALITY_REPOSITORY,
         CURRICULUM_REPOSITORY,
         SubjectRepositoryPort,
+        FACULTY_REPOSITORY,
       ],
     },
     {
@@ -137,6 +145,12 @@ import { SubjectRepositoryPort } from '@domain/ports/outbound/academic/subject-r
         CAREER_SUBJECT_REPOSITORY,
         SubjectRepositoryPort,
       ],
+    },
+    {
+      provide: ManageFacultiesUseCase,
+      useFactory: (repo: FacultyRepositoryPort) =>
+        new ManageFacultiesUseCase(repo),
+      inject: [FACULTY_REPOSITORY],
     },
     {
       provide: GetCareerBreakdownUseCase,

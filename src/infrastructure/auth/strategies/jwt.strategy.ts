@@ -29,11 +29,17 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('Token inválido para esta operación');
     }
 
-    const hasSession = await this.refreshTokenRepo.hasActiveSession(
-      payload.sub,
-    );
-    if (!hasSession) {
-      throw new UnauthorizedException('Sesión cerrada o expirada');
+    try {
+      const hasSession = await this.refreshTokenRepo.hasActiveSession(
+        payload.sub,
+      );
+      if (!hasSession) {
+        throw new UnauthorizedException('Sesión cerrada o expirada');
+      }
+    } catch (e) {
+      if (e instanceof UnauthorizedException) {
+        throw e;
+      }
     }
 
     return { id: payload.sub, email: payload.email, role: payload.role };

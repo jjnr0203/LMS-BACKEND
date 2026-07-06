@@ -21,4 +21,9 @@ export class RolePostgresRepository implements RoleRepositoryPort {
     const ormEntity = await this.repository.findOne({ where: { name } });
     return ormEntity ? RoleOrmEntity.toDomain(ormEntity) : null;
   }
+
+  async findAll(): Promise<RoleEntity[]> {
+    const all = await this.repository.find({ order: { name: 'ASC' } });
+    return all.map((o) => RoleOrmEntity.toDomain(o));
+  }
 }
