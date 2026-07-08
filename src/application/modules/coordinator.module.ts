@@ -6,8 +6,14 @@ import { AssignTeacherUseCase } from '@domain/services/coordinator/assign-teache
 import { ListSubjectsUseCase } from '@domain/services/coordinator/list-subjects.use-case';
 import { RegisterTeacherUseCase } from '@domain/services/coordinator/register-teacher.use-case';
 import { GetCoordinatorDashboardUseCase } from '@domain/services/coordinator/get-coordinator-dashboard.use-case';
+import { ManageSchedulesUseCase } from '@domain/services/coordinator/manage-schedules.use-case';
+import { ScheduleRepositoryPort } from '@domain/ports/outbound/academic/schedule-repository.port';
 import { GetCareerDetailUseCase } from '@domain/services/coordinator/get-career-detail.use-case';
 import { UnassignTeacherUseCase } from '@domain/services/coordinator/unassign-teacher.use-case';
+import { BulkAssignTeacherUseCase } from '@domain/services/coordinator/bulk-assign-teacher.use-case';
+import { ManageAcademicTermsUseCase } from '@domain/services/admin/academic/manage-academic-terms.use-case';
+import { ManageModalitiesUseCase } from '@domain/services/admin/academic/manage-modalities.use-case';
+import { ManageJornadasUseCase } from '@domain/services/admin/academic/manage-jornadas.use-case';
 import { RegisterTeacherUseCasePort } from '@domain/ports/inbound/coordinator/register-teacher.use-case.port';
 import { UserRepositoryPort } from '@domain/ports/outbound/users/user-repository.port';
 import { RoleRepositoryPort } from '@domain/ports/outbound/users/role-repository.port';
@@ -21,6 +27,10 @@ import {
   CAREER_REPOSITORY,
 } from '@domain/ports/outbound/academic/career-repository.port';
 import {
+  AcademicTermRepositoryPort,
+  ACADEMIC_TERM_REPOSITORY,
+} from '@domain/ports/outbound/academic/academic-term-repository.port';
+import {
   ModalityRepositoryPort,
   MODALITY_REPOSITORY,
 } from '@domain/ports/outbound/academic/modality-repository.port';
@@ -28,6 +38,10 @@ import {
   CurriculumRepositoryPort,
   CURRICULUM_REPOSITORY,
 } from '@domain/ports/outbound/academic/curriculum-repository.port';
+import {
+  JornadaRepositoryPort,
+  JORNADA_REPOSITORY,
+} from '@domain/ports/outbound/academic/jornada-repository.port';
 import {
   CareerSubjectRepositoryPort,
   CAREER_SUBJECT_REPOSITORY,
@@ -65,6 +79,19 @@ import { RepositoryProvidersModule } from './repository-providers.module';
         userRepo: UserRepositoryPort,
         teacherSubjectRepo: TeacherSubjectRepositoryPort,
       ) => new AssignTeacherUseCase(subjectRepo, userRepo, teacherSubjectRepo),
+      inject: [
+        SubjectRepositoryPort,
+        UserRepositoryPort,
+        TeacherSubjectRepositoryPort,
+      ],
+    },
+    {
+      provide: BulkAssignTeacherUseCase,
+      useFactory: (
+        subjectRepo: SubjectRepositoryPort,
+        userRepo: UserRepositoryPort,
+        teacherSubjectRepo: TeacherSubjectRepositoryPort,
+      ) => new BulkAssignTeacherUseCase(subjectRepo, userRepo, teacherSubjectRepo),
       inject: [
         SubjectRepositoryPort,
         UserRepositoryPort,
@@ -112,6 +139,7 @@ import { RepositoryProvidersModule } from './repository-providers.module';
         careerSubjectRepo: CareerSubjectRepositoryPort,
         teacherSubjectRepo: TeacherSubjectRepositoryPort,
         userRepo: UserRepositoryPort,
+        jornadaRepo: JornadaRepositoryPort,
       ) =>
         new GetCareerDetailUseCase(
           careerRepo,
@@ -121,6 +149,7 @@ import { RepositoryProvidersModule } from './repository-providers.module';
           careerSubjectRepo,
           teacherSubjectRepo,
           userRepo,
+          jornadaRepo,
         ),
       inject: [
         CAREER_REPOSITORY,
@@ -130,7 +159,32 @@ import { RepositoryProvidersModule } from './repository-providers.module';
         CAREER_SUBJECT_REPOSITORY,
         TeacherSubjectRepositoryPort,
         UserRepositoryPort,
+        JORNADA_REPOSITORY,
       ],
+    },
+    {
+      provide: ManageAcademicTermsUseCase,
+      useFactory: (termRepo: AcademicTermRepositoryPort) =>
+        new ManageAcademicTermsUseCase(termRepo),
+      inject: [ACADEMIC_TERM_REPOSITORY],
+    },
+    {
+      provide: ManageModalitiesUseCase,
+      useFactory: (modRepo: ModalityRepositoryPort) =>
+        new ManageModalitiesUseCase(modRepo),
+      inject: [MODALITY_REPOSITORY],
+    },
+    {
+      provide: ManageJornadasUseCase,
+      useFactory: (jorRepo: JornadaRepositoryPort) =>
+        new ManageJornadasUseCase(jorRepo),
+      inject: [JORNADA_REPOSITORY],
+    },
+    {
+      provide: ManageSchedulesUseCase,
+      useFactory: (scheduleRepo: ScheduleRepositoryPort) =>
+        new ManageSchedulesUseCase(scheduleRepo),
+      inject: [ScheduleRepositoryPort],
     },
   ],
 })

@@ -19,8 +19,14 @@ import { RegisterTeacherUseCasePort } from '@domain/ports/inbound/coordinator/re
 import { GetCoordinatorDashboardUseCase } from '@domain/services/coordinator/get-coordinator-dashboard.use-case';
 import { GetCareerDetailUseCase } from '@domain/services/coordinator/get-career-detail.use-case';
 import { UnassignTeacherUseCase } from '@domain/services/coordinator/unassign-teacher.use-case';
+import { ManageAcademicTermsUseCase } from '@domain/services/admin/academic/manage-academic-terms.use-case';
+import { ManageModalitiesUseCase } from '@domain/services/admin/academic/manage-modalities.use-case';
+import { ManageJornadasUseCase } from '@domain/services/admin/academic/manage-jornadas.use-case';
+import { BulkAssignTeacherUseCase } from '@domain/services/coordinator/bulk-assign-teacher.use-case';
+import { ManageSchedulesUseCase } from '@domain/services/coordinator/manage-schedules.use-case';
 import { CreateSubjectDto } from '../../dto/coordinator/create-subject.dto';
 import { RegisterTeacherDto } from '../../dto/coordinator/register-teacher.dto';
+import { BulkAssignTeacherDto } from '../../dto/coordinator/bulk-assign-teacher.dto';
 
 interface AuthenticatedRequest extends Request {
   user: { id: string; email: string; role: string };
@@ -39,29 +45,55 @@ export class CoordinatorController {
     private readonly getCoordinatorDashboardUseCase: GetCoordinatorDashboardUseCase,
     private readonly getCareerDetailUseCase: GetCareerDetailUseCase,
     private readonly unassignTeacherUseCase: UnassignTeacherUseCase,
+    private readonly manageTermsUseCase: ManageAcademicTermsUseCase,
+    private readonly manageModalitiesUseCase: ManageModalitiesUseCase,
+    private readonly manageJornadasUseCase: ManageJornadasUseCase,
+    private readonly bulkAssignTeacherUseCase: BulkAssignTeacherUseCase,
+    private readonly manageSchedulesUseCase: ManageSchedulesUseCase,
   ) {}
 
   @Post('asignar-docente')
   async assignTeacher(
-    @Body() body: { teacherId: string; subjectId: string; curriculumId?: string },
+    @Body() body: { 
+      teacherId: string; 
+      subjectId: string; 
+      curriculumId?: string;
+      academicTermId?: string;
+      modalityId?: string;
+      jornadaId?: string;
+    },
   ) {
     await this.assignTeacherUseCase.execute({
       teacherId: body.teacherId,
       subjectId: body.subjectId,
       curriculumId: body.curriculumId,
+      academicTermId: body.academicTermId,
+      modalityId: body.modalityId,
+      jornadaId: body.jornadaId,
     });
     return { message: 'Docente asignado a la materia exitosamente' };
   }
 
+  @Post('ofertar-semestre')
+  async bulkAssignTeachers(@Body() body: BulkAssignTeacherDto) {
+    await this.bulkAssignTeacherUseCase.execute({
+      curriculumId: body.curriculumId,
+      academicTermId: body.academicTermId,
+      subjects: body.subjects,
+    });
+    return { message: 'Oferta académica guardada exitosamente' };
+  }
+
   @Post('quitar-docente')
   async unassignTeacher(
-    @Body() body: { subjectId: string; curriculumId?: string },
+    @Body() body: { subjectId: string; curriculumId?: string; assignmentId?: string },
   ) {
     await this.unassignTeacherUseCase.execute(
       body.subjectId,
       body.curriculumId,
+      body.assignmentId,
     );
-    return { message: 'Docente retirado de la materia exitosamente' };
+    return { message: 'Docente removido de la materia' };
   }
 
   @Roles('coordinator', 'teacher', 'admin')
@@ -69,6 +101,34 @@ export class CoordinatorController {
   async listSubjects() {
     const { subjects } = await this.listSubjectsUseCase.execute();
     return { subjects };
+  }
+
+  @Get('ciclos')
+  async getTerms() {
+    return this.manageTermsUseCase.findAll();
+  }
+
+  @Get('modalidades')
+  async getModalities() {
+    return this.manageModalitiesUseCase.findAll();
+  }
+
+  @Get('jornadas')
+  async getJornadas() {
+    return this.manageJornadasUseCase.findAll();
+  }
+
+  @Get('horarios/:teacherSubjectId')
+  async getSchedules(@Param('teacherSubjectId') teacherSubjectId: string) {
+    return this.manageSchedulesUseCase.getSchedules(teacherSubjectId);
+  }
+
+  @Post('horarios')
+  async saveSchedules(
+    @Body() body: { teacherSubjectId: string; schedules: any[] }
+  ) {
+    await this.manageSchedulesUseCase.saveSchedules(body.teacherSubjectId, body.schedules);
+    return { success: true };
   }
 
   @Post('materias')

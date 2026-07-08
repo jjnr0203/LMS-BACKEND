@@ -20,6 +20,9 @@ export class TeacherSubjectPostgresRepository
       teacherId: relation.teacherId,
       subjectId: relation.subjectId,
       curriculumId: relation.curriculumId,
+      academicTermId: relation.academicTermId,
+      modalityId: relation.modalityId,
+      jornadaId: relation.jornadaId,
       assignedAt: relation.assignedAt,
     });
     const saved = await this.repository.save(ormEntity);
@@ -29,7 +32,27 @@ export class TeacherSubjectPostgresRepository
       saved.subjectId,
       saved.assignedAt,
       saved.curriculumId,
+      saved.academicTermId,
+      saved.modalityId,
+      saved.jornadaId,
     );
+  }
+
+  async saveMany(relations: TeacherSubjectEntity[]): Promise<void> {
+    if (relations.length === 0) return;
+    const ormEntities = relations.map((relation) =>
+      this.repository.create({
+        id: relation.id,
+        teacherId: relation.teacherId,
+        subjectId: relation.subjectId,
+        curriculumId: relation.curriculumId,
+        academicTermId: relation.academicTermId,
+        modalityId: relation.modalityId,
+        jornadaId: relation.jornadaId,
+        assignedAt: relation.assignedAt,
+      })
+    );
+    await this.repository.save(ormEntities);
   }
 
   async findByTeacherAndSubject(
@@ -46,6 +69,9 @@ export class TeacherSubjectPostgresRepository
       found.subjectId,
       found.assignedAt,
       found.curriculumId,
+      found.academicTermId,
+      found.modalityId,
+      found.jornadaId,
     );
   }
 
@@ -66,6 +92,9 @@ export class TeacherSubjectPostgresRepository
           f.subjectId,
           f.assignedAt,
           f.curriculumId,
+          f.academicTermId,
+          f.modalityId,
+          f.jornadaId,
         ),
     );
   }
@@ -89,6 +118,9 @@ export class TeacherSubjectPostgresRepository
           f.subjectId,
           f.assignedAt,
           f.curriculumId,
+          f.academicTermId,
+          f.modalityId,
+          f.jornadaId,
         ),
     );
   }
@@ -102,5 +134,35 @@ export class TeacherSubjectPostgresRepository
       where.curriculumId = curriculumId;
     }
     await this.repository.delete(where);
+  }
+
+  async deleteByContext(
+    subjectId: string,
+    academicTermId: string,
+    modalityId: string,
+    jornadaId: string,
+    curriculumId?: string,
+  ): Promise<void> {
+    const where: any = { subjectId, academicTermId, modalityId, jornadaId };
+    if (curriculumId !== undefined) {
+      where.curriculumId = curriculumId;
+    }
+    await this.repository.delete(where);
+  }
+
+  async deleteBySubjectAndTerm(
+    subjectId: string,
+    academicTermId: string,
+    curriculumId?: string,
+  ): Promise<void> {
+    const where: any = { subjectId, academicTermId };
+    if (curriculumId !== undefined) {
+      where.curriculumId = curriculumId;
+    }
+    await this.repository.delete(where);
+  }
+
+  async deleteById(id: string): Promise<void> {
+    await this.repository.delete({ id });
   }
 }

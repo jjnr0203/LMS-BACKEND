@@ -13,6 +13,7 @@ import { AssignmentRepositoryPort } from '@domain/ports/outbound/academic/assign
 import { SubmissionRepositoryPort } from '@domain/ports/outbound/academic/submission-repository.port';
 import { StudentSubjectRepositoryPort } from '@domain/ports/outbound/academic/student-subject-repository.port';
 import { TeacherSubjectRepositoryPort } from '@domain/ports/outbound/academic/teacher-subject-repository.port';
+import { ScheduleRepositoryPort } from '@domain/ports/outbound/academic/schedule-repository.port';
 import {
   AcademicTermRepositoryPort,
   ACADEMIC_TERM_REPOSITORY,
@@ -21,7 +22,10 @@ import {
   ModalityRepositoryPort,
   MODALITY_REPOSITORY,
 } from '@domain/ports/outbound/academic/modality-repository.port';
-export const JORNADA_REPOSITORY = Symbol('JORNADA_REPOSITORY');
+import {
+  JornadaRepositoryPort,
+  JORNADA_REPOSITORY,
+} from '@domain/ports/outbound/academic/jornada-repository.port';
 import {
   CareerRepositoryPort,
   CAREER_REPOSITORY,
@@ -57,6 +61,7 @@ import { AssignmentPostgresRepository } from '@infrastructure/adapters/database/
 import { SubmissionPostgresRepository } from '@infrastructure/adapters/database/academic/submission-postgres.repository';
 import { StudentSubjectPostgresRepository } from '@infrastructure/adapters/database/academic/student-subject-postgres.repository';
 import { TeacherSubjectPostgresRepository } from '@infrastructure/adapters/database/academic/teacher-subject-postgres.repository';
+import { SchedulePostgresRepository } from '@infrastructure/adapters/database/academic/schedule-postgres.repository';
 import { AcademicTermPostgresRepository } from '@infrastructure/adapters/database/academic/academic-term-postgres.repository';
 import { ModalityPostgresRepository } from '@infrastructure/adapters/database/academic/modality-postgres.repository';
 import { JornadaPostgresRepository } from '@infrastructure/adapters/database/academic/jornada-postgres.repository';
@@ -143,6 +148,10 @@ import { RolesGuard } from '@infrastructure/auth/guards/roles.guard';
       useClass: TeacherSubjectPostgresRepository,
     },
     {
+      provide: ScheduleRepositoryPort,
+      useClass: SchedulePostgresRepository,
+    },
+    {
       provide: ACADEMIC_TERM_REPOSITORY,
       useClass: AcademicTermPostgresRepository,
     },
@@ -206,6 +215,7 @@ import { RolesGuard } from '@infrastructure/auth/guards/roles.guard';
     SubmissionRepositoryPort,
     StudentSubjectRepositoryPort,
     TeacherSubjectRepositoryPort,
+    ScheduleRepositoryPort,
     ACADEMIC_TERM_REPOSITORY,
     MODALITY_REPOSITORY,
     JORNADA_REPOSITORY,

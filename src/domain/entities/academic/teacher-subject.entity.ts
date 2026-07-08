@@ -5,5 +5,8 @@ export class TeacherSubjectEntity {
     public readonly subjectId: string,
     public readonly assignedAt: Date,
     public readonly curriculumId?: string,
+    public readonly academicTermId?: string,
+    public readonly modalityId?: string,
+    public readonly jornadaId?: string,
   ) {}
 }

@@ -17,4 +17,18 @@ export abstract class TeacherSubjectRepositoryPort {
     subjectId: string,
     curriculumId?: string,
   ): Promise<void>;
+  abstract deleteByContext(
+    subjectId: string,
+    academicTermId: string,
+    modalityId: string,
+    jornadaId: string,
+    curriculumId?: string,
+  ): Promise<void>;
+  abstract deleteBySubjectAndTerm(
+    subjectId: string,
+    academicTermId: string,
+    curriculumId?: string,
+  ): Promise<void>;
+  abstract deleteById(id: string): Promise<void>;
+  abstract saveMany(relations: TeacherSubjectEntity[]): Promise<void>;
 }

@@ -33,6 +33,30 @@ export class TeacherSubjectOrmEntity {
   @Column({ type: 'uuid', name: 'curriculum_id', nullable: true })
   curriculumId?: string;
 
+  @Index()
+  @Column({ type: 'uuid', name: 'academic_term_id', nullable: true })
+  academicTermId?: string;
+
+  @ManyToOne('AcademicTermOrmEntity', { nullable: true })
+  @JoinColumn({ name: 'academic_term_id' })
+  academicTerm?: any;
+
+  @Index()
+  @Column({ type: 'uuid', name: 'modality_id', nullable: true })
+  modalityId?: string;
+
+  @ManyToOne('ModalityOrmEntity', { nullable: true })
+  @JoinColumn({ name: 'modality_id' })
+  modality?: any;
+
+  @Index()
+  @Column({ type: 'uuid', name: 'jornada_id', nullable: true })
+  jornadaId?: string;
+
+  @ManyToOne('JornadaOrmEntity', { nullable: true })
+  @JoinColumn({ name: 'jornada_id' })
+  jornada?: any;
+
   @Column({
     type: 'timestamp',
     name: 'assigned_at',

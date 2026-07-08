@@ -11,6 +11,7 @@ import { AssignmentOrmEntity } from '@infrastructure/database/entities/academic/
 import { SubmissionOrmEntity } from '@infrastructure/database/entities/academic/submission.orm-entity';
 import { StudentSubjectOrmEntity } from '@infrastructure/database/entities/academic/student-subject.orm-entity';
 import { TeacherSubjectOrmEntity } from '@infrastructure/database/entities/academic/teacher-subject.orm-entity';
+import { ScheduleOrmEntity } from '@infrastructure/database/entities/academic/schedule.orm-entity';
 import { AcademicTermOrmEntity } from '@infrastructure/database/entities/academic/academic-term.orm-entity';
 import { ModalityOrmEntity } from '@infrastructure/database/entities/academic/modality.orm-entity';
 import { CareerOrmEntity } from '@infrastructure/database/entities/academic/career.orm-entity';
@@ -49,6 +50,7 @@ import { JornadaOrmEntity } from '@infrastructure/database/entities/academic/jor
           SubmissionOrmEntity,
           StudentSubjectOrmEntity,
           TeacherSubjectOrmEntity,
+          ScheduleOrmEntity,
           AcademicTermOrmEntity,
           ModalityOrmEntity,
           CareerOrmEntity,
@@ -79,6 +81,7 @@ import { JornadaOrmEntity } from '@infrastructure/database/entities/academic/jor
       SubmissionOrmEntity,
       StudentSubjectOrmEntity,
       TeacherSubjectOrmEntity,
+      ScheduleOrmEntity,
       AcademicTermOrmEntity,
       ModalityOrmEntity,
       CareerOrmEntity,

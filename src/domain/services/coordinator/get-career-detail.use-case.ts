@@ -1,10 +1,23 @@
 import { CareerRepositoryPort } from '../../ports/outbound/academic/career-repository.port';
 import { ModalityRepositoryPort } from '../../ports/outbound/academic/modality-repository.port';
+import { JornadaRepositoryPort } from '../../ports/outbound/academic/jornada-repository.port';
 import { CurriculumRepositoryPort } from '../../ports/outbound/academic/curriculum-repository.port';
 import { SubjectRepositoryPort } from '../../ports/outbound/academic/subject-repository.port';
 import { CareerSubjectRepositoryPort } from '../../ports/outbound/academic/career-subject-repository.port';
 import { TeacherSubjectRepositoryPort } from '../../ports/outbound/academic/teacher-subject-repository.port';
 import { UserRepositoryPort } from '../../ports/outbound/users/user-repository.port';
+import { TeacherSubjectEntity } from '../../entities/academic/teacher-subject.entity';
+
+export interface SubjectAssignment {
+  id: string;
+  teacherId: string;
+  teacherName: string;
+  academicTermId: string;
+  modalityId: string;
+  modalityName: string;
+  jornadaId: string;
+  jornadaName: string;
+}
 
 export interface SubjectEntry {
   id: string;
@@ -12,9 +25,7 @@ export interface SubjectEntry {
   name: string;
   credits: number;
   semester: number;
-
-  teacherId: string | null;
-  teacherName: string | null;
+  assignments: SubjectAssignment[];
 }
 
 export interface SemesterGroup {
@@ -39,6 +50,7 @@ export class GetCareerDetailUseCase {
     private readonly careerSubjectRepository: CareerSubjectRepositoryPort,
     private readonly teacherSubjectRepository: TeacherSubjectRepositoryPort,
     private readonly userRepository: UserRepositoryPort,
+    private readonly jornadaRepository: JornadaRepositoryPort,
   ) {}
 
   async execute(careerId: string) {
@@ -48,53 +60,49 @@ export class GetCareerDetailUseCase {
     const allModalities = await this.modalityRepository.findAll();
     const modalityMap = new Map(allModalities.map((m) => [m.id, m.name]));
 
+    const allJornadas = await this.jornadaRepository.findAll();
+    const jornadaMap = new Map(allJornadas.map((j) => [j.id, j.name]));
+
     const careerModalityNames = (career.modalityIds || [])
       .map((id) => modalityMap.get(id))
       .filter((n): n is string => n !== undefined);
 
     const curriculums = await this.curriculumRepository.findByCareer(careerId);
-    const careerSubjects =
-      await this.careerSubjectRepository.findByCareer(careerId);
-    const subjectIds = [
-      ...new Set(careerSubjects.map((cs) => cs.subjectId)),
-    ];
-    const subjects =
-      subjectIds.length > 0
-        ? await this.subjectRepository.findByIds(subjectIds)
-        : [];
+    const careerSubjects = await this.careerSubjectRepository.findByCareer(careerId);
+    const subjectIds = [...new Set(careerSubjects.map((cs) => cs.subjectId))];
+    
+    const subjects = subjectIds.length > 0
+      ? await this.subjectRepository.findByIds(subjectIds)
+      : [];
     const subjectMap = new Map(subjects.map((s) => [s.id, s]));
 
-    const allTeacherSubjects =
-      subjectIds.length > 0
-        ? await Promise.all(
-            subjectIds.map((sid) =>
-              this.teacherSubjectRepository.findBySubjectId(sid),
-            ),
-          ).then((results) => results.flat())
-        : [];
+    const allTeacherSubjects = subjectIds.length > 0
+      ? await Promise.all(
+          subjectIds.map((sid) => this.teacherSubjectRepository.findBySubjectId(sid)),
+        ).then((results) => results.flat())
+      : [];
 
-    const teacherByCurriculum = new Map<string, Map<string, string>>();
+    const teacherIds = [...new Set(allTeacherSubjects.map((ts) => ts.teacherId))];
+    const teachers = teacherIds.length > 0
+      ? await this.userRepository.findByIds(teacherIds)
+      : [];
+    const teacherNameMap = new Map(
+      teachers.map((u) => [u.id, `${u.firstName} ${u.lastName}`]),
+    );
+
+    // Group assignments by curriculumId -> subjectId -> array of TeacherSubjectEntity
+    const assignmentsByCurriculum = new Map<string, Map<string, TeacherSubjectEntity[]>>();
     for (const ts of allTeacherSubjects) {
       const key = ts.curriculumId || '__shared__';
-      if (!teacherByCurriculum.has(key)) {
-        teacherByCurriculum.set(key, new Map());
+      if (!assignmentsByCurriculum.has(key)) {
+        assignmentsByCurriculum.set(key, new Map());
       }
-      teacherByCurriculum.get(key)!.set(ts.subjectId, ts.teacherId);
+      const subjectMap = assignmentsByCurriculum.get(key)!;
+      if (!subjectMap.has(ts.subjectId)) {
+        subjectMap.set(ts.subjectId, []);
+      }
+      subjectMap.get(ts.subjectId)!.push(ts);
     }
-
-    const teacherIds = [
-      ...new Set(allTeacherSubjects.map((ts) => ts.teacherId)),
-    ];
-    const teachers =
-      teacherIds.length > 0
-        ? await this.userRepository.findByIds(teacherIds)
-        : [];
-    const teacherNameMap = new Map(
-      teachers.map((u) => [
-        u.id,
-        `${u.firstName} ${u.lastName}`,
-      ]),
-    );
 
     const curriculumList = await Promise.all(
       curriculums.map(async (cur) => {
@@ -102,10 +110,8 @@ export class GetCareerDetailUseCase {
           (cs) => cs.curriculumId === cur.id || !cs.curriculumId,
         );
 
-        const curAssignments =
-          teacherByCurriculum.get(cur.id) ||
-          teacherByCurriculum.get('__shared__') ||
-          new Map<string, string>();
+        const curAssignmentsMap = assignmentsByCurriculum.get(cur.id) || new Map<string, TeacherSubjectEntity[]>();
+        const sharedAssignmentsMap = assignmentsByCurriculum.get('__shared__') || new Map<string, TeacherSubjectEntity[]>();
 
         const semesterMap = new Map<number, SubjectEntry[]>();
 
@@ -118,11 +124,21 @@ export class GetCareerDetailUseCase {
             semesterMap.set(semester, []);
           }
 
-          const assignedTeacherId =
-            curAssignments.get(sub.id) || null;
-          const teacherName = assignedTeacherId
-            ? teacherNameMap.get(assignedTeacherId) || null
-            : null;
+          const rawAssignments = [
+            ...(curAssignmentsMap.get(sub.id) || []),
+            ...(sharedAssignmentsMap.get(sub.id) || []),
+          ];
+
+          const assignments: SubjectAssignment[] = rawAssignments.map(ts => ({
+            id: ts.id,
+            teacherId: ts.teacherId,
+            teacherName: teacherNameMap.get(ts.teacherId) || 'Desconocido',
+            academicTermId: ts.academicTermId || '',
+            modalityId: ts.modalityId || '',
+            modalityName: ts.modalityId ? modalityMap.get(ts.modalityId) || 'Sin Modalidad' : 'Sin Modalidad',
+            jornadaId: ts.jornadaId || '',
+            jornadaName: ts.jornadaId ? jornadaMap.get(ts.jornadaId) || 'Sin Jornada' : 'Sin Jornada',
+          }));
 
           semesterMap.get(semester)!.push({
             id: sub.id,
@@ -130,9 +146,7 @@ export class GetCareerDetailUseCase {
             name: sub.name,
             credits: sub.credits,
             semester,
-
-            teacherId: assignedTeacherId,
-            teacherName,
+            assignments,
           });
         }
 
@@ -161,6 +175,8 @@ export class GetCareerDetailUseCase {
         durationSemesters: career.durationSemesters,
         isActive: career.isActive,
         modalityNames: careerModalityNames,
+        modalityIds: career.modalityIds || [],
+        jornadaIds: career.jornadaIds || [],
       },
       curriculums: curriculumList,
     };

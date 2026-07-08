@@ -44,6 +44,9 @@ export class AssignTeacherUseCase implements AssignTeacherUseCasePort {
       command.subjectId,
       new Date(),
       command.curriculumId,
+      command.academicTermId,
+      command.modalityId,
+      command.jornadaId,
     );
 
     await this.teacherSubjectRepository.save(relation);

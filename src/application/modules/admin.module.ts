@@ -22,8 +22,10 @@ import {
   ModalityRepositoryPort,
   MODALITY_REPOSITORY,
 } from '@domain/ports/outbound/academic/modality-repository.port';
-import { JornadaRepositoryPort } from '@domain/ports/outbound/academic/jornada-repository.port';
-import { JORNADA_REPOSITORY } from './repository-providers.module';
+import {
+  JornadaRepositoryPort,
+  JORNADA_REPOSITORY,
+} from '@domain/ports/outbound/academic/jornada-repository.port';
 import { ManageJornadasUseCase } from '@domain/services/admin/academic/manage-jornadas.use-case';
 import {
   CareerRepositoryPort,
@@ -172,6 +174,7 @@ import { TeacherSubjectRepositoryPort } from '@domain/ports/outbound/academic/te
         modalityRepo: ModalityRepositoryPort,
         userRepo: UserRepositoryPort,
         teacherSubjRepo: TeacherSubjectRepositoryPort,
+        jornadaRepo: JornadaRepositoryPort,
       ) =>
         new GetCareerBreakdownUseCase(
           careerRepo,
@@ -181,6 +184,7 @@ import { TeacherSubjectRepositoryPort } from '@domain/ports/outbound/academic/te
           modalityRepo,
           userRepo,
           teacherSubjRepo,
+          jornadaRepo,
         ),
       inject: [
         CAREER_REPOSITORY,
@@ -190,6 +194,7 @@ import { TeacherSubjectRepositoryPort } from '@domain/ports/outbound/academic/te
         MODALITY_REPOSITORY,
         UserRepositoryPort,
         TeacherSubjectRepositoryPort,
+        JORNADA_REPOSITORY,
       ],
     },
   ],
