@@ -25,9 +25,7 @@ export class BulkCreateSubjectsUseCase {
       if (subject) {
         subject.name = item.name;
         subject.credits = item.credits;
-        if (item.modalityIds) {
-          subject.modalityIds = item.modalityIds;
-        }
+
         await this.subjectRepository.save(subject);
       } else {
         subject = new SubjectEntity(
@@ -35,7 +33,7 @@ export class BulkCreateSubjectsUseCase {
           item.name,
           item.code,
           item.credits,
-          item.modalityIds || [],
+          item.hours || 0,
         );
         await this.subjectRepository.save(subject);
       }

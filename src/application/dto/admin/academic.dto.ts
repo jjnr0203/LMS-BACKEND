@@ -40,6 +40,20 @@ export class CreateModalityDto {
   description?: string;
 }
 
+export class CreateJornadaDto {
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @IsBoolean()
+  @IsOptional()
+  isActive?: boolean;
+
+  @IsString()
+  @IsOptional()
+  description?: string;
+}
+
 export class CreateCareerDto {
   @IsString()
   @IsNotEmpty()
@@ -53,6 +67,11 @@ export class CreateCareerDto {
   @IsArray()
   @IsString({ each: true })
   modalityIds?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  jornadaIds?: string[];
 
   @IsOptional()
   @IsString()
@@ -94,9 +113,9 @@ export class CreateSubjectDto {
   teacherId?: string;
 
   @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  modalityIds?: string[];
+  @Type(() => Number)
+  @IsNumber()
+  hours?: number;
 
   @IsOptional()
   @IsString()
@@ -133,10 +152,10 @@ export class BulkSubjectItemDto {
   @IsNumber()
   semester: number;
 
-  @IsArray()
-  @IsString({ each: true })
   @IsOptional()
-  modalityIds?: string[];
+  @Type(() => Number)
+  @IsNumber()
+  hours?: number;
 
   @IsOptional()
   @IsString()

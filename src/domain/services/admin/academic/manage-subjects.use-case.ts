@@ -8,11 +8,12 @@ export interface CreateSubjectDto {
   code: string;
   name: string;
   credits: number;
+  hours?: number;
   teacherId?: string;
   description?: string;
   careerId?: string;
   semester?: number;
-  modalityIds?: string[];
+
   curriculumId?: string;
 }
 
@@ -20,11 +21,12 @@ export interface UpdateSubjectDto {
   code?: string;
   name?: string;
   credits?: number;
+  hours?: number;
   teacherId?: string;
   description?: string;
   careerId?: string;
   semester?: number;
-  modalityIds?: string[];
+
   curriculumId?: string;
 }
 
@@ -40,7 +42,8 @@ export class ManageSubjectsUseCase {
       data.name,
       data.code,
       data.credits,
-      data.modalityIds || [],
+      data.hours || 0,
+
       data.teacherId,
       data.description,
     );
@@ -70,7 +73,8 @@ export class ManageSubjectsUseCase {
     if (data.name !== undefined) subject.name = data.name;
     if (data.code !== undefined) subject.code = data.code;
     if (data.credits !== undefined) subject.credits = data.credits;
-    if (data.modalityIds !== undefined) subject.modalityIds = data.modalityIds;
+    if (data.hours !== undefined) subject.hours = data.hours;
+
     if (data.teacherId !== undefined) subject.teacherId = data.teacherId;
     if (data.description !== undefined) subject.description = data.description;
 

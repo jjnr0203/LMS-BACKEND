@@ -17,7 +17,6 @@ export class SubjectPostgresRepository implements SubjectRepositoryPort {
   async findById(id: string): Promise<SubjectEntity | null> {
     const orm = await this.repository.findOne({
       where: { id },
-      relations: ['modalities'],
     });
     return orm ? this.toDomain(orm) : null;
   }
@@ -26,7 +25,6 @@ export class SubjectPostgresRepository implements SubjectRepositoryPort {
     if (ids.length === 0) return [];
     const orms = await this.repository.find({
       where: { id: In(ids) },
-      relations: ['modalities'],
     });
     return orms.map((o) => this.toDomain(o));
   }
@@ -34,7 +32,7 @@ export class SubjectPostgresRepository implements SubjectRepositoryPort {
   async findByCode(code: string): Promise<SubjectEntity | null> {
     const orm = await this.repository.findOne({
       where: { code },
-      relations: ['modalities'],
+
     });
     return orm ? this.toDomain(orm) : null;
   }
@@ -43,7 +41,7 @@ export class SubjectPostgresRepository implements SubjectRepositoryPort {
     if (codes.length === 0) return [];
     const orms = await this.repository.find({
       where: { code: In(codes) },
-      relations: ['modalities'],
+
     });
     return orms.map((o) => this.toDomain(o));
   }
@@ -55,7 +53,7 @@ export class SubjectPostgresRepository implements SubjectRepositoryPort {
   }
 
   async findAll(): Promise<SubjectEntity[]> {
-    const orms = await this.repository.find({ relations: ['modalities'] });
+    const orms = await this.repository.find();
     return orms.map((o) => this.toDomain(o));
   }
 
@@ -66,7 +64,7 @@ export class SubjectPostgresRepository implements SubjectRepositoryPort {
   async findByTeacherId(teacherId: string): Promise<SubjectEntity[]> {
     const orms = await this.repository.find({
       where: { teacherId },
-      relations: ['modalities'],
+
     });
     return orms.map((o) => this.toDomain(o));
   }
@@ -92,7 +90,8 @@ export class SubjectPostgresRepository implements SubjectRepositoryPort {
       orm.name,
       orm.code,
       orm.credits,
-      orm.modalities ? orm.modalities.map((m) => m.id) : [],
+      orm.hours || 0,
+
       orm.teacherId,
       orm.description,
     );
@@ -104,15 +103,8 @@ export class SubjectPostgresRepository implements SubjectRepositoryPort {
     orm.name = entity.name;
     orm.code = entity.code;
     orm.credits = entity.credits;
-    if (entity.modalityIds && entity.modalityIds.length > 0) {
-      orm.modalities = entity.modalityIds.map((id) => {
-        const m = new ModalityOrmEntity();
-        m.id = id;
-        return m;
-      });
-    } else {
-      orm.modalities = [];
-    }
+    orm.hours = entity.hours || 0;
+
     if (entity.teacherId) orm.teacherId = entity.teacherId;
     orm.description = entity.description;
     return orm;

@@ -4,7 +4,7 @@ export class SubjectEntity {
     public name: string,
     public code: string,
     public credits: number,
-    public modalityIds: string[] = [],
+    public hours: number = 0,
     public teacherId?: string,
     public description?: string,
   ) {}

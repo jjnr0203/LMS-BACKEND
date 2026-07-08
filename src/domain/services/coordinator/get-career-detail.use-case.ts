@@ -12,8 +12,7 @@ export interface SubjectEntry {
   name: string;
   credits: number;
   semester: number;
-  modalityIds: string[];
-  modalityNames: string[];
+
   teacherId: string | null;
   teacherName: string | null;
 }
@@ -131,10 +130,7 @@ export class GetCareerDetailUseCase {
             name: sub.name,
             credits: sub.credits,
             semester,
-            modalityIds: sub.modalityIds || [],
-            modalityNames: (sub.modalityIds || [])
-              .map((id) => modalityMap.get(id))
-              .filter((n): n is string => n !== undefined),
+
             teacherId: assignedTeacherId,
             teacherName,
           });

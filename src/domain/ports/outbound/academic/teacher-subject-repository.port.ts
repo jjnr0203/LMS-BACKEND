@@ -10,6 +10,9 @@ export abstract class TeacherSubjectRepositoryPort {
     subjectId: string,
     curriculumId?: string,
   ): Promise<TeacherSubjectEntity[]>;
+  abstract findBySubjectIds(
+    subjectIds: string[],
+  ): Promise<TeacherSubjectEntity[]>;
   abstract deleteBySubjectId(
     subjectId: string,
     curriculumId?: string,

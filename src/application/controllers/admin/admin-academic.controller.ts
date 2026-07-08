@@ -16,6 +16,7 @@ import { Roles } from '@infrastructure/auth/decorators/roles.decorator';
 
 import { ManageAcademicTermsUseCase } from '@domain/services/admin/academic/manage-academic-terms.use-case';
 import { ManageModalitiesUseCase } from '@domain/services/admin/academic/manage-modalities.use-case';
+import { ManageJornadasUseCase } from '@domain/services/admin/academic/manage-jornadas.use-case';
 import { ManageCareersUseCase } from '@domain/services/admin/academic/manage-careers.use-case';
 import { ManageSubjectsUseCase } from '@domain/services/admin/academic/manage-subjects.use-case';
 import { BulkCreateSubjectsUseCase } from '@domain/services/admin/academic/bulk-create-subjects.use-case';
@@ -27,6 +28,7 @@ import { ManageFacultiesUseCase } from '@domain/services/admin/academic/manage-f
 import {
   CreateAcademicTermDto,
   CreateModalityDto,
+  CreateJornadaDto,
   CreateCareerDto,
   AssignSubjectsDto,
   CreateSubjectDto,
@@ -42,6 +44,7 @@ export class AdminAcademicController {
   constructor(
     private readonly manageTermsUC: ManageAcademicTermsUseCase,
     private readonly manageModalitiesUC: ManageModalitiesUseCase,
+    private readonly manageJornadasUC: ManageJornadasUseCase,
     private readonly manageCareersUC: ManageCareersUseCase,
     private readonly manageSubjectsUC: ManageSubjectsUseCase,
     private readonly bulkCreateSubjectsUC: BulkCreateSubjectsUseCase,
@@ -115,6 +118,34 @@ export class AdminAcademicController {
   @Delete('modalities/:id')
   async deleteModality(@Param('id') id: string) {
     await this.manageModalitiesUC.delete(id);
+    return { success: true };
+  }
+
+  // --- JORNADAS ---
+  @Get('jornadas')
+  async getJornadas() {
+    return this.manageJornadasUC.findAll();
+  }
+
+  @Post('jornadas')
+  async createJornada(@Body() dto: CreateJornadaDto) {
+    return this.manageJornadasUC.create(dto);
+  }
+
+  @Put('jornadas/:id')
+  async updateJornada(
+    @Param('id') id: string,
+    @Body() dto: Partial<CreateJornadaDto>,
+  ) {
+    const res = await this.manageJornadasUC.update(id, dto);
+    if (!res)
+      throw new HttpException('Jornada not found', HttpStatus.NOT_FOUND);
+    return res;
+  }
+
+  @Delete('jornadas/:id')
+  async deleteJornada(@Param('id') id: string) {
+    await this.manageJornadasUC.delete(id);
     return { success: true };
   }
 

@@ -21,6 +21,7 @@ import {
   ModalityRepositoryPort,
   MODALITY_REPOSITORY,
 } from '@domain/ports/outbound/academic/modality-repository.port';
+export const JORNADA_REPOSITORY = Symbol('JORNADA_REPOSITORY');
 import {
   CareerRepositoryPort,
   CAREER_REPOSITORY,
@@ -58,6 +59,7 @@ import { StudentSubjectPostgresRepository } from '@infrastructure/adapters/datab
 import { TeacherSubjectPostgresRepository } from '@infrastructure/adapters/database/academic/teacher-subject-postgres.repository';
 import { AcademicTermPostgresRepository } from '@infrastructure/adapters/database/academic/academic-term-postgres.repository';
 import { ModalityPostgresRepository } from '@infrastructure/adapters/database/academic/modality-postgres.repository';
+import { JornadaPostgresRepository } from '@infrastructure/adapters/database/academic/jornada-postgres.repository';
 import { CareerPostgresRepository } from '@infrastructure/adapters/database/academic/career-postgres.repository';
 import { CareerSubjectPostgresRepository } from '@infrastructure/adapters/database/academic/career-subject-postgres.repository';
 import { SemesterColorPostgresRepository } from '@infrastructure/adapters/database/academic/semester-color-postgres.repository';
@@ -149,6 +151,10 @@ import { RolesGuard } from '@infrastructure/auth/guards/roles.guard';
       useClass: ModalityPostgresRepository,
     },
     {
+      provide: JORNADA_REPOSITORY,
+      useClass: JornadaPostgresRepository,
+    },
+    {
       provide: CAREER_REPOSITORY,
       useClass: CareerPostgresRepository,
     },
@@ -202,6 +208,7 @@ import { RolesGuard } from '@infrastructure/auth/guards/roles.guard';
     TeacherSubjectRepositoryPort,
     ACADEMIC_TERM_REPOSITORY,
     MODALITY_REPOSITORY,
+    JORNADA_REPOSITORY,
     CAREER_REPOSITORY,
     CAREER_SUBJECT_REPOSITORY,
     'SEMESTER_COLOR_REPOSITORY',

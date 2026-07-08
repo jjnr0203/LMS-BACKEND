@@ -22,6 +22,9 @@ import {
   ModalityRepositoryPort,
   MODALITY_REPOSITORY,
 } from '@domain/ports/outbound/academic/modality-repository.port';
+import { JornadaRepositoryPort } from '@domain/ports/outbound/academic/jornada-repository.port';
+import { JORNADA_REPOSITORY } from './repository-providers.module';
+import { ManageJornadasUseCase } from '@domain/services/admin/academic/manage-jornadas.use-case';
 import {
   CareerRepositoryPort,
   CAREER_REPOSITORY,
@@ -41,6 +44,7 @@ import {
   FACULTY_REPOSITORY,
 } from '@domain/ports/outbound/academic/faculty-repository.port';
 import { SubjectRepositoryPort } from '@domain/ports/outbound/academic/subject-repository.port';
+import { TeacherSubjectRepositoryPort } from '@domain/ports/outbound/academic/teacher-subject-repository.port';
 
 @Module({
   imports: [RepositoryProvidersModule],
@@ -93,6 +97,12 @@ import { SubjectRepositoryPort } from '@domain/ports/outbound/academic/subject-r
       useFactory: (repo: ModalityRepositoryPort) =>
         new ManageModalitiesUseCase(repo),
       inject: [MODALITY_REPOSITORY],
+    },
+    {
+      provide: ManageJornadasUseCase,
+      useFactory: (repo: JornadaRepositoryPort) =>
+        new ManageJornadasUseCase(repo),
+      inject: [JORNADA_REPOSITORY],
     },
     {
       provide: ManageCareersUseCase,
@@ -161,6 +171,7 @@ import { SubjectRepositoryPort } from '@domain/ports/outbound/academic/subject-r
         subjectRepo: SubjectRepositoryPort,
         modalityRepo: ModalityRepositoryPort,
         userRepo: UserRepositoryPort,
+        teacherSubjRepo: TeacherSubjectRepositoryPort,
       ) =>
         new GetCareerBreakdownUseCase(
           careerRepo,
@@ -169,6 +180,7 @@ import { SubjectRepositoryPort } from '@domain/ports/outbound/academic/subject-r
           subjectRepo,
           modalityRepo,
           userRepo,
+          teacherSubjRepo,
         ),
       inject: [
         CAREER_REPOSITORY,
@@ -177,6 +189,7 @@ import { SubjectRepositoryPort } from '@domain/ports/outbound/academic/subject-r
         SubjectRepositoryPort,
         MODALITY_REPOSITORY,
         UserRepositoryPort,
+        TeacherSubjectRepositoryPort,
       ],
     },
   ],

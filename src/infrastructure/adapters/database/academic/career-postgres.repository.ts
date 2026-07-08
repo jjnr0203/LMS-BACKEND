@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { CareerRepositoryPort } from '@domain/ports/outbound/academic/career-repository.port';
 import { CareerOrmEntity } from '../../../database/entities/academic/career.orm-entity';
 import { ModalityOrmEntity } from '../../../database/entities/academic/modality.orm-entity';
+import { JornadaOrmEntity } from '../../../database/entities/academic/jornada.orm-entity';
 import { Career } from '@domain/entities/academic/career.entity';
 
 @Injectable()
@@ -20,6 +21,7 @@ export class CareerPostgresRepository implements CareerRepositoryPort {
       ormEntity.code,
       ormEntity.durationSemesters,
       ormEntity.modalities ? ormEntity.modalities.map((m) => m.id) : [],
+      ormEntity.jornadas ? ormEntity.jornadas.map((j) => j.id) : [],
       ormEntity.coordinatorId,
       ormEntity.isActive,
       ormEntity.facultyId,
@@ -41,6 +43,15 @@ export class CareerPostgresRepository implements CareerRepositoryPort {
     } else {
       ormEntity.modalities = [];
     }
+    if (domainEntity.jornadaIds && domainEntity.jornadaIds.length > 0) {
+      ormEntity.jornadas = domainEntity.jornadaIds.map((id) => {
+        const j = new JornadaOrmEntity();
+        j.id = id;
+        return j;
+      });
+    } else {
+      ormEntity.jornadas = [];
+    }
     if (domainEntity.coordinatorId)
       ormEntity.coordinatorId = domainEntity.coordinatorId;
     if (domainEntity.facultyId)
@@ -57,7 +68,7 @@ export class CareerPostgresRepository implements CareerRepositoryPort {
   async findById(id: string): Promise<Career | null> {
     const found = await this.repository.findOne({
       where: { id },
-      relations: ['modalities', 'coordinator'],
+      relations: ['modalities', 'coordinator', 'jornadas'],
     });
     return found ? this.mapToDomain(found) : null;
   }
@@ -65,7 +76,7 @@ export class CareerPostgresRepository implements CareerRepositoryPort {
   async findAll(): Promise<Career[]> {
     const all = await this.repository.find({
       order: { name: 'ASC' },
-      relations: ['modalities', 'coordinator'],
+      relations: ['modalities', 'coordinator', 'jornadas'],
     });
     return all.map((o) => this.mapToDomain(o));
   }
@@ -74,7 +85,7 @@ export class CareerPostgresRepository implements CareerRepositoryPort {
     const all = await this.repository.find({
       where: { coordinatorId },
       order: { name: 'ASC' },
-      relations: ['modalities', 'coordinator'],
+      relations: ['modalities', 'coordinator', 'jornadas'],
     });
     return all.map((o) => this.mapToDomain(o));
   }

@@ -72,7 +72,8 @@ export class ManageCurriculumsUseCase {
     return relations.map((rel) => {
       const sub = subjectMap.get(rel.subjectId);
       return {
-        id: rel.id,
+        id: sub?.id,
+        relationId: rel.id,
         careerId: rel.careerId,
         curriculumId: rel.curriculumId,
         subjectId: rel.subjectId,
@@ -80,7 +81,7 @@ export class ManageCurriculumsUseCase {
         code: sub?.code || '',
         name: sub?.name || '',
         credits: sub?.credits || 0,
-        modalityIds: sub?.modalityIds || [],
+        hours: sub?.hours || 0,
       };
     });
   }

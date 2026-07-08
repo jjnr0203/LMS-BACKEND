@@ -7,9 +7,10 @@ import {
   ManyToMany,
   JoinTable,
   Index,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { UserOrmEntity } from '../users/user.orm-entity';
-import { ModalityOrmEntity } from './modality.orm-entity';
 
 @Entity('subjects')
 export class SubjectOrmEntity {
@@ -25,9 +26,12 @@ export class SubjectOrmEntity {
   @Column({ type: 'int' })
   credits: number;
 
+  @Column({ type: 'int', default: 0 })
+  hours: number;
+
   @Index()
-  @Column({ type: 'varchar', length: 20, name: 'teacher_id', nullable: true })
-  teacherId: string;
+  @Column({ name: 'teacher_id', type: 'uuid', nullable: true })
+  teacherId?: string;
 
   @ManyToOne(() => UserOrmEntity)
   @JoinColumn({ name: 'teacher_id' })
@@ -36,11 +40,11 @@ export class SubjectOrmEntity {
   @Column({ type: 'text', nullable: true })
   description?: string;
 
-  @ManyToMany(() => ModalityOrmEntity)
-  @JoinTable({
-    name: 'subject_modalities',
-    joinColumn: { name: 'subject_id', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'modality_id', referencedColumnName: 'id' },
-  })
-  modalities: ModalityOrmEntity[];
+
+
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: Date;
 }

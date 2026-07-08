@@ -7,9 +7,13 @@ import {
   ManyToMany,
   JoinTable,
   Index,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { UserOrmEntity } from '../users/user.orm-entity';
 import { ModalityOrmEntity } from './modality.orm-entity';
+import { JornadaOrmEntity } from './jornada.orm-entity';
+import { FacultyOrmEntity } from './faculty.orm-entity';
 
 @Entity('careers')
 export class CareerOrmEntity {
@@ -33,6 +37,14 @@ export class CareerOrmEntity {
   })
   modalities: ModalityOrmEntity[];
 
+  @ManyToMany(() => JornadaOrmEntity)
+  @JoinTable({
+    name: 'career_jornadas',
+    joinColumn: { name: 'career_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'jornada_id', referencedColumnName: 'id' },
+  })
+  jornadas: JornadaOrmEntity[];
+
   @Index()
   @Column({
     type: 'varchar',
@@ -42,8 +54,14 @@ export class CareerOrmEntity {
   })
   coordinatorId?: string;
 
-  @Column({ type: 'uuid', name: 'faculty_id', nullable: true })
+  @Column({ name: 'faculty_id', type: 'uuid', nullable: true })
   facultyId?: string;
+
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: Date;
 
   @ManyToOne(() => UserOrmEntity)
   @JoinColumn({ name: 'coordinator_id' })

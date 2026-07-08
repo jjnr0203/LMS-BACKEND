@@ -9,6 +9,7 @@ export interface CreateCareerDto {
   code: string;
   name: string;
   modalityIds?: string[];
+  jornadaIds?: string[];
   coordinatorId?: string;
   durationSemesters: number;
   isActive: boolean;
@@ -33,6 +34,7 @@ export class ManageCareersUseCase {
       data.code,
       data.durationSemesters,
       data.modalityIds || [],
+      data.jornadaIds || [],
       data.coordinatorId,
       data.isActive,
       data.facultyId,
@@ -52,6 +54,7 @@ export class ManageCareersUseCase {
     if (data.durationSemesters !== undefined)
       career.durationSemesters = data.durationSemesters;
     if (data.modalityIds !== undefined) career.modalityIds = data.modalityIds;
+    if (data.jornadaIds !== undefined) career.jornadaIds = data.jornadaIds;
     if (data.coordinatorId !== undefined)
       career.coordinatorId = data.coordinatorId;
     if (data.facultyId !== undefined)

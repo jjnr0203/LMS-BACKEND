@@ -20,6 +20,7 @@ import { CurriculumOrmEntity } from '@infrastructure/database/entities/academic/
 import { FacultyOrmEntity } from '@infrastructure/database/entities/academic/faculty.orm-entity';
 import { PermissionOrmEntity } from '@infrastructure/database/entities/academic/permission.orm-entity';
 import { RolePermissionOrmEntity } from '@infrastructure/database/entities/academic/role-permission.orm-entity';
+import { JornadaOrmEntity } from '@infrastructure/database/entities/academic/jornada.orm-entity';
 
 @Module({
   imports: [
@@ -57,6 +58,7 @@ import { RolePermissionOrmEntity } from '@infrastructure/database/entities/acade
           FacultyOrmEntity,
           PermissionOrmEntity,
           RolePermissionOrmEntity,
+          JornadaOrmEntity,
         ],
         synchronize: true,
         extra: {
@@ -86,6 +88,7 @@ import { RolePermissionOrmEntity } from '@infrastructure/database/entities/acade
       FacultyOrmEntity,
       PermissionOrmEntity,
       RolePermissionOrmEntity,
+      JornadaOrmEntity,
     ]),
   ],
   exports: [TypeOrmModule],

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { TeacherSubjectRepositoryPort } from '../../../../domain/ports/outbound/academic/teacher-subject-repository.port';
 import { TeacherSubjectEntity } from '../../../../domain/entities/academic/teacher-subject.entity';
 import { TeacherSubjectOrmEntity } from '../../../database/entities/academic/teacher-subject.orm-entity';
@@ -58,6 +58,29 @@ export class TeacherSubjectPostgresRepository
       where.curriculumId = curriculumId;
     }
     const found = await this.repository.find({ where });
+    return found.map(
+      (f) =>
+        new TeacherSubjectEntity(
+          f.id,
+          f.teacherId,
+          f.subjectId,
+          f.assignedAt,
+          f.curriculumId,
+        ),
+    );
+  }
+
+  async findBySubjectIds(
+    subjectIds: string[],
+  ): Promise<TeacherSubjectEntity[]> {
+    if (subjectIds.length === 0) return [];
+    
+    const found = await this.repository.find({
+      where: {
+        subjectId: In(subjectIds),
+      },
+    });
+    
     return found.map(
       (f) =>
         new TeacherSubjectEntity(

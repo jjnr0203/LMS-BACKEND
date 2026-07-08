@@ -69,6 +69,7 @@ export class GetDashboardStatsUseCase {
         durationSemesters: career.durationSemesters,
         isActive: career.isActive,
         activeCurriculums,
+        facultyId: career.facultyId || null,
       };
     });
 
@@ -86,6 +87,11 @@ export class GetDashboardStatsUseCase {
         totalCareers: allCareers.length,
         totalSubjects: await this.subjectRepository.count(),
         totalFaculties: allFaculties.length,
+        faculties: allFaculties.map((f) => ({
+          id: f.id,
+          code: f.code,
+          name: f.name,
+        })),
         careers: careersDetails,
       },
     };

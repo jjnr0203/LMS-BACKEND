@@ -4,13 +4,15 @@ import { CareerSubjectRepositoryPort } from '../../../ports/outbound/academic/ca
 import { SubjectRepositoryPort } from '../../../ports/outbound/academic/subject-repository.port';
 import { ModalityRepositoryPort } from '../../../ports/outbound/academic/modality-repository.port';
 import { UserRepositoryPort } from '../../../ports/outbound/users/user-repository.port';
+import { TeacherSubjectRepositoryPort } from '../../../ports/outbound/academic/teacher-subject-repository.port';
 interface SubjectBreakdown {
   id: string;
   code: string;
   name: string;
   credits: number;
+  hours: number;
   semester: number;
-  modalityNames: string[];
+
   teacherName: string | null;
 }
 
@@ -49,6 +51,7 @@ export class GetCareerBreakdownUseCase {
     private readonly subjectRepository: SubjectRepositoryPort,
     private readonly modalityRepository: ModalityRepositoryPort,
     private readonly userRepository: UserRepositoryPort,
+    private readonly teacherSubjectRepository: TeacherSubjectRepositoryPort,
   ) {}
 
   async execute(careerId: string): Promise<CareerBreakdownResult | null> {
@@ -82,9 +85,22 @@ export class GetCareerBreakdownUseCase {
         : [];
     const subjectMap = new Map(subjects.map((s) => [s.id, s]));
 
-    const teacherIds = subjects
-      .map((s) => s.teacherId)
-      .filter((id): id is string => !!id);
+    const teacherSubjects =
+      subjectIds.length > 0
+        ? await this.teacherSubjectRepository.findBySubjectIds(subjectIds)
+        : [];
+        
+    // Mapping of (curriculumId_subjectId) or subjectId to teacherId
+    const teacherSubjectMap = new Map<string, string>();
+    for (const ts of teacherSubjects) {
+      if (ts.curriculumId) {
+        teacherSubjectMap.set(`${ts.curriculumId}_${ts.subjectId}`, ts.teacherId);
+      } else {
+        teacherSubjectMap.set(ts.subjectId, ts.teacherId);
+      }
+    }
+
+    const teacherIds = [...new Set(teacherSubjects.map(ts => ts.teacherId))];
     const teacherNames =
       teacherIds.length > 0
         ? await this.userRepository.findByIds(teacherIds)
@@ -106,17 +122,19 @@ export class GetCareerBreakdownUseCase {
         if (!semesterMap.has(sem)) {
           semesterMap.set(sem, []);
         }
+        
+        const mappedTeacherId = teacherSubjectMap.get(`${curriculum.id}_${rel.subjectId}`) || teacherSubjectMap.get(rel.subjectId);
+        
         semesterMap.get(sem)!.push({
           id: rel.subjectId,
           code: sub.code,
           name: sub.name,
           credits: sub.credits,
+          hours: sub.hours || 0,
           semester: sem,
-          modalityNames: (sub.modalityIds || [])
-            .map((id) => modalityMap.get(id))
-            .filter((n): n is string => n !== undefined),
-          teacherName: sub.teacherId
-            ? teacherMap.get(sub.teacherId) || null
+
+          teacherName: mappedTeacherId
+            ? teacherMap.get(mappedTeacherId) || null
             : null,
         });
       }
