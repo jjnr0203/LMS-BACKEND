@@ -140,6 +140,7 @@ import { RepositoryProvidersModule } from './repository-providers.module';
         teacherSubjectRepo: TeacherSubjectRepositoryPort,
         userRepo: UserRepositoryPort,
         jornadaRepo: JornadaRepositoryPort,
+        scheduleRepo: ScheduleRepositoryPort,
       ) =>
         new GetCareerDetailUseCase(
           careerRepo,
@@ -150,6 +151,7 @@ import { RepositoryProvidersModule } from './repository-providers.module';
           teacherSubjectRepo,
           userRepo,
           jornadaRepo,
+          scheduleRepo,
         ),
       inject: [
         CAREER_REPOSITORY,
@@ -160,6 +162,7 @@ import { RepositoryProvidersModule } from './repository-providers.module';
         TeacherSubjectRepositoryPort,
         UserRepositoryPort,
         JORNADA_REPOSITORY,
+        ScheduleRepositoryPort,
       ],
     },
     {

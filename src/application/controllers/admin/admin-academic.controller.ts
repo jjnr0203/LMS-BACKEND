@@ -55,6 +55,7 @@ export class AdminAcademicController {
   ) {}
 
   // --- SEMESTER COLORS ---
+  @Roles('admin', 'coordinator')
   @Get('semester-colors')
   async getSemesterColors() {
     return this.manageSemesterColorsUC.getColors();

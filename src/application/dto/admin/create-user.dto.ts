@@ -6,7 +6,7 @@ import {
   Length,
 } from 'class-validator';
 
-import { IsOptional, IsDate } from 'class-validator';
+import { IsOptional, IsDate, IsArray } from 'class-validator';
 
 export class CreateUserDto {
   @IsString()
@@ -41,4 +41,9 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   roleName: string;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  facultyIds?: string[];
 }

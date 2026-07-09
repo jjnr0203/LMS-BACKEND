@@ -16,7 +16,7 @@ export class UserPostgresRepository implements UserRepositoryPort {
     const ormEntity = await this.repository.findOne({
       where: { id },
       withDeleted: true,
-      relations: ['role'],
+      relations: ['role', 'faculties'],
     });
     return ormEntity ? UserOrmEntity.toDomain(ormEntity) : null;
   }
@@ -26,7 +26,7 @@ export class UserPostgresRepository implements UserRepositoryPort {
     const ormEntities = await this.repository.find({
       where: { id: In(ids) },
       withDeleted: true,
-      relations: ['role'],
+      relations: ['role', 'faculties'],
     });
     return ormEntities.map((e) => UserOrmEntity.toDomain(e));
   }
@@ -35,7 +35,7 @@ export class UserPostgresRepository implements UserRepositoryPort {
     const ormEntity = await this.repository.findOne({
       where: { email },
       withDeleted: true,
-      relations: ['role'],
+      relations: ['role', 'faculties'],
     });
     return ormEntity ? UserOrmEntity.toDomain(ormEntity) : null;
   }
@@ -51,14 +51,20 @@ export class UserPostgresRepository implements UserRepositoryPort {
     limit: number,
     role?: string,
     search?: string,
+    facultyIds?: string[],
   ): Promise<{ data: UserEntity[]; total: number }> {
     const qb = this.repository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.role', 'role')
+      .leftJoinAndSelect('user.faculties', 'faculties')
       .where('user.deletedAt IS NULL'); // Since withDeleted is not used here but it's handled by TypeORM soft deletes automatically, but just in case, TypeORM does it by default. Actually, we just don't need to specify deletedAt if TypeORM does it automatically unless we use withDeleted.
 
     if (role) {
       qb.andWhere('role.name = :role', { role });
+    }
+
+    if (facultyIds && facultyIds.length > 0) {
+      qb.innerJoin('user.faculties', 'fFilter', 'fFilter.id IN (:...facultyIds)', { facultyIds });
     }
 
     if (search) {

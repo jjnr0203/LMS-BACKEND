@@ -13,12 +13,13 @@ export class GetPaginatedUsersUseCase implements GetPaginatedUsersUseCasePort {
     command: GetPaginatedUsersCommand,
     host: string,
   ): Promise<PaginatedResponse<UserEntity>> {
-    const { page, limit, role, search } = command;
+    const { page, limit, role, search, facultyIds } = command;
     const { data, total } = await this.userRepository.findPaginated(
       page,
       limit,
       role,
       search,
+      facultyIds,
     );
 
     const lastPage = Math.ceil(total / limit) || 1;

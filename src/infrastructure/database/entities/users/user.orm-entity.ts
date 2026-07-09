@@ -7,10 +7,13 @@ import {
   DeleteDateColumn,
   ManyToOne,
   JoinColumn,
+  ManyToMany,
+  JoinTable,
   Index,
 } from 'typeorm';
 import { UserEntity } from '@domain/entities/users/user.entity';
 import { RoleOrmEntity } from './role.orm-entity';
+import { FacultyOrmEntity } from '../academic/faculty.orm-entity';
 
 @Entity('users')
 export class UserOrmEntity {
@@ -49,6 +52,14 @@ export class UserOrmEntity {
   @JoinColumn({ name: 'role_id' })
   role: RoleOrmEntity;
 
+  @ManyToMany(() => FacultyOrmEntity)
+  @JoinTable({
+    name: 'user_faculties',
+    joinColumn: { name: 'user_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'faculty_id', referencedColumnName: 'id' },
+  })
+  faculties: FacultyOrmEntity[];
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
@@ -74,6 +85,7 @@ export class UserOrmEntity {
       ormEntity.updatedAt,
       ormEntity.deletedAt,
       ormEntity.role?.name,
+      ormEntity.faculties?.map(f => ({ id: f.id, name: f.name })),
     );
   }
 
@@ -90,6 +102,16 @@ export class UserOrmEntity {
     orm.phone = entity.phone;
     orm.avatarUrl = entity.avatarUrl;
     orm.deletedAt = entity.deletedAt;
+    
+    if (entity.faculties) {
+      orm.faculties = entity.faculties.map(f => {
+        const faculty = new FacultyOrmEntity();
+        faculty.id = f.id;
+        faculty.name = f.name ?? '';
+        return faculty;
+      });
+    }
+    
     return orm;
   }
 }

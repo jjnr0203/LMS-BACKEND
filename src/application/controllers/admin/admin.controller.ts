@@ -33,6 +33,7 @@ export class AdminController {
       roleName: dto.roleName,
       birthDate: dto.birthDate,
       phone: dto.phone,
+      facultyIds: dto.facultyIds,
     });
     return {
       message: 'Usuario creado exitosamente',

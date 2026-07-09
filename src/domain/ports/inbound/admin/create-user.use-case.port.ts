@@ -9,6 +9,7 @@ export interface CreateUserCommand {
   phone?: string;
   password: string;
   roleName: string;
+  facultyIds?: string[];
 }
 
 export abstract class CreateUserUseCasePort {

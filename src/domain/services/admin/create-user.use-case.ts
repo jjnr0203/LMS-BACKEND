@@ -45,6 +45,12 @@ export class CreateUserUseCase implements CreateUserUseCasePort {
       true,
       command.birthDate,
       command.phone,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      role.name,
+      command.facultyIds?.map(id => ({ id }))
     );
 
     const savedUser = await this.userRepository.save(user);

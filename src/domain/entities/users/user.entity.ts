@@ -14,5 +14,6 @@ export class UserEntity {
     public readonly updatedAt?: Date,
     public readonly deletedAt?: Date,
     public readonly roleName?: string,
+    public readonly faculties?: { id: string; name?: string }[],
   ) {}
 }

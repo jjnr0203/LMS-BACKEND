@@ -6,6 +6,7 @@ import { SubjectRepositoryPort } from '../../ports/outbound/academic/subject-rep
 import { CareerSubjectRepositoryPort } from '../../ports/outbound/academic/career-subject-repository.port';
 import { TeacherSubjectRepositoryPort } from '../../ports/outbound/academic/teacher-subject-repository.port';
 import { UserRepositoryPort } from '../../ports/outbound/users/user-repository.port';
+import { ScheduleRepositoryPort } from '../../ports/outbound/academic/schedule-repository.port';
 import { TeacherSubjectEntity } from '../../entities/academic/teacher-subject.entity';
 
 export interface SubjectAssignment {
@@ -17,6 +18,7 @@ export interface SubjectAssignment {
   modalityName: string;
   jornadaId: string;
   jornadaName: string;
+  schedules?: any[];
 }
 
 export interface SubjectEntry {
@@ -51,6 +53,7 @@ export class GetCareerDetailUseCase {
     private readonly teacherSubjectRepository: TeacherSubjectRepositoryPort,
     private readonly userRepository: UserRepositoryPort,
     private readonly jornadaRepository: JornadaRepositoryPort,
+    private readonly scheduleRepository: ScheduleRepositoryPort,
   ) {}
 
   async execute(careerId: string) {
@@ -89,6 +92,23 @@ export class GetCareerDetailUseCase {
     const teacherNameMap = new Map(
       teachers.map((u) => [u.id, `${u.firstName} ${u.lastName}`]),
     );
+
+    const allTeacherSubjectIds = allTeacherSubjects.map((ts) => ts.id);
+    const allSchedules = allTeacherSubjectIds.length > 0
+      ? await this.scheduleRepository.findByTeacherSubjectIds(allTeacherSubjectIds)
+      : [];
+    const schedulesByTeacherSubject = new Map<string, any[]>();
+    for (const sched of allSchedules) {
+      if (!schedulesByTeacherSubject.has(sched.teacherSubjectId)) {
+        schedulesByTeacherSubject.set(sched.teacherSubjectId, []);
+      }
+      schedulesByTeacherSubject.get(sched.teacherSubjectId)!.push({
+        id: sched.id,
+        dayOfWeek: sched.dayOfWeek,
+        startTime: sched.startTime,
+        endTime: sched.endTime,
+      });
+    }
 
     // Group assignments by curriculumId -> subjectId -> array of TeacherSubjectEntity
     const assignmentsByCurriculum = new Map<string, Map<string, TeacherSubjectEntity[]>>();
@@ -138,6 +158,7 @@ export class GetCareerDetailUseCase {
             modalityName: ts.modalityId ? modalityMap.get(ts.modalityId) || 'Sin Modalidad' : 'Sin Modalidad',
             jornadaId: ts.jornadaId || '',
             jornadaName: ts.jornadaId ? jornadaMap.get(ts.jornadaId) || 'Sin Jornada' : 'Sin Jornada',
+            schedules: schedulesByTeacherSubject.get(ts.id) || [],
           }));
 
           semesterMap.get(semester)!.push({
@@ -177,6 +198,7 @@ export class GetCareerDetailUseCase {
         modalityNames: careerModalityNames,
         modalityIds: career.modalityIds || [],
         jornadaIds: career.jornadaIds || [],
+        facultyId: career.facultyId,
       },
       curriculums: curriculumList,
     };

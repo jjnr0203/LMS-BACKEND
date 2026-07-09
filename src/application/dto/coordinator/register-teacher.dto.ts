@@ -6,7 +6,7 @@ import {
   Length,
 } from 'class-validator';
 
-import { IsOptional, IsDate } from 'class-validator';
+import { IsOptional, IsDate, IsArray } from 'class-validator';
 
 export class RegisterTeacherDto {
   @IsString()
@@ -37,4 +37,9 @@ export class RegisterTeacherDto {
   @IsNotEmpty()
   @MinLength(6)
   password: string;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  facultyIds?: string[];
 }

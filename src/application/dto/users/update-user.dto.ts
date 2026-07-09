@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsEmail, MaxLength } from 'class-validator';
+import { IsString, IsOptional, IsEmail, MaxLength, IsArray } from 'class-validator';
 
 export class UpdateUserDto {
   @IsString()
@@ -24,4 +24,9 @@ export class UpdateUserDto {
 
   @IsOptional()
   birthDate?: Date;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  facultyIds?: string[];
 }

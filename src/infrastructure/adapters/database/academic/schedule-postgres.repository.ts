@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { ScheduleRepositoryPort } from '../../../../domain/ports/outbound/academic/schedule-repository.port';
 import { ScheduleOrmEntity } from '../../../database/entities/academic/schedule.orm-entity';
 import { ScheduleEntity } from '../../../../domain/entities/academic/schedule.entity';
@@ -13,10 +13,18 @@ export class SchedulePostgresRepository implements ScheduleRepositoryPort {
   ) {}
 
   async findByTeacherSubject(teacherSubjectId: string): Promise<ScheduleEntity[]> {
-    const ormEntities = await this.repository.find({
+    const found = await this.repository.find({
       where: { teacherSubjectId },
     });
-    return ormEntities.map((orm) => this.toDomain(orm));
+    return found.map((f) => this.toDomain(f));
+  }
+
+  async findByTeacherSubjectIds(teacherSubjectIds: string[]): Promise<ScheduleEntity[]> {
+    if (!teacherSubjectIds || teacherSubjectIds.length === 0) return [];
+    const found = await this.repository.find({
+      where: { teacherSubjectId: In(teacherSubjectIds) },
+    });
+    return found.map((f) => this.toDomain(f));
   }
 
   async saveMultiple(schedules: ScheduleEntity[]): Promise<void> {

@@ -177,6 +177,7 @@ export class CoordinatorController {
       password: dto.password,
       birthDate: dto.birthDate,
       phone: dto.phone,
+      facultyIds: dto.facultyIds,
     });
     return { message: 'Docente creado exitosamente', user };
   }

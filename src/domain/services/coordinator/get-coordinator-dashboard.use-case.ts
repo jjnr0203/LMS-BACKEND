@@ -23,6 +23,7 @@ export class GetCoordinatorDashboardUseCase {
       name: c.name,
       durationSemesters: c.durationSemesters,
       isActive: c.isActive,
+      facultyId: c.facultyId,
       modalityNames: (c.modalityIds || [])
         .map((id) => modalityMap.get(id))
         .filter((n): n is string => n !== undefined),

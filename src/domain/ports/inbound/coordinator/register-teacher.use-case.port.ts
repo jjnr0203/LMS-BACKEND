@@ -8,6 +8,7 @@ export interface RegisterTeacherCommand {
   birthDate?: Date;
   phone?: string;
   password: string;
+  facultyIds?: string[];
 }
 
 export abstract class RegisterTeacherUseCasePort {
