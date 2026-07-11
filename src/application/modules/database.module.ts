@@ -17,6 +17,7 @@ import { ModalityOrmEntity } from '@infrastructure/database/entities/academic/mo
 import { CareerOrmEntity } from '@infrastructure/database/entities/academic/career.orm-entity';
 import { CareerSubjectOrmEntity } from '@infrastructure/database/entities/academic/career-subject.orm-entity';
 import { SemesterColorOrmEntity } from '@infrastructure/database/entities/academic/semester-color.orm-entity';
+import { CoordinatorSubjectColorOrmEntity } from '@infrastructure/database/entities/academic/coordinator-subject-color.orm-entity';
 import { CurriculumOrmEntity } from '@infrastructure/database/entities/academic/curriculum.orm-entity';
 import { FacultyOrmEntity } from '@infrastructure/database/entities/academic/faculty.orm-entity';
 import { PermissionOrmEntity } from '@infrastructure/database/entities/academic/permission.orm-entity';
@@ -56,6 +57,7 @@ import { JornadaOrmEntity } from '@infrastructure/database/entities/academic/jor
           CareerOrmEntity,
           CareerSubjectOrmEntity,
           SemesterColorOrmEntity,
+          CoordinatorSubjectColorOrmEntity,
           CurriculumOrmEntity,
           FacultyOrmEntity,
           PermissionOrmEntity,
@@ -87,6 +89,7 @@ import { JornadaOrmEntity } from '@infrastructure/database/entities/academic/jor
       CareerOrmEntity,
       CareerSubjectOrmEntity,
       SemesterColorOrmEntity,
+      CoordinatorSubjectColorOrmEntity,
       CurriculumOrmEntity,
       FacultyOrmEntity,
       PermissionOrmEntity,

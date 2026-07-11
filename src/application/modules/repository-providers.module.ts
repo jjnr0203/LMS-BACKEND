@@ -35,6 +35,7 @@ import {
   CAREER_SUBJECT_REPOSITORY,
 } from '@domain/ports/outbound/academic/career-subject-repository.port';
 import { SemesterColorRepositoryPort } from '@domain/ports/outbound/academic/semester-color-repository.port';
+import { COORDINATOR_SUBJECT_COLOR_REPOSITORY } from '@domain/ports/outbound/academic/coordinator-subject-color-repository.port';
 import {
   FacultyRepositoryPort,
   FACULTY_REPOSITORY,
@@ -68,6 +69,7 @@ import { JornadaPostgresRepository } from '@infrastructure/adapters/database/aca
 import { CareerPostgresRepository } from '@infrastructure/adapters/database/academic/career-postgres.repository';
 import { CareerSubjectPostgresRepository } from '@infrastructure/adapters/database/academic/career-subject-postgres.repository';
 import { SemesterColorPostgresRepository } from '@infrastructure/adapters/database/academic/semester-color-postgres.repository';
+import { CoordinatorSubjectColorPostgresRepository } from '@infrastructure/adapters/database/academic/coordinator-subject-color-postgres.repository';
 import { CurriculumPostgresRepository } from '@infrastructure/adapters/database/academic/curriculum-postgres.repository';
 import { FacultyPostgresRepository } from '@infrastructure/adapters/database/academic/faculty-postgres.repository';
 import { PermissionPostgresRepository } from '@infrastructure/adapters/database/academic/permission-postgres.repository';
@@ -188,6 +190,10 @@ import { RolesGuard } from '@infrastructure/auth/guards/roles.guard';
       useClass: SemesterColorPostgresRepository,
     },
     {
+      provide: COORDINATOR_SUBJECT_COLOR_REPOSITORY,
+      useClass: CoordinatorSubjectColorPostgresRepository,
+    },
+    {
       provide: CURRICULUM_REPOSITORY,
       useClass: CurriculumPostgresRepository,
     },
@@ -222,6 +228,7 @@ import { RolesGuard } from '@infrastructure/auth/guards/roles.guard';
     CAREER_REPOSITORY,
     CAREER_SUBJECT_REPOSITORY,
     'SEMESTER_COLOR_REPOSITORY',
+    COORDINATOR_SUBJECT_COLOR_REPOSITORY,
     CURRICULUM_REPOSITORY,
     FACULTY_REPOSITORY,
     PERMISSION_REPOSITORY,

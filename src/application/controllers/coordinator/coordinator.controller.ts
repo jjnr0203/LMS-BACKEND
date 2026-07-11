@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Put,
   Param,
   Body,
   UseGuards,
@@ -16,6 +17,7 @@ import { EnrollStudentUseCase } from '@domain/services/coordinator/enroll-studen
 import { AssignTeacherUseCase } from '@domain/services/coordinator/assign-teacher.use-case';
 import { ListSubjectsUseCase } from '@domain/services/coordinator/list-subjects.use-case';
 import { RegisterTeacherUseCasePort } from '@domain/ports/inbound/coordinator/register-teacher.use-case.port';
+import { ManageCoordinatorSubjectColorsUseCase } from '@domain/services/coordinator/manage-coordinator-subject-colors.use-case';
 import { GetCoordinatorDashboardUseCase } from '@domain/services/coordinator/get-coordinator-dashboard.use-case';
 import { GetCareerDetailUseCase } from '@domain/services/coordinator/get-career-detail.use-case';
 import { UnassignTeacherUseCase } from '@domain/services/coordinator/unassign-teacher.use-case';
@@ -42,6 +44,7 @@ export class CoordinatorController {
     private readonly assignTeacherUseCase: AssignTeacherUseCase,
     private readonly listSubjectsUseCase: ListSubjectsUseCase,
     private readonly registerTeacherUseCase: RegisterTeacherUseCasePort,
+    private readonly manageSubjectColorsUseCase: ManageCoordinatorSubjectColorsUseCase,
     private readonly getCoordinatorDashboardUseCase: GetCoordinatorDashboardUseCase,
     private readonly getCareerDetailUseCase: GetCareerDetailUseCase,
     private readonly unassignTeacherUseCase: UnassignTeacherUseCase,
@@ -159,7 +162,24 @@ export class CoordinatorController {
 
   @Get('dashboard')
   async getDashboard(@ReqDecorator() req: AuthenticatedRequest) {
-    return this.getCoordinatorDashboardUseCase.execute(req.user.id);
+    const coordinatorId = req.user.id;
+    return this.getCoordinatorDashboardUseCase.execute(coordinatorId);
+  }
+
+  @Get('subject-colors')
+  async getSubjectColors(@ReqDecorator() req: AuthenticatedRequest) {
+    const coordinatorId = req.user.id;
+    return this.manageSubjectColorsUseCase.getColors(coordinatorId);
+  }
+
+  @Put('subject-colors')
+  async saveSubjectColor(
+    @ReqDecorator() req: AuthenticatedRequest,
+    @Body() dto: { subjectId: string; color: string },
+  ) {
+    const coordinatorId = req.user.id;
+    await this.manageSubjectColorsUseCase.saveColor(coordinatorId, dto.subjectId, dto.color);
+    return { success: true };
   }
 
   @Get('carrera/:id')
