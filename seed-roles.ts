@@ -8,6 +8,7 @@ const roles = [
   { name: 'treasury', description: 'Personal de tesorería' },
   { name: 'teacher', description: 'Docente' },
   { name: 'student', description: 'Estudiante' },
+  { name: 'secretary', description: 'Secretaría general' },
 ];
 
 async function seed() {

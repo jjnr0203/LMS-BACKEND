@@ -96,4 +96,27 @@ export class CareerSubjectPostgresRepository implements CareerSubjectRepositoryP
     });
     return found.map((f) => this.mapToDomain(f));
   }
+
+  async findSubjectsByCareerAndSemester(careerId: string, semester: number): Promise<any[]> {
+    const found = await this.repository.find({
+      where: { careerId, semester },
+      relations: ['subject'],
+    });
+    return found.map((cs) => ({
+      id: cs.subject?.id ?? cs.subjectId,
+      name: cs.subject?.name ?? '',
+      code: cs.subject?.code ?? '',
+      credits: cs.subject?.credits ?? 0,
+      hours: cs.subject?.hours ?? 0,
+      semester: cs.semester,
+    }));
+  }
+
+  async findSemestersByCareer(careerId: string): Promise<number[]> {
+    const found = await this.repository.find({
+      where: { careerId },
+      select: ['semester'],
+    });
+    return [...new Set(found.map((cs) => cs.semester))].sort((a, b) => a - b);
+  }
 }

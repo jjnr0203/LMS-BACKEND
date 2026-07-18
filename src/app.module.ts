@@ -8,6 +8,7 @@ import { AdminModule } from './application/modules/admin.module';
 import { CoordinatorModule } from './application/modules/coordinator.module';
 import { TreasuryModule } from './application/modules/treasury.module';
 import { TeacherModule } from './application/modules/teacher.module';
+import { SecretaryModule } from './application/modules/secretary.module';
 import { DatabaseModule } from './application/modules/database.module';
 
 @Module({
@@ -20,6 +21,7 @@ import { DatabaseModule } from './application/modules/database.module';
     CoordinatorModule,
     TreasuryModule,
     TeacherModule,
+    SecretaryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

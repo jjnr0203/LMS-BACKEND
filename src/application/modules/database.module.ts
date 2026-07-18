@@ -23,6 +23,11 @@ import { FacultyOrmEntity } from '@infrastructure/database/entities/academic/fac
 import { PermissionOrmEntity } from '@infrastructure/database/entities/academic/permission.orm-entity';
 import { RolePermissionOrmEntity } from '@infrastructure/database/entities/academic/role-permission.orm-entity';
 import { JornadaOrmEntity } from '@infrastructure/database/entities/academic/jornada.orm-entity';
+import { InscriptionOrmEntity } from '@infrastructure/database/entities/secretary/inscription.orm-entity';
+import { EnrollmentDetailOrmEntity } from '@infrastructure/database/entities/secretary/enrollment-detail.orm-entity';
+import { EnrollmentSubjectOrmEntity } from '@infrastructure/database/entities/secretary/enrollment-subject.orm-entity';
+import { AcademicRecordOrmEntity } from '@infrastructure/database/entities/secretary/academic-record.orm-entity';
+import { CertificateOrmEntity } from '@infrastructure/database/entities/secretary/certificate.orm-entity';
 
 @Module({
   imports: [
@@ -63,8 +68,13 @@ import { JornadaOrmEntity } from '@infrastructure/database/entities/academic/jor
           PermissionOrmEntity,
           RolePermissionOrmEntity,
           JornadaOrmEntity,
+          InscriptionOrmEntity,
+          EnrollmentDetailOrmEntity,
+          EnrollmentSubjectOrmEntity,
+          AcademicRecordOrmEntity,
+          CertificateOrmEntity,
         ],
-        synchronize: true,
+        synchronize: false,
         extra: {
           max: 25,
           idleTimeoutMillis: 30000,
@@ -95,6 +105,11 @@ import { JornadaOrmEntity } from '@infrastructure/database/entities/academic/jor
       PermissionOrmEntity,
       RolePermissionOrmEntity,
       JornadaOrmEntity,
+      InscriptionOrmEntity,
+      EnrollmentDetailOrmEntity,
+      EnrollmentSubjectOrmEntity,
+      AcademicRecordOrmEntity,
+      CertificateOrmEntity,
     ]),
   ],
   exports: [TypeOrmModule],
