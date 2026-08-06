@@ -12,6 +12,7 @@ export class UserResponseDto {
   createdAt?: Date;
   roleName?: string;
   faculties?: { id: string; name?: string }[];
+  requiresPasswordChange?: boolean;
 
   static fromEntity(entity: UserEntity): UserResponseDto {
     const dto = new UserResponseDto();
@@ -26,6 +27,7 @@ export class UserResponseDto {
     dto.createdAt = entity.createdAt;
     dto.roleName = entity.roleName;
     dto.faculties = entity.faculties;
+    dto.requiresPasswordChange = entity.requiresPasswordChange;
     return dto;
   }
 }

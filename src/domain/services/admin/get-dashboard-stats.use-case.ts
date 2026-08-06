@@ -4,7 +4,8 @@ import { ModalityRepositoryPort } from '../../ports/outbound/academic/modality-r
 import { CurriculumRepositoryPort } from '../../ports/outbound/academic/curriculum-repository.port';
 import { SubjectRepositoryPort } from '../../ports/outbound/academic/subject-repository.port';
 import { FacultyRepositoryPort } from '../../ports/outbound/academic/faculty-repository.port';
-
+import { TeacherRepositoryPort } from '../../ports/outbound/users/teacher-repository.port';
+import { StudentRepositoryPort } from '../../ports/outbound/users/student-repository.port';
 export class GetDashboardStatsUseCase {
   constructor(
     private readonly userRepository: UserRepositoryPort,
@@ -13,10 +14,14 @@ export class GetDashboardStatsUseCase {
     private readonly curriculumRepository: CurriculumRepositoryPort,
     private readonly subjectRepository: SubjectRepositoryPort,
     private readonly facultyRepository: FacultyRepositoryPort,
+    private readonly teacherRepository: TeacherRepositoryPort,
+    private readonly studentRepository: StudentRepositoryPort,
   ) {}
 
   async execute(): Promise<any> {
     const counts = await this.userRepository.getCountsByRole();
+    const teacherCount = await this.teacherRepository.count();
+    const studentCount = await this.studentRepository.count();
     const allCareers = await this.careerRepository.findAll();
     const allModalities = await this.modalityRepository.findAll();
     const modalityMap = new Map(allModalities.map((m) => [m.id, m.name]));
@@ -77,11 +82,13 @@ export class GetDashboardStatsUseCase {
 
     return {
       users: {
-        student: counts['student'] || 0,
-        teacher: counts['teacher'] || 0,
+        student: studentCount,
+        teacher: teacherCount,
         coordinator: counts['coordinator'] || 0,
         treasury: counts['treasury'] || 0,
         admin: counts['admin'] || 0,
+        secretary: counts['secretary'] || 0,
+        human_resources: counts['human_resources'] || 0,
       },
       academic: {
         totalCareers: allCareers.length,

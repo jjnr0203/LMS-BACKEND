@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Get } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Get, BadRequestException } from '@nestjs/common';
 import { JwtAuthGuard } from '@infrastructure/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@infrastructure/auth/guards/roles.guard';
 import { Roles } from '@infrastructure/auth/decorators/roles.decorator';
@@ -24,12 +24,15 @@ export class AdminController {
 
   @Post('users')
   async createUser(@Body() dto: CreateUserDto) {
+    const allowedRoles = ['admin', 'human_resources'];
+    if (!allowedRoles.includes(dto.roleName)) {
+      throw new BadRequestException(`El rol ${dto.roleName} no está permitido para este endpoint`);
+    }
     const { user } = await this.createUserUseCase.execute({
       id: dto.id,
       firstName: dto.firstName,
       lastName: dto.lastName,
       email: dto.email,
-      password: dto.password,
       roleName: dto.roleName,
       birthDate: dto.birthDate,
       phone: dto.phone,

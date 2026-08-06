@@ -44,6 +44,9 @@ export class UserOrmEntity {
   @Column({ type: 'boolean', name: 'is_active', default: true })
   isActive: boolean;
 
+  @Column({ type: 'boolean', name: 'requires_password_change', default: true })
+  requiresPasswordChange: boolean;
+
   @Index()
   @Column({ type: 'uuid', name: 'role_id' })
   roleId: string;
@@ -67,7 +70,7 @@ export class UserOrmEntity {
   updatedAt: Date;
 
   @DeleteDateColumn({ name: 'deleted_at' })
-  deletedAt?: Date;
+  deletedAt?: Date | null;
 
   static toDomain(ormEntity: UserOrmEntity): UserEntity {
     return new UserEntity(
@@ -86,6 +89,7 @@ export class UserOrmEntity {
       ormEntity.deletedAt,
       ormEntity.role?.name,
       ormEntity.faculties?.map(f => ({ id: f.id, name: f.name })),
+      ormEntity.requiresPasswordChange,
     );
   }
 
@@ -102,6 +106,7 @@ export class UserOrmEntity {
     orm.phone = entity.phone;
     orm.avatarUrl = entity.avatarUrl;
     orm.deletedAt = entity.deletedAt;
+    orm.requiresPasswordChange = entity.requiresPasswordChange;
     
     if (entity.faculties) {
       orm.faculties = entity.faculties.map(f => {

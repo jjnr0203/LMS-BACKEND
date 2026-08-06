@@ -8,7 +8,7 @@ import {
   Index,
 } from 'typeorm';
 import { AcademicRecordEntity } from '@domain/entities/secretary/academic-record.entity';
-import { UserOrmEntity } from '../users/user.orm-entity';
+import { StudentOrmEntity } from '../users/student.orm-entity';
 import { SubjectOrmEntity } from '../academic/subject.orm-entity';
 import { AcademicTermOrmEntity } from '../academic/academic-term.orm-entity';
 
@@ -21,9 +21,9 @@ export class AcademicRecordOrmEntity {
   @Column({ type: 'varchar', length: 20, name: 'student_id' })
   studentId: string;
 
-  @ManyToOne(() => UserOrmEntity)
+  @ManyToOne(() => StudentOrmEntity)
   @JoinColumn({ name: 'student_id' })
-  student: UserOrmEntity;
+  student: StudentOrmEntity;
 
   @Index()
   @Column({ type: 'uuid', name: 'subject_id' })

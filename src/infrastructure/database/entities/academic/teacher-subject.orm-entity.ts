@@ -6,7 +6,7 @@ import {
   JoinColumn,
   Index,
 } from 'typeorm';
-import { UserOrmEntity } from '../users/user.orm-entity';
+import { TeacherOrmEntity } from '../users/teacher.orm-entity';
 import { SubjectOrmEntity } from './subject.orm-entity';
 
 @Entity('teacher_subjects')
@@ -18,9 +18,9 @@ export class TeacherSubjectOrmEntity {
   @Column({ type: 'varchar', length: 20, name: 'teacher_id' })
   teacherId: string;
 
-  @ManyToOne(() => UserOrmEntity)
+  @ManyToOne(() => TeacherOrmEntity)
   @JoinColumn({ name: 'teacher_id' })
-  teacher: UserOrmEntity;
+  teacher: TeacherOrmEntity;
 
   @Index()
   @Column({ type: 'uuid', name: 'subject_id' })

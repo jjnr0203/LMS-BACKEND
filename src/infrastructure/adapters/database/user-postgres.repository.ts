@@ -49,42 +49,118 @@ export class UserPostgresRepository implements UserRepositoryPort {
   async findPaginated(
     page: number,
     limit: number,
-    role?: string,
+    role?: string | string[],
     search?: string,
     facultyIds?: string[],
   ): Promise<{ data: UserEntity[]; total: number }> {
-    const qb = this.repository
-      .createQueryBuilder('user')
-      .leftJoinAndSelect('user.role', 'role')
-      .leftJoinAndSelect('user.faculties', 'faculties')
-      .where('user.deletedAt IS NULL'); // Since withDeleted is not used here but it's handled by TypeORM soft deletes automatically, but just in case, TypeORM does it by default. Actually, we just don't need to specify deletedAt if TypeORM does it automatically unless we use withDeleted.
-
-    if (role) {
-      qb.andWhere('role.name = :role', { role });
-    }
-
-    if (facultyIds && facultyIds.length > 0) {
-      qb.innerJoin('user.faculties', 'fFilter', 'fFilter.id IN (:...facultyIds)', { facultyIds });
-    }
-
+    let searchCondition = '';
+    const params: any[] = [];
+    
     if (search) {
-      qb.andWhere(
-        new Brackets((qbInner) => {
-          qbInner
-            .where('user.id ILIKE :search', { search: `%${search}%` })
-            .orWhere('user.firstName ILIKE :search', { search: `%${search}%` })
-            .orWhere('user.lastName ILIKE :search', { search: `%${search}%` })
-            .orWhere('role.name ILIKE :search', { search: `%${search}%` });
-        }),
-      );
+      searchCondition = ` AND (
+        u.id ILIKE $1 OR 
+        u.first_name ILIKE $1 OR 
+        u.last_name ILIKE $1 OR 
+        u.email ILIKE $1
+      )`;
+      params.push(`%${search}%`);
     }
 
-    qb.orderBy('user.createdAt', 'DESC')
-      .skip((page - 1) * limit)
-      .take(limit);
+    const usersQuery = `
+      SELECT u.id, u.first_name, u.last_name, u.email, u.phone, u.birth_date, u.is_active, u.created_at, r.name as role_name, r.id as role_id, u.avatar_url, u.updated_at, u.requires_password_change
+      FROM users u 
+      INNER JOIN roles r ON u.role_id = r.id 
+      WHERE u.deleted_at IS NULL ${searchCondition}
+    `;
+    const teachersQuery = `
+      SELECT u.id, u.first_name, u.last_name, u.email, u.phone, u.birth_date, u.is_active, u.created_at, 'teacher' as role_name, NULL as role_id, u.avatar_url, u.updated_at, false as requires_password_change
+      FROM teachers u
+      WHERE u.deleted_at IS NULL ${searchCondition}
+    `;
+    const studentsQuery = `
+      SELECT u.id, u.first_name, u.last_name, u.email, u.phone, u.birth_date, u.is_active, u.created_at, 'student' as role_name, NULL as role_id, u.avatar_url, u.updated_at, false as requires_password_change
+      FROM students u
+      WHERE u.deleted_at IS NULL ${searchCondition}
+    `;
 
-    const [ormEntities, total] = await qb.getManyAndCount();
-    return { data: ormEntities.map((e) => UserOrmEntity.toDomain(e)), total };
+    let unionQuery = `
+      ${usersQuery}
+      UNION ALL
+      ${teachersQuery}
+      UNION ALL
+      ${studentsQuery}
+    `;
+
+    let finalQuery = `SELECT * FROM (${unionQuery}) as q`;
+    
+    let whereClauses: string[] = [];
+
+    // Filter by role
+    if (role) {
+      let roleCondition = '';
+      if (Array.isArray(role)) {
+        const roleParams = role.map((_, i) => `$${params.length + i + 1}`);
+        roleCondition = `q.role_name IN (${roleParams.join(', ')})`;
+        params.push(...role);
+      } else {
+        params.push(role);
+        roleCondition = `q.role_name = $${params.length}`;
+      }
+      whereClauses.push(roleCondition);
+    }
+
+    // Filter by facultyIds (only applies to users)
+    if (facultyIds && facultyIds.length > 0) {
+      const facultyParams = facultyIds.map((_, i) => `$${params.length + i + 1}`);
+      const facultyCondition = `
+        q.id IN (
+          SELECT uf.user_id 
+          FROM user_faculties uf 
+          WHERE uf.faculty_id IN (${facultyParams.join(', ')})
+        )
+      `;
+      params.push(...facultyIds);
+      whereClauses.push(facultyCondition);
+    }
+
+    if (whereClauses.length > 0) {
+      finalQuery += ` WHERE ${whereClauses.join(' AND ')}`;
+    }
+
+    const offset = (page - 1) * limit;
+    const paginatedQuery = `
+      ${finalQuery}
+      ORDER BY created_at DESC
+      LIMIT $${params.length + 1} OFFSET $${params.length + 2}
+    `;
+    
+    const countQuery = `SELECT COUNT(*) as total FROM (${finalQuery}) as counted_q`;
+
+    const [rawData, countResult] = await Promise.all([
+      this.repository.query(paginatedQuery, [...params, limit, offset]),
+      this.repository.query(countQuery, params)
+    ]);
+
+    const data = rawData.map((row: any) => new UserEntity(
+      row.id,
+      row.first_name,
+      row.last_name,
+      row.email,
+      '',
+      row.role_id,
+      row.is_active,
+      row.birth_date,
+      row.phone,
+      row.avatar_url,
+      row.created_at,
+      row.updated_at,
+      undefined,
+      row.role_name,
+      undefined,
+      row.requires_password_change
+    ));
+
+    return { data, total: parseInt(countResult[0].total, 10) };
   }
 
   async softDelete(id: string): Promise<void> {

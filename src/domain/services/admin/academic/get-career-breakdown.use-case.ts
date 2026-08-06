@@ -4,6 +4,7 @@ import { CareerSubjectRepositoryPort } from '../../../ports/outbound/academic/ca
 import { SubjectRepositoryPort } from '../../../ports/outbound/academic/subject-repository.port';
 import { ModalityRepositoryPort } from '../../../ports/outbound/academic/modality-repository.port';
 import { UserRepositoryPort } from '../../../ports/outbound/users/user-repository.port';
+import { TeacherRepositoryPort } from '../../../ports/outbound/users/teacher-repository.port';
 import { TeacherSubjectRepositoryPort } from '../../../ports/outbound/academic/teacher-subject-repository.port';
 import { JornadaRepositoryPort } from '../../../ports/outbound/academic/jornada-repository.port';
 import { TeacherSubjectEntity } from '../../../entities/academic/teacher-subject.entity';
@@ -65,6 +66,7 @@ export class GetCareerBreakdownUseCase {
     private readonly userRepository: UserRepositoryPort,
     private readonly teacherSubjectRepository: TeacherSubjectRepositoryPort,
     private readonly jornadaRepository: JornadaRepositoryPort,
+    private readonly teacherRepository: TeacherRepositoryPort,
   ) {}
 
   async execute(careerId: string): Promise<CareerBreakdownResult | null> {
@@ -109,7 +111,7 @@ export class GetCareerBreakdownUseCase {
     const teacherIds = [...new Set(allTeacherSubjects.map(ts => ts.teacherId))];
     const teacherNames =
       teacherIds.length > 0
-        ? await this.userRepository.findByIds(teacherIds)
+        ? await this.teacherRepository.findByIds(teacherIds)
         : [];
     const teacherMap = new Map(
       teacherNames.map((u) => [u.id, `${u.firstName} ${u.lastName}`]),

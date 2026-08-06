@@ -6,6 +6,7 @@ import { SubjectRepositoryPort } from '../../ports/outbound/academic/subject-rep
 import { CareerSubjectRepositoryPort } from '../../ports/outbound/academic/career-subject-repository.port';
 import { TeacherSubjectRepositoryPort } from '../../ports/outbound/academic/teacher-subject-repository.port';
 import { UserRepositoryPort } from '../../ports/outbound/users/user-repository.port';
+import { TeacherRepositoryPort } from '../../ports/outbound/users/teacher-repository.port';
 import { ScheduleRepositoryPort } from '../../ports/outbound/academic/schedule-repository.port';
 import { TeacherSubjectEntity } from '../../entities/academic/teacher-subject.entity';
 
@@ -54,6 +55,7 @@ export class GetCareerDetailUseCase {
     private readonly userRepository: UserRepositoryPort,
     private readonly jornadaRepository: JornadaRepositoryPort,
     private readonly scheduleRepository: ScheduleRepositoryPort,
+    private readonly teacherRepository: TeacherRepositoryPort,
   ) {}
 
   async execute(careerId: string) {
@@ -87,7 +89,7 @@ export class GetCareerDetailUseCase {
 
     const teacherIds = [...new Set(allTeacherSubjects.map((ts) => ts.teacherId))];
     const teachers = teacherIds.length > 0
-      ? await this.userRepository.findByIds(teacherIds)
+      ? await this.teacherRepository.findByIds(teacherIds)
       : [];
     const teacherNameMap = new Map(
       teachers.map((u) => [u.id, `${u.firstName} ${u.lastName}`]),

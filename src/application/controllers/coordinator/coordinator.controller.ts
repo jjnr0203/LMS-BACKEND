@@ -187,18 +187,4 @@ export class CoordinatorController {
     return this.getCareerDetailUseCase.execute(id);
   }
 
-  @Post('register-teacher')
-  async registerTeacher(@Body() dto: RegisterTeacherDto) {
-    const { user } = await this.registerTeacherUseCase.execute({
-      id: dto.id,
-      firstName: dto.firstName,
-      lastName: dto.lastName,
-      email: dto.email,
-      password: dto.password,
-      birthDate: dto.birthDate,
-      phone: dto.phone,
-      facultyIds: dto.facultyIds,
-    });
-    return { message: 'Docente creado exitosamente', user };
-  }
 }

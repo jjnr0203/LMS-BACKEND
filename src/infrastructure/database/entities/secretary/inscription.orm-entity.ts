@@ -10,7 +10,7 @@ import {
   Index,
 } from 'typeorm';
 import { InscriptionEntity } from '@domain/entities/secretary/inscription.entity';
-import { UserOrmEntity } from '../users/user.orm-entity';
+import { StudentOrmEntity } from '../users/student.orm-entity';
 import { CareerOrmEntity } from '../academic/career.orm-entity';
 
 @Entity('inscriptions')
@@ -22,9 +22,9 @@ export class InscriptionOrmEntity {
   @Column({ type: 'varchar', length: 20, name: 'student_id' })
   studentId: string;
 
-  @ManyToOne(() => UserOrmEntity)
+  @ManyToOne(() => StudentOrmEntity)
   @JoinColumn({ name: 'student_id' })
-  student: UserOrmEntity;
+  student: StudentOrmEntity;
 
   @Index()
   @Column({ type: 'uuid', name: 'career_id' })

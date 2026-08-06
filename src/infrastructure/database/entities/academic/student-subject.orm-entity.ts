@@ -7,7 +7,8 @@ import {
   CreateDateColumn,
   Index,
 } from 'typeorm';
-import { UserOrmEntity } from '../users/user.orm-entity';
+import { StudentOrmEntity } from '../users/student.orm-entity';
+import { TeacherOrmEntity } from '../users/teacher.orm-entity';
 import { SubjectOrmEntity } from './subject.orm-entity';
 
 @Entity('student_subjects')
@@ -19,9 +20,9 @@ export class StudentSubjectOrmEntity {
   @Column({ type: 'varchar', length: 20, name: 'student_id' })
   studentId: string;
 
-  @ManyToOne(() => UserOrmEntity)
+  @ManyToOne(() => StudentOrmEntity)
   @JoinColumn({ name: 'student_id' })
-  student: UserOrmEntity;
+  student: StudentOrmEntity;
 
   @Index()
   @Column({ type: 'uuid', name: 'subject_id' })
@@ -35,9 +36,9 @@ export class StudentSubjectOrmEntity {
   @Column({ type: 'varchar', length: 20, name: 'teacher_id' })
   teacherId: string;
 
-  @ManyToOne(() => UserOrmEntity)
+  @ManyToOne(() => TeacherOrmEntity)
   @JoinColumn({ name: 'teacher_id' })
-  teacher: UserOrmEntity;
+  teacher: TeacherOrmEntity;
 
   @CreateDateColumn({ name: 'enrolled_at' })
   enrolledAt: Date;

@@ -32,7 +32,7 @@ export class UserMapper {
     orm.birthDate = entity.birthDate;
     orm.phone = entity.phone;
     orm.avatarUrl = entity.avatarUrl;
-    orm.deletedAt = entity.deletedAt;
+    orm.deletedAt = entity.deletedAt as any;
     return orm;
   }
 

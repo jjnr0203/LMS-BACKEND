@@ -4,6 +4,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserOrmEntity } from '@infrastructure/database/entities/users/user.orm-entity';
 import { RoleOrmEntity } from '@infrastructure/database/entities/users/role.orm-entity';
 import { RefreshTokenOrmEntity } from '@infrastructure/database/entities/auth/refresh-token.orm-entity';
+import { TeacherOrmEntity } from '@infrastructure/database/entities/users/teacher.orm-entity';
+import { StudentOrmEntity } from '@infrastructure/database/entities/users/student.orm-entity';
 import { TuitionOrmEntity } from '@infrastructure/database/entities/academic/tuition.orm-entity';
 import { SubjectOrmEntity } from '@infrastructure/database/entities/academic/subject.orm-entity';
 import { EnrollmentOrmEntity } from '@infrastructure/database/entities/academic/enrollment.orm-entity';
@@ -47,6 +49,8 @@ import { CertificateOrmEntity } from '@infrastructure/database/entities/secretar
             : false,
         entities: [
           UserOrmEntity,
+          TeacherOrmEntity,
+          StudentOrmEntity,
           RoleOrmEntity,
           RefreshTokenOrmEntity,
           TuitionOrmEntity,
@@ -84,6 +88,8 @@ import { CertificateOrmEntity } from '@infrastructure/database/entities/secretar
     }),
     TypeOrmModule.forFeature([
       UserOrmEntity,
+      TeacherOrmEntity,
+      StudentOrmEntity,
       RoleOrmEntity,
       RefreshTokenOrmEntity,
       TuitionOrmEntity,

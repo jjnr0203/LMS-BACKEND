@@ -5,7 +5,7 @@ import {
 import { UserRepositoryPort } from '../../ports/outbound/users/user-repository.port';
 import { PasswordHasherPort } from '../../ports/outbound/auth/password-hasher.port';
 import { UserEntity } from '../../entities/users/user.entity';
-import { NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { NotFoundException, UnauthorizedException, BadRequestException } from '@nestjs/common';
 
 export class UpdatePasswordUseCase implements UpdatePasswordUseCasePort {
   constructor(
@@ -25,7 +25,7 @@ export class UpdatePasswordUseCase implements UpdatePasswordUseCasePort {
         user.passwordHash,
       );
       if (!isMatch) {
-        throw new UnauthorizedException('La contraseña actual es incorrecta');
+        throw new BadRequestException('La contraseña actual es incorrecta');
       }
     }
 
@@ -45,6 +45,9 @@ export class UpdatePasswordUseCase implements UpdatePasswordUseCasePort {
       user.createdAt,
       user.updatedAt,
       user.deletedAt,
+      user.roleName,
+      user.faculties,
+      false, // requiresPasswordChange
     );
 
     await this.userRepository.save(updatedUser);

@@ -8,7 +8,7 @@ export abstract class UserRepositoryPort {
   abstract findPaginated(
     page: number,
     limit: number,
-    role?: string,
+    role?: string | string[],
     search?: string,
     facultyIds?: string[],
   ): Promise<{ data: UserEntity[]; total: number }>;

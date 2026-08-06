@@ -38,6 +38,7 @@ export class UpdateUserUseCase implements UpdateUserUseCasePort {
       user.deletedAt,
       user.roleName,
       command.facultyIds !== undefined ? command.facultyIds.map(id => ({ id })) : user.faculties,
+      user.requiresPasswordChange
     );
 
     const saved = await this.userRepository.save(updatedUser);

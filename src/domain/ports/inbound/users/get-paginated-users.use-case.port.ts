@@ -4,7 +4,7 @@ import { PaginatedResponse } from '../../../../common/pagination/pagination.resp
 export interface GetPaginatedUsersCommand {
   page: number;
   limit: number;
-  role?: string;
+  role?: string | string[];
   search?: string;
   facultyIds?: string[];
 }

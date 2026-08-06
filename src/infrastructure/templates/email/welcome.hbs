@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f4f6f9; color: #333; margin: 0; padding: 0; }
+    .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+    .header { background-color: #10b981; color: #ffffff; padding: 30px 20px; text-align: center; }
+    .header h1 { margin: 0; font-size: 24px; font-weight: 600; }
+    .content { padding: 40px 30px; line-height: 1.6; }
+    .content p { margin: 0 0 15px; font-size: 16px; }
+    .credentials { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 20px; margin: 25px 0; }
+    .credentials p { margin: 5px 0; font-size: 15px; }
+    .credentials strong { color: #0f172a; }
+    .btn-container { text-align: center; margin: 35px 0 15px; }
+    .btn { display: inline-block; background-color: #10b981; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 6px; font-weight: bold; font-size: 16px; transition: background-color 0.3s; }
+    .btn:hover { background-color: #059669; }
+    .footer { background-color: #f8fafc; padding: 20px; text-align: center; font-size: 13px; color: #64748b; border-top: 1px solid #e2e8f0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>¡Bienvenido al Sistema Académico!</h1>
+    </div>
+    <div class="content">
+      <p>Hola <strong>{{firstName}} {{lastName}}</strong>,</p>
+      <p>Tu cuenta ha sido creada exitosamente. Para acceder al sistema, utiliza las siguientes credenciales temporales. Por motivos de seguridad, <strong>se te pedirá cambiar tu contraseña la primera vez que ingreses</strong>.</p>
+      
+      <div class="credentials">
+        <p><strong>Usuario / Cédula:</strong> {{id}}</p>
+        <p><strong>Contraseña temporal:</strong> {{id}}</p>
+      </div>
+
+      <div class="btn-container">
+        <a href="{{loginUrl}}" class="btn">Ingresar al Sistema</a>
+      </div>
+      
+      <p>Si tienes alguna duda o problema para acceder, por favor contacta al administrador del sistema.</p>
+    </div>
+    <div class="footer">
+      <p>&copy; 2026 Sistema Académico. Todos los derechos reservados.</p>
+    </div>
+  </div>
+</body>
+</html>

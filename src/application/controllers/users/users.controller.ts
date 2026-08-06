@@ -46,7 +46,7 @@ export class UsersController {
   ) {}
 
   @Get()
-  @Roles('admin', 'treasury', 'coordinator', 'teacher')
+  @Roles('admin', 'treasury', 'coordinator', 'teacher', 'human_resources')
   async findAll(
     @Query('page') page: string = '1',
     @Query('limit') limit: string = '10',
@@ -84,7 +84,7 @@ export class UsersController {
   }
 
   @Get(':id')
-  @Roles('admin', 'treasury')
+  @Roles('admin', 'treasury', 'human_resources')
   async findOne(
     @Param('id') id: string,
     @ReqDecorator() req: AuthenticatedRequest,
@@ -121,7 +121,7 @@ export class UsersController {
     @Body() dto: UpdateUserDto,
     @ReqDecorator() req: AuthenticatedRequest,
   ) {
-    if (req.user.role !== 'admin' && req.user.id !== id) {
+    if (req.user.role !== 'admin' && req.user.role !== 'human_resources' && req.user.id !== id) {
       if (req.user.role === 'treasury') {
         const targetUser = await this.getUserByIdUseCase.execute(id);
         if (targetUser.roleName !== 'student') {
@@ -149,14 +149,18 @@ export class UsersController {
   }
 
   @Delete(':id')
-  @Roles('admin', 'treasury')
+  @Roles('admin', 'treasury', 'human_resources')
   async remove(
     @Param('id') id: string,
     @ReqDecorator() req: AuthenticatedRequest,
   ) {
-    if (req.user.role === 'treasury') {
-      const targetUser = await this.getUserByIdUseCase.execute(id);
-      if (targetUser.roleName !== 'student') {
+    if (req.user.role !== 'admin' && req.user.role !== 'human_resources') {
+      if (req.user.role === 'treasury') {
+        const targetUser = await this.getUserByIdUseCase.execute(id);
+        if (targetUser.roleName !== 'student') {
+          throw new BadRequestException('Unauthorized to delete this user');
+        }
+      } else {
         throw new BadRequestException('Unauthorized to delete this user');
       }
     }

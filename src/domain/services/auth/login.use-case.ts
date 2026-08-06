@@ -51,6 +51,7 @@ export class LoginUseCase implements LoginUseCasePort {
       sub: user.id,
       email: user.email,
       role: role.name,
+      requiresPasswordChange: user.requiresPasswordChange,
     };
 
     const accessToken = this.tokenGenerator.generateAccessToken(payload);

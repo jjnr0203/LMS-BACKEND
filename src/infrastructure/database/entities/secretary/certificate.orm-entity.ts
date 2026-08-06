@@ -8,7 +8,7 @@ import {
   Index,
 } from 'typeorm';
 import { CertificateEntity } from '@domain/entities/secretary/certificate.entity';
-import { UserOrmEntity } from '../users/user.orm-entity';
+import { StudentOrmEntity } from '../users/student.orm-entity';
 
 @Entity('certificates')
 export class CertificateOrmEntity {
@@ -19,9 +19,9 @@ export class CertificateOrmEntity {
   @Column({ type: 'varchar', length: 20, name: 'student_id' })
   studentId: string;
 
-  @ManyToOne(() => UserOrmEntity)
+  @ManyToOne(() => StudentOrmEntity)
   @JoinColumn({ name: 'student_id' })
-  student: UserOrmEntity;
+  student: StudentOrmEntity;
 
   @Column({ type: 'varchar', length: 30 })
   type: string;

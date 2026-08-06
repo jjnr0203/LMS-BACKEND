@@ -8,6 +8,7 @@ export class AdminResponseDto {
       lastName: user.lastName,
       email: user.email,
       roleId: user.roleId,
+      roleName: user.roleName,
       isActive: user.isActive,
       createdAt: user.createdAt,
     };

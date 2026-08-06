@@ -26,7 +26,14 @@ export class GetPaginatedUsersUseCase implements GetPaginatedUsersUseCasePort {
 
     // As per user's request, we use localhost base if no domain is provided. The controller will pass the host.
     const baseUrl = `http://${host}/api/users`;
-    const roleParam = role ? `&role=${role}` : '';
+    let roleParam = '';
+    if (role) {
+      if (Array.isArray(role)) {
+        roleParam = role.map(r => `&role=${r}`).join('');
+      } else {
+        roleParam = `&role=${role}`;
+      }
+    }
     const searchParam = search ? `&search=${encodeURIComponent(search)}` : '';
 
     const next =

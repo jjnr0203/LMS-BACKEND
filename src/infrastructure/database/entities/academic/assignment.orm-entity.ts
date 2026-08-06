@@ -7,7 +7,7 @@ import {
   CreateDateColumn,
   Index,
 } from 'typeorm';
-import { UserOrmEntity } from '../users/user.orm-entity';
+import { TeacherOrmEntity } from '../users/teacher.orm-entity';
 import { SubjectOrmEntity } from './subject.orm-entity';
 
 @Entity('assignments')
@@ -33,9 +33,9 @@ export class AssignmentOrmEntity {
   @Column({ type: 'varchar', length: 20, name: 'teacher_id' })
   teacherId: string;
 
-  @ManyToOne(() => UserOrmEntity)
+  @ManyToOne(() => TeacherOrmEntity)
   @JoinColumn({ name: 'teacher_id' })
-  teacher: UserOrmEntity;
+  teacher: TeacherOrmEntity;
 
   @Column({ type: 'timestamp', name: 'due_date' })
   dueDate: Date;

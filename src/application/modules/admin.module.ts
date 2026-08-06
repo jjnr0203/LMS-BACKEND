@@ -6,6 +6,9 @@ import { GetCareerBreakdownUseCase } from '@domain/services/admin/academic/get-c
 import { UserRepositoryPort } from '@domain/ports/outbound/users/user-repository.port';
 import { RoleRepositoryPort } from '@domain/ports/outbound/users/role-repository.port';
 import { PasswordHasherPort } from '@domain/ports/outbound/auth/password-hasher.port';
+import { TeacherRepositoryPort } from '@domain/ports/outbound/users/teacher-repository.port';
+import { StudentRepositoryPort } from '@domain/ports/outbound/users/student-repository.port';
+import { MailerService } from '@nestjs-modules/mailer';
 import { RepositoryProvidersModule } from './repository-providers.module';
 import { AdminAcademicController } from '../controllers/admin/admin-academic.controller';
 import { ManageAcademicTermsUseCase } from '@domain/services/admin/academic/manage-academic-terms.use-case';
@@ -58,8 +61,9 @@ import { TeacherSubjectRepositoryPort } from '@domain/ports/outbound/academic/te
         userRepo: UserRepositoryPort,
         roleRepo: RoleRepositoryPort,
         hasher: PasswordHasherPort,
-      ) => new CreateUserUseCase(userRepo, roleRepo, hasher),
-      inject: [UserRepositoryPort, RoleRepositoryPort, PasswordHasherPort],
+        mailerService: MailerService,
+      ) => new CreateUserUseCase(userRepo, roleRepo, hasher, mailerService),
+      inject: [UserRepositoryPort, RoleRepositoryPort, PasswordHasherPort, MailerService],
     },
     {
       provide: GetDashboardStatsUseCase,
@@ -70,6 +74,8 @@ import { TeacherSubjectRepositoryPort } from '@domain/ports/outbound/academic/te
         curriculumRepo: CurriculumRepositoryPort,
         subjectRepo: SubjectRepositoryPort,
         facultyRepo: FacultyRepositoryPort,
+        teacherRepo: TeacherRepositoryPort,
+        studentRepo: StudentRepositoryPort,
       ) =>
         new GetDashboardStatsUseCase(
           userRepo,
@@ -78,6 +84,8 @@ import { TeacherSubjectRepositoryPort } from '@domain/ports/outbound/academic/te
           curriculumRepo,
           subjectRepo,
           facultyRepo,
+          teacherRepo,
+          studentRepo,
         ),
       inject: [
         UserRepositoryPort,
@@ -86,6 +94,8 @@ import { TeacherSubjectRepositoryPort } from '@domain/ports/outbound/academic/te
         CURRICULUM_REPOSITORY,
         SubjectRepositoryPort,
         FACULTY_REPOSITORY,
+        TeacherRepositoryPort,
+        StudentRepositoryPort,
       ],
     },
     {
@@ -175,6 +185,7 @@ import { TeacherSubjectRepositoryPort } from '@domain/ports/outbound/academic/te
         userRepo: UserRepositoryPort,
         teacherSubjRepo: TeacherSubjectRepositoryPort,
         jornadaRepo: JornadaRepositoryPort,
+        teacherRepo: TeacherRepositoryPort,
       ) =>
         new GetCareerBreakdownUseCase(
           careerRepo,
@@ -185,6 +196,7 @@ import { TeacherSubjectRepositoryPort } from '@domain/ports/outbound/academic/te
           userRepo,
           teacherSubjRepo,
           jornadaRepo,
+          teacherRepo,
         ),
       inject: [
         CAREER_REPOSITORY,
@@ -195,6 +207,7 @@ import { TeacherSubjectRepositoryPort } from '@domain/ports/outbound/academic/te
         UserRepositoryPort,
         TeacherSubjectRepositoryPort,
         JORNADA_REPOSITORY,
+        TeacherRepositoryPort,
       ],
     },
   ],

@@ -1,3 +1,7 @@
+import { TeacherPostgresRepository } from '@infrastructure/adapters/database/repositories/users/teacher-postgres.repository';
+import { TeacherRepositoryPort } from '@domain/ports/outbound/users/teacher-repository.port';
+import { StudentPostgresRepository } from '@infrastructure/adapters/database/repositories/users/student-postgres.repository';
+import { StudentRepositoryPort } from '@domain/ports/outbound/users/student-repository.port';
 import { Module } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { DatabaseModule } from './database.module';
@@ -99,6 +103,14 @@ import { RolesGuard } from '@infrastructure/auth/guards/roles.guard';
     }),
   ],
   providers: [
+    {
+      provide: TeacherRepositoryPort,
+      useClass: TeacherPostgresRepository,
+    },
+    {
+      provide: StudentRepositoryPort,
+      useClass: StudentPostgresRepository,
+    },
     {
       provide: UserRepositoryPort,
       useClass: UserPostgresRepository,
@@ -209,6 +221,8 @@ import { RolesGuard } from '@infrastructure/auth/guards/roles.guard';
     },
   ],
   exports: [
+    TeacherRepositoryPort,
+    StudentRepositoryPort,
     UserRepositoryPort,
     RoleRepositoryPort,
     RefreshTokenRepositoryPort,

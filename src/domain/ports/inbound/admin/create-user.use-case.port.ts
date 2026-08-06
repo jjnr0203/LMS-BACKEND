@@ -7,7 +7,6 @@ export interface CreateUserCommand {
   email: string;
   birthDate?: Date;
   phone?: string;
-  password: string;
   roleName: string;
   facultyIds?: string[];
 }

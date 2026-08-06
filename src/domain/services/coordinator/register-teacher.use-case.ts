@@ -19,14 +19,14 @@ export class RegisterTeacherUseCase implements RegisterTeacherUseCasePort {
     command: RegisterTeacherCommand,
   ): Promise<{ user: UserEntity }> {
     const existingById = await this.userRepository.findById(command.id);
-    if (existingById) {
+    if (existingById && !existingById.deletedAt) {
       throw new BadRequestException('Ya existe un usuario con esta cédula');
     }
 
     const existingByEmail = await this.userRepository.findByEmail(
       command.email,
     );
-    if (existingByEmail) {
+    if (existingByEmail && (!existingByEmail.deletedAt || existingByEmail.id !== command.id)) {
       throw new BadRequestException('Ya existe un usuario con este email');
     }
 
@@ -47,10 +47,10 @@ export class RegisterTeacherUseCase implements RegisterTeacherUseCasePort {
       true,
       command.birthDate,
       command.phone,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
+      undefined, // avatarUrl
+      undefined, // createdAt
+      undefined, // updatedAt
+      null,      // deletedAt (null to restore soft-deleted users)
       role.name,
       command.facultyIds?.map(id => ({ id }))
     );

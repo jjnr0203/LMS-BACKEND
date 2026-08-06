@@ -10,7 +10,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { UserOrmEntity } from '../users/user.orm-entity';
+import { TeacherOrmEntity } from '../users/teacher.orm-entity';
 
 @Entity('subjects')
 export class SubjectOrmEntity {
@@ -33,9 +33,9 @@ export class SubjectOrmEntity {
   @Column({ name: 'teacher_id', type: 'uuid', nullable: true })
   teacherId?: string;
 
-  @ManyToOne(() => UserOrmEntity)
+  @ManyToOne(() => TeacherOrmEntity)
   @JoinColumn({ name: 'teacher_id' })
-  teacher: UserOrmEntity;
+  teacher: TeacherOrmEntity;
 
   @Column({ type: 'text', nullable: true })
   description?: string;

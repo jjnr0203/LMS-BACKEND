@@ -22,6 +22,7 @@ import { RoleRepositoryPort } from '@domain/ports/outbound/users/role-repository
 import { PasswordHasherPort } from '@domain/ports/outbound/auth/password-hasher.port';
 import { TuitionRepositoryPort } from '@domain/ports/outbound/academic/tuition-repository.port';
 import { SubjectRepositoryPort } from '@domain/ports/outbound/academic/subject-repository.port';
+import { TeacherRepositoryPort } from '@domain/ports/outbound/users/teacher-repository.port';
 import { EnrollmentRepositoryPort } from '@domain/ports/outbound/academic/enrollment-repository.port';
 import { TeacherSubjectRepositoryPort } from '@domain/ports/outbound/academic/teacher-subject-repository.port';
 import {
@@ -143,6 +144,7 @@ import { RepositoryProvidersModule } from './repository-providers.module';
         userRepo: UserRepositoryPort,
         jornadaRepo: JornadaRepositoryPort,
         scheduleRepo: ScheduleRepositoryPort,
+        teacherRepo: TeacherRepositoryPort,
       ) =>
         new GetCareerDetailUseCase(
           careerRepo,
@@ -154,6 +156,7 @@ import { RepositoryProvidersModule } from './repository-providers.module';
           userRepo,
           jornadaRepo,
           scheduleRepo,
+          teacherRepo,
         ),
       inject: [
         CAREER_REPOSITORY,
@@ -165,6 +168,7 @@ import { RepositoryProvidersModule } from './repository-providers.module';
         UserRepositoryPort,
         JORNADA_REPOSITORY,
         ScheduleRepositoryPort,
+        TeacherRepositoryPort,
       ],
     },
     {

@@ -6,7 +6,7 @@ import {
   JoinColumn,
   Index,
 } from 'typeorm';
-import { UserOrmEntity } from '../users/user.orm-entity';
+import { StudentOrmEntity } from '../users/student.orm-entity';
 
 @Entity('tuitions')
 export class TuitionOrmEntity {
@@ -17,9 +17,9 @@ export class TuitionOrmEntity {
   @Column({ type: 'varchar', length: 20, name: 'student_id' })
   studentId: string;
 
-  @ManyToOne(() => UserOrmEntity)
+  @ManyToOne(() => StudentOrmEntity)
   @JoinColumn({ name: 'student_id' })
-  student: UserOrmEntity;
+  student: StudentOrmEntity;
 
   @Column({ type: 'varchar', length: 20, default: 'no_paga' })
   status: string;

@@ -24,14 +24,14 @@ export class RegisterStudentUseCase implements RegisterStudentUseCasePort {
     command: RegisterStudentCommand,
   ): Promise<RegisterStudentResult> {
     const existingById = await this.userRepository.findById(command.id);
-    if (existingById) {
+    if (existingById && !existingById.deletedAt) {
       throw new BadRequestException('Ya existe un usuario con esta cédula');
     }
 
     const existingByEmail = await this.userRepository.findByEmail(
       command.email,
     );
-    if (existingByEmail) {
+    if (existingByEmail && (!existingByEmail.deletedAt || existingByEmail.id !== command.id)) {
       throw new BadRequestException('Ya existe un usuario con este email');
     }
 
@@ -52,6 +52,11 @@ export class RegisterStudentUseCase implements RegisterStudentUseCasePort {
       true,
       command.birthDate,
       command.phone,
+      undefined, // avatarUrl
+      undefined, // createdAt
+      undefined, // updatedAt
+      null,      // deletedAt
+      role.name,
     );
 
     const savedUser = await this.userRepository.save(user);
