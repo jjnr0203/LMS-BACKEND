@@ -31,6 +31,18 @@ export class TeacherOrmEntity {
   @Column({ type: 'varchar', length: 255, name: 'avatar_url', nullable: true })
   avatarUrl?: string;
 
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  address?: string;
+
+  @Column({ type: 'varchar', length: 255, name: 'linkedin_url', nullable: true })
+  linkedIn?: string;
+
+  @Column({ type: 'varchar', length: 255, name: 'cv_url', nullable: true })
+  cvUrl?: string | null;
+
+  @Column({ type: 'jsonb', default: [] })
+  certificates: string[];
+
   @Column({ type: 'boolean', name: 'is_active', default: true })
   isActive: boolean;
 
@@ -55,7 +67,11 @@ export class TeacherOrmEntity {
       orm.avatarUrl,
       orm.createdAt,
       orm.updatedAt,
-      orm.deletedAt
+      orm.deletedAt,
+      orm.address,
+      orm.linkedIn,
+      orm.cvUrl,
+      orm.certificates
     );
   }
 
@@ -69,6 +85,10 @@ export class TeacherOrmEntity {
     orm.birthDate = entity.birthDate;
     orm.phone = entity.phone;
     orm.avatarUrl = entity.avatarUrl;
+    orm.address = entity.address;
+    orm.linkedIn = entity.linkedIn;
+    orm.cvUrl = entity.cvUrl;
+    orm.certificates = entity.certificates;
     orm.createdAt = entity.createdAt as any;
     orm.updatedAt = entity.updatedAt as any;
     orm.deletedAt = entity.deletedAt;

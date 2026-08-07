@@ -42,7 +42,12 @@ export class StudentService {
       data.phone !== undefined ? data.phone : student.phone,
       data.avatarUrl !== undefined ? data.avatarUrl : student.avatarUrl,
       student.createdAt,
-      new Date()
+      new Date(),
+      student.deletedAt,
+      data.address !== undefined ? data.address : student.address,
+      data.linkedIn !== undefined ? data.linkedIn : student.linkedIn,
+      data.cvUrl !== undefined ? data.cvUrl : student.cvUrl,
+      student.certificates
     );
     return this.studentRepository.save(updated);
   }

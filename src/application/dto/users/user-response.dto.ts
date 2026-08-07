@@ -13,6 +13,10 @@ export class UserResponseDto {
   roleName?: string;
   faculties?: { id: string; name?: string }[];
   requiresPasswordChange?: boolean;
+  address?: string;
+  linkedIn?: string;
+  cvUrl?: string | null;
+  certificates: string[];
 
   static fromEntity(entity: UserEntity): UserResponseDto {
     const dto = new UserResponseDto();
@@ -28,6 +32,10 @@ export class UserResponseDto {
     dto.roleName = entity.roleName;
     dto.faculties = entity.faculties;
     dto.requiresPasswordChange = entity.requiresPasswordChange;
+    dto.address = entity.address;
+    dto.linkedIn = entity.linkedIn;
+    dto.cvUrl = entity.cvUrl;
+    dto.certificates = entity.certificates;
     return dto;
   }
 }

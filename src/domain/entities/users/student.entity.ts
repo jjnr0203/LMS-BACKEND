@@ -11,5 +11,9 @@ export class StudentEntity {
     public readonly createdAt?: Date,
     public readonly updatedAt?: Date,
     public readonly deletedAt?: Date,
+    public readonly address?: string,
+    public readonly linkedIn?: string,
+    public readonly cvUrl?: string | null,
+    public readonly certificates: string[] = [],
   ) {}
 }

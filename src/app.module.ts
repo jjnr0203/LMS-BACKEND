@@ -15,6 +15,7 @@ import { TeacherModule } from './application/modules/teacher.module';
 import { SecretaryModule } from './application/modules/secretary.module';
 import { DatabaseModule } from './application/modules/database.module';
 import { HumanResourcesModule } from './application/modules/human-resources.module';
+import { InstitutionModule } from './application/modules/institution.module';
 
 @Module({
   imports: [
@@ -33,7 +34,7 @@ import { HumanResourcesModule } from './application/modules/human-resources.modu
           },
         },
         defaults: {
-          from: `"Soporte Académico" <${process.env.SMTP_USER}>`,
+          from: `"Soporte Académico SGA" <soporteacademico.sga@gmail.com>`,
         },
         template: {
           dir: process.cwd() + '/src/infrastructure/templates/email',
@@ -53,6 +54,7 @@ import { HumanResourcesModule } from './application/modules/human-resources.modu
     TeacherModule,
     SecretaryModule,
     HumanResourcesModule,
+    InstitutionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

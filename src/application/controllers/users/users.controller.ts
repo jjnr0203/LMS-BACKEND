@@ -25,6 +25,9 @@ import { UpdateUserUseCase } from '@domain/services/users/update-user.use-case';
 import { UpdatePasswordUseCase } from '@domain/services/users/update-password.use-case';
 import { SoftDeleteUserUseCase } from '@domain/services/users/soft-delete-user.use-case';
 import { UploadAvatarUseCase } from '@domain/services/users/upload-avatar.use-case';
+import { UploadCvUseCase } from '@domain/services/users/upload-cv.use-case';
+import { UploadCertificateUseCase } from '@domain/services/users/upload-certificate.use-case';
+import { DeleteCertificateUseCase } from '@domain/services/users/delete-certificate.use-case';
 import { UpdateUserDto } from '../../dto/users/update-user.dto';
 import { UpdatePasswordDto } from '../../dto/users/update-password.dto';
 import { UserResponseDto } from '../../dto/users/user-response.dto';
@@ -43,6 +46,9 @@ export class UsersController {
     private readonly updatePasswordUseCase: UpdatePasswordUseCase,
     private readonly softDeleteUserUseCase: SoftDeleteUserUseCase,
     private readonly uploadAvatarUseCase: UploadAvatarUseCase,
+    private readonly uploadCvUseCase: UploadCvUseCase,
+    private readonly uploadCertificateUseCase: UploadCertificateUseCase,
+    private readonly deleteCertificateUseCase: DeleteCertificateUseCase,
   ) {}
 
   @Get()
@@ -112,6 +118,70 @@ export class UsersController {
     return {
       message: 'Avatar actualizado exitosamente',
       user: UserResponseDto.fromEntity(user),
+    };
+  }
+
+  @Post('me/cv')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadCv(
+    @UploadedFile() file: Express.Multer.File,
+    @ReqDecorator() req: AuthenticatedRequest,
+  ) {
+    if (!file) {
+      throw new BadRequestException('Ningún archivo enviado');
+    }
+    const result = await this.uploadCvUseCase.execute(
+      req.user.id,
+      file.buffer,
+      file.originalname,
+    );
+    return {
+      message: 'CV actualizado exitosamente',
+      cvUrl: result.cvUrl,
+    };
+  }
+
+  @Delete('me/cv')
+  async deleteCv(
+    @ReqDecorator() req: AuthenticatedRequest,
+  ) {
+    await this.uploadCvUseCase.execute(req.user.id, null);
+    return {
+      message: 'CV eliminado exitosamente',
+    };
+  }
+
+  @Post('me/certificates')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadCertificate(
+    @UploadedFile() file: Express.Multer.File,
+    @ReqDecorator() req: AuthenticatedRequest,
+  ) {
+    if (!file) {
+      throw new BadRequestException('Ningún archivo enviado');
+    }
+    const result = await this.uploadCertificateUseCase.execute(
+      req.user.id,
+      file.buffer,
+      file.originalname,
+    );
+    return {
+      message: 'Certificado subido exitosamente',
+      certificateUrl: result.certificateUrl,
+    };
+  }
+
+  @Delete('me/certificates')
+  async deleteCertificate(
+    @Body('url') url: string,
+    @ReqDecorator() req: AuthenticatedRequest,
+  ) {
+    if (!url) {
+      throw new BadRequestException('URL del certificado es requerida');
+    }
+    await this.deleteCertificateUseCase.execute(req.user.id, url);
+    return {
+      message: 'Certificado eliminado exitosamente',
     };
   }
 

@@ -9,6 +9,8 @@ export interface UpdateUserCommand {
   avatarUrl?: string;
   birthDate?: Date;
   facultyIds?: string[];
+  address?: string;
+  linkedIn?: string;
 }
 
 export abstract class UpdateUserUseCasePort {

@@ -26,6 +26,7 @@ import { PermissionOrmEntity } from '@infrastructure/database/entities/academic/
 import { RolePermissionOrmEntity } from '@infrastructure/database/entities/academic/role-permission.orm-entity';
 import { JornadaOrmEntity } from '@infrastructure/database/entities/academic/jornada.orm-entity';
 import { InscriptionOrmEntity } from '@infrastructure/database/entities/secretary/inscription.orm-entity';
+import { InstitutionConfigOrmEntity } from '@infrastructure/database/entities/institution/institution-config.orm-entity';
 import { EnrollmentDetailOrmEntity } from '@infrastructure/database/entities/secretary/enrollment-detail.orm-entity';
 import { EnrollmentSubjectOrmEntity } from '@infrastructure/database/entities/secretary/enrollment-subject.orm-entity';
 import { AcademicRecordOrmEntity } from '@infrastructure/database/entities/secretary/academic-record.orm-entity';
@@ -77,6 +78,7 @@ import { CertificateOrmEntity } from '@infrastructure/database/entities/secretar
           EnrollmentSubjectOrmEntity,
           AcademicRecordOrmEntity,
           CertificateOrmEntity,
+          InstitutionConfigOrmEntity,
         ],
         synchronize: false,
         extra: {
@@ -116,6 +118,7 @@ import { CertificateOrmEntity } from '@infrastructure/database/entities/secretar
       EnrollmentSubjectOrmEntity,
       AcademicRecordOrmEntity,
       CertificateOrmEntity,
+      InstitutionConfigOrmEntity,
     ]),
   ],
   exports: [TypeOrmModule],

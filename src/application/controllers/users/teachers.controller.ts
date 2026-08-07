@@ -10,7 +10,7 @@ export class TeachersController {
   constructor(private readonly teacherService: TeacherService) {}
 
   @Get()
-  @Roles('admin', 'human_resources')
+  @Roles('admin', 'treasury', 'coordinator', 'teacher', 'human_resources')
   async findAll(
     @Query('page') page: string = '1',
     @Query('limit') limit: string = '10',
@@ -34,9 +34,15 @@ export class TeachersController {
   }
 
   @Get(':id')
-  @Roles('admin', 'human_resources')
+  @Roles('admin', 'treasury', 'coordinator', 'teacher', 'human_resources')
   async findOne(@Param('id') id: string) {
     return this.teacherService.getById(id);
+  }
+
+  @Get(':id/stats')
+  @Roles('admin', 'treasury', 'coordinator', 'teacher', 'human_resources')
+  async getStats(@Param('id') id: string) {
+    return this.teacherService.getStats(id);
   }
 
   @Post()

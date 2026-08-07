@@ -11,6 +11,13 @@ export class AdminResponseDto {
       roleName: user.roleName,
       isActive: user.isActive,
       createdAt: user.createdAt,
+      avatarUrl: (user as any).avatarUrl,
+      cvUrl: (user as any).cvUrl,
+      certificates: (user as any).certificates,
+      linkedIn: (user as any).linkedIn,
+      address: (user as any).address,
+      phone: user.phone,
+      birthDate: user.birthDate,
     };
   }
 }

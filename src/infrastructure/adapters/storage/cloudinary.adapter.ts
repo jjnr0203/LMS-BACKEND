@@ -30,4 +30,23 @@ export class CloudinaryAdapter implements ImageUploadPort {
       streamifier.createReadStream(fileBuffer).pipe(uploadStream);
     });
   }
+  async uploadDocument(fileBuffer: Buffer, folder: string, fileName?: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const options: any = { folder, resource_type: 'auto' };
+      if (fileName) {
+        const cleanName = fileName.replace(/\.[^/.]+$/, ""); // Remove extension
+        options.public_id = cleanName;
+        options.use_filename = true;
+        options.unique_filename = false;
+      }
+      const uploadStream = cloudinary.uploader.upload_stream(
+        options,
+        (error: UploadApiErrorResponse, result: UploadApiResponse) => {
+          if (error) return reject(new Error(error.message));
+          resolve(result.secure_url);
+        },
+      );
+      streamifier.createReadStream(fileBuffer).pipe(uploadStream);
+    });
+  }
 }

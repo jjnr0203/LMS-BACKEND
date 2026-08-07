@@ -16,5 +16,9 @@ export class UserEntity {
     public readonly roleName?: string,
     public readonly faculties?: { id: string; name?: string }[],
     public readonly requiresPasswordChange: boolean = true,
+    public readonly address?: string,
+    public readonly linkedIn?: string,
+    public readonly cvUrl?: string | null,
+    public readonly certificates: string[] = [],
   ) {}
 }

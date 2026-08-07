@@ -41,6 +41,18 @@ export class UserOrmEntity {
   @Column({ type: 'varchar', length: 255, name: 'avatar_url', nullable: true })
   avatarUrl?: string;
 
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  address?: string;
+
+  @Column({ type: 'varchar', length: 255, name: 'linkedin_url', nullable: true })
+  linkedIn?: string;
+
+  @Column({ type: 'varchar', length: 255, name: 'cv_url', nullable: true })
+  cvUrl?: string | null;
+
+  @Column({ type: 'jsonb', default: [] })
+  certificates: string[];
+
   @Column({ type: 'boolean', name: 'is_active', default: true })
   isActive: boolean;
 
@@ -90,6 +102,10 @@ export class UserOrmEntity {
       ormEntity.role?.name,
       ormEntity.faculties?.map(f => ({ id: f.id, name: f.name })),
       ormEntity.requiresPasswordChange,
+      ormEntity.address,
+      ormEntity.linkedIn,
+      ormEntity.cvUrl,
+      ormEntity.certificates,
     );
   }
 
@@ -105,6 +121,10 @@ export class UserOrmEntity {
     orm.birthDate = entity.birthDate;
     orm.phone = entity.phone;
     orm.avatarUrl = entity.avatarUrl;
+    orm.address = entity.address;
+    orm.linkedIn = entity.linkedIn;
+    orm.cvUrl = entity.cvUrl;
+    orm.certificates = entity.certificates;
     orm.deletedAt = entity.deletedAt;
     orm.requiresPasswordChange = entity.requiresPasswordChange;
     

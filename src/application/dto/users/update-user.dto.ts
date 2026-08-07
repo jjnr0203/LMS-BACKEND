@@ -22,6 +22,14 @@ export class UpdateUserDto {
   @IsOptional()
   avatarUrl?: string;
 
+  @IsString()
+  @IsOptional()
+  address?: string;
+
+  @IsString()
+  @IsOptional()
+  linkedIn?: string;
+
   @IsOptional()
   birthDate?: Date;
 
