@@ -3,7 +3,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { SecretaryController } from '../controllers/secretary/secretary.controller';
 import { CreateInscriptionUseCase } from '@domain/services/secretary/create-inscription.use-case';
 import { CreateEnrollmentUseCase } from '@domain/services/secretary/create-enrollment.use-case';
-import { GetAcademicHistoryUseCase } from '@domain/services/secretary/get-academic-history.use-case';
 import { GenerateCertificateUseCase } from '@domain/services/secretary/generate-certificate.use-case';
 import { GetSecretaryDashboardUseCase } from '@domain/services/secretary/get-secretary-dashboard.use-case';
 import { InscriptionRepositoryPort } from '@domain/ports/outbound/secretary/inscription-repository.port';
@@ -21,13 +20,15 @@ import { EnrollmentDetailOrmEntity } from '@infrastructure/database/entities/sec
 import { EnrollmentSubjectOrmEntity } from '@infrastructure/database/entities/secretary/enrollment-subject.orm-entity';
 import { AcademicRecordOrmEntity } from '@infrastructure/database/entities/secretary/academic-record.orm-entity';
 import { CertificateOrmEntity } from '@infrastructure/database/entities/secretary/certificate.orm-entity';
-import { UserRepositoryPort } from '@domain/ports/outbound/users/user-repository.port';
-import { RoleRepositoryPort } from '@domain/ports/outbound/users/role-repository.port';
-import { PasswordHasherPort } from '@domain/ports/outbound/auth/password-hasher.port';
-import { SubjectRepositoryPort } from '@domain/ports/outbound/academic/subject-repository.port';
-import { ACADEMIC_TERM_REPOSITORY } from '@domain/ports/outbound/academic/academic-term-repository.port';
+import { InstitutionConfigOrmEntity } from '@infrastructure/database/entities/institution/institution-config.orm-entity';
+import { StudentRepositoryPort } from '@domain/ports/outbound/users/student-repository.port';
+import { PdfGeneratorPort } from '@domain/ports/outbound/storage/pdf-generator.port';
+import { PdfkitPdfGeneratorAdapter } from '@infrastructure/adapters/storage/pdfkit-pdf-generator.adapter';
+import { ImageUploadPort } from '@domain/ports/outbound/storage/image-upload.port';
+import { CloudinaryAdapter } from '@infrastructure/adapters/storage/cloudinary.adapter';
+import { InstitutionConfigPostgresRepository } from '@infrastructure/adapters/database/repositories/institution/institution-config-postgres.repository';
+import { CAREER_REPOSITORY } from '@domain/ports/outbound/academic/career-repository.port';
 import { RepositoryProvidersModule } from './repository-providers.module';
-
 @Module({
   imports: [
     RepositoryProvidersModule,
@@ -37,10 +38,23 @@ import { RepositoryProvidersModule } from './repository-providers.module';
       EnrollmentSubjectOrmEntity,
       AcademicRecordOrmEntity,
       CertificateOrmEntity,
+      InstitutionConfigOrmEntity,
     ]),
   ],
   controllers: [SecretaryController],
   providers: [
+    {
+      provide: PdfGeneratorPort,
+      useClass: PdfkitPdfGeneratorAdapter,
+    },
+    {
+      provide: ImageUploadPort,
+      useClass: CloudinaryAdapter,
+    },
+    {
+      provide: InstitutionConfigPostgresRepository,
+      useClass: InstitutionConfigPostgresRepository,
+    },
     {
       provide: InscriptionRepositoryPort,
       useClass: InscriptionPostgresRepository,
@@ -65,37 +79,57 @@ import { RepositoryProvidersModule } from './repository-providers.module';
       provide: CreateInscriptionUseCase,
       useFactory: (
         inscriptionRepo: InscriptionRepositoryPort,
-        userRepo: UserRepositoryPort,
-        roleRepo: RoleRepositoryPort,
-        hasher: PasswordHasherPort,
-      ) => new CreateInscriptionUseCase(inscriptionRepo, userRepo, roleRepo, hasher),
-      inject: [InscriptionRepositoryPort, UserRepositoryPort, RoleRepositoryPort, PasswordHasherPort],
+        studentRepo: StudentRepositoryPort,
+      ) => new CreateInscriptionUseCase(inscriptionRepo, studentRepo),
+      inject: [InscriptionRepositoryPort, StudentRepositoryPort],
     },
     {
       provide: CreateEnrollmentUseCase,
       useFactory: (
         enrollmentDetailRepo: EnrollmentDetailRepositoryPort,
         enrollmentSubjectRepo: EnrollmentSubjectRepositoryPort,
-        userRepo: UserRepositoryPort,
-      ) => new CreateEnrollmentUseCase(enrollmentDetailRepo, enrollmentSubjectRepo, userRepo),
-      inject: [EnrollmentDetailRepositoryPort, EnrollmentSubjectRepositoryPort, UserRepositoryPort],
-    },
-    {
-      provide: GetAcademicHistoryUseCase,
-      useFactory: (
-        academicRecordRepo: AcademicRecordRepositoryPort,
-        subjectRepo: SubjectRepositoryPort,
-        academicTermRepo: any,
-      ) => new GetAcademicHistoryUseCase(academicRecordRepo, subjectRepo, academicTermRepo),
-      inject: [AcademicRecordRepositoryPort, SubjectRepositoryPort, ACADEMIC_TERM_REPOSITORY],
+        studentRepo: StudentRepositoryPort,
+      ) =>
+        new CreateEnrollmentUseCase(
+          enrollmentDetailRepo,
+          enrollmentSubjectRepo,
+          studentRepo,
+        ),
+      inject: [
+        EnrollmentDetailRepositoryPort,
+        EnrollmentSubjectRepositoryPort,
+        StudentRepositoryPort,
+      ],
     },
     {
       provide: GenerateCertificateUseCase,
       useFactory: (
         certificateRepo: CertificateRepositoryPort,
-        userRepo: UserRepositoryPort,
-      ) => new GenerateCertificateUseCase(certificateRepo, userRepo),
-      inject: [CertificateRepositoryPort, UserRepositoryPort],
+        studentRepo: StudentRepositoryPort,
+        inscriptionRepo: InscriptionRepositoryPort,
+        careerRepo: any,
+        pdfGenerator: PdfGeneratorPort,
+        imageUpload: ImageUploadPort,
+        institutionRepo: InstitutionConfigPostgresRepository,
+      ) =>
+        new GenerateCertificateUseCase(
+          certificateRepo,
+          studentRepo,
+          inscriptionRepo,
+          careerRepo,
+          pdfGenerator,
+          imageUpload,
+          institutionRepo,
+        ),
+      inject: [
+        CertificateRepositoryPort,
+        StudentRepositoryPort,
+        InscriptionRepositoryPort,
+        CAREER_REPOSITORY,
+        PdfGeneratorPort,
+        ImageUploadPort,
+        InstitutionConfigPostgresRepository,
+      ],
     },
     {
       provide: GetSecretaryDashboardUseCase,
@@ -104,8 +138,19 @@ import { RepositoryProvidersModule } from './repository-providers.module';
         enrollmentDetailRepo: EnrollmentDetailRepositoryPort,
         academicRecordRepo: AcademicRecordRepositoryPort,
         certificateRepo: CertificateRepositoryPort,
-      ) => new GetSecretaryDashboardUseCase(inscriptionRepo, enrollmentDetailRepo, academicRecordRepo, certificateRepo),
-      inject: [InscriptionRepositoryPort, EnrollmentDetailRepositoryPort, AcademicRecordRepositoryPort, CertificateRepositoryPort],
+      ) =>
+        new GetSecretaryDashboardUseCase(
+          inscriptionRepo,
+          enrollmentDetailRepo,
+          academicRecordRepo,
+          certificateRepo,
+        ),
+      inject: [
+        InscriptionRepositoryPort,
+        EnrollmentDetailRepositoryPort,
+        AcademicRecordRepositoryPort,
+        CertificateRepositoryPort,
+      ],
     },
   ],
 })

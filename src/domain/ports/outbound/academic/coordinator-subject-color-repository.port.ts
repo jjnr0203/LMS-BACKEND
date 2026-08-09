@@ -1,5 +1,7 @@
 export interface CoordinatorSubjectColorRepositoryPort {
-  findByCoordinatorId(coordinatorId: string): Promise<{ subjectId: string; color: string }[]>;
+  findByCoordinatorId(
+    coordinatorId: string,
+  ): Promise<{ subjectId: string; color: string }[]>;
   save(coordinatorId: string, subjectId: string, color: string): Promise<void>;
 }
 

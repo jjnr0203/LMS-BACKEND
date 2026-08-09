@@ -29,12 +29,16 @@ export class InscriptionPostgresRepository implements InscriptionRepositoryPort 
   }
 
   async findAll(): Promise<InscriptionEntity[]> {
-    const orms = await this.repository.find({ relations: ['student', 'career'] });
+    const orms = await this.repository.find({
+      relations: ['student', 'career'],
+    });
     return orms.map(InscriptionOrmEntity.toDomain);
   }
 
   async findAllWithDetails(): Promise<any[]> {
-    const orms = await this.repository.find({ relations: ['student', 'career'] });
+    const orms = await this.repository.find({
+      relations: ['student', 'career'],
+    });
     return orms.map((orm) => ({
       id: orm.id,
       studentId: orm.studentId,

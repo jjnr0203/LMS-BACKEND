@@ -24,7 +24,10 @@ export class ManageFacultiesUseCase {
     return this.repository.save(faculty);
   }
 
-  async update(id: string, data: Partial<CreateFacultyDto>): Promise<Faculty | null> {
+  async update(
+    id: string,
+    data: Partial<CreateFacultyDto>,
+  ): Promise<Faculty | null> {
     const faculty = await this.repository.findById(id);
     if (!faculty) return null;
 

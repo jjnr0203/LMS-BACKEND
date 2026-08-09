@@ -6,9 +6,7 @@ import { TeacherSubjectEntity } from '../../../../domain/entities/academic/teach
 import { TeacherSubjectOrmEntity } from '../../../database/entities/academic/teacher-subject.orm-entity';
 
 @Injectable()
-export class TeacherSubjectPostgresRepository
-  implements TeacherSubjectRepositoryPort
-{
+export class TeacherSubjectPostgresRepository implements TeacherSubjectRepositoryPort {
   constructor(
     @InjectRepository(TeacherSubjectOrmEntity)
     private readonly repository: Repository<TeacherSubjectOrmEntity>,
@@ -50,7 +48,7 @@ export class TeacherSubjectPostgresRepository
         modalityId: relation.modalityId,
         jornadaId: relation.jornadaId,
         assignedAt: relation.assignedAt,
-      })
+      }),
     );
     await this.repository.save(ormEntities);
   }
@@ -103,13 +101,13 @@ export class TeacherSubjectPostgresRepository
     subjectIds: string[],
   ): Promise<TeacherSubjectEntity[]> {
     if (subjectIds.length === 0) return [];
-    
+
     const found = await this.repository.find({
       where: {
         subjectId: In(subjectIds),
       },
     });
-    
+
     return found.map(
       (f) =>
         new TeacherSubjectEntity(

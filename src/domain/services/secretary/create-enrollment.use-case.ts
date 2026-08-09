@@ -1,9 +1,12 @@
 import { v4 as uuid } from 'uuid';
 import { BadRequestException } from '@nestjs/common';
-import { CreateEnrollmentUseCasePort, CreateEnrollmentCommand } from '@domain/ports/inbound/secretary/create-enrollment.use-case.port';
+import {
+  CreateEnrollmentUseCasePort,
+  CreateEnrollmentCommand,
+} from '@domain/ports/inbound/secretary/create-enrollment.use-case.port';
 import { EnrollmentDetailRepositoryPort } from '@domain/ports/outbound/secretary/enrollment-detail-repository.port';
 import { EnrollmentSubjectRepositoryPort } from '@domain/ports/outbound/secretary/enrollment-subject-repository.port';
-import { UserRepositoryPort } from '@domain/ports/outbound/users/user-repository.port';
+import { StudentRepositoryPort } from '@domain/ports/outbound/users/student-repository.port';
 import { EnrollmentDetailEntity } from '@domain/entities/secretary/enrollment-detail.entity';
 import { EnrollmentSubjectEntity } from '@domain/entities/secretary/enrollment-subject.entity';
 
@@ -11,11 +14,13 @@ export class CreateEnrollmentUseCase implements CreateEnrollmentUseCasePort {
   constructor(
     private readonly enrollmentDetailRepo: EnrollmentDetailRepositoryPort,
     private readonly enrollmentSubjectRepo: EnrollmentSubjectRepositoryPort,
-    private readonly userRepo: UserRepositoryPort,
+    private readonly studentRepo: StudentRepositoryPort,
   ) {}
 
-  async execute(command: CreateEnrollmentCommand): Promise<{ enrollment: EnrollmentDetailEntity }> {
-    const student = await this.userRepo.findById(command.studentId);
+  async execute(
+    command: CreateEnrollmentCommand,
+  ): Promise<{ enrollment: EnrollmentDetailEntity }> {
+    const student = await this.studentRepo.findById(command.studentId);
     if (!student) {
       throw new BadRequestException('El estudiante no existe');
     }
@@ -25,7 +30,9 @@ export class CreateEnrollmentUseCase implements CreateEnrollmentUseCasePort {
       command.academicTermId,
     );
     if (existing) {
-      throw new BadRequestException('El estudiante ya está matriculado en este período');
+      throw new BadRequestException(
+        'El estudiante ya está matriculado en este período',
+      );
     }
 
     const enrollmentId = uuid();
@@ -42,7 +49,7 @@ export class CreateEnrollmentUseCase implements CreateEnrollmentUseCasePort {
 
     if (command.subjectIds && command.subjectIds.length > 0) {
       const subjects = command.subjectIds.map(
-        subjectId =>
+        (subjectId) =>
           new EnrollmentSubjectEntity(
             uuid(),
             enrollmentId,

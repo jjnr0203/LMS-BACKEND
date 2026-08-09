@@ -1,11 +1,12 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsIn } from 'class-validator';
 
 export class GenerateCertificateDto {
   @IsString()
   @IsNotEmpty()
   studentId: string;
 
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  type: string;
+  @IsIn(['matricula'])
+  type?: string;
 }

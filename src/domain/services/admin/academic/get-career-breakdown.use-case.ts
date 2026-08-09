@@ -96,7 +96,9 @@ export class GetCareerBreakdownUseCase {
     const curriculums = await this.curriculumRepository.findByCareer(careerId);
     const allCareerSubjects =
       await this.careerSubjectRepository.findByCareer(careerId);
-    const subjectIds = [...new Set(allCareerSubjects.map((cs) => cs.subjectId))];
+    const subjectIds = [
+      ...new Set(allCareerSubjects.map((cs) => cs.subjectId)),
+    ];
     const subjects =
       subjectIds.length > 0
         ? await this.subjectRepository.findByIds(subjectIds)
@@ -107,8 +109,10 @@ export class GetCareerBreakdownUseCase {
       subjectIds.length > 0
         ? await this.teacherSubjectRepository.findBySubjectIds(subjectIds)
         : [];
-        
-    const teacherIds = [...new Set(allTeacherSubjects.map(ts => ts.teacherId))];
+
+    const teacherIds = [
+      ...new Set(allTeacherSubjects.map((ts) => ts.teacherId)),
+    ];
     const teacherNames =
       teacherIds.length > 0
         ? await this.teacherRepository.findByIds(teacherIds)
@@ -118,7 +122,10 @@ export class GetCareerBreakdownUseCase {
     );
 
     // Group assignments by curriculumId -> subjectId -> array of TeacherSubjectEntity
-    const assignmentsByCurriculum = new Map<string, Map<string, TeacherSubjectEntity[]>>();
+    const assignmentsByCurriculum = new Map<
+      string,
+      Map<string, TeacherSubjectEntity[]>
+    >();
     for (const ts of allTeacherSubjects) {
       const key = ts.curriculumId || '__shared__';
       if (!assignmentsByCurriculum.has(key)) {
@@ -136,8 +143,12 @@ export class GetCareerBreakdownUseCase {
         (cs) => cs.curriculumId === curriculum.id || !cs.curriculumId,
       );
 
-      const curAssignmentsMap = assignmentsByCurriculum.get(curriculum.id) || new Map<string, TeacherSubjectEntity[]>();
-      const sharedAssignmentsMap = assignmentsByCurriculum.get('__shared__') || new Map<string, TeacherSubjectEntity[]>();
+      const curAssignmentsMap =
+        assignmentsByCurriculum.get(curriculum.id) ||
+        new Map<string, TeacherSubjectEntity[]>();
+      const sharedAssignmentsMap =
+        assignmentsByCurriculum.get('__shared__') ||
+        new Map<string, TeacherSubjectEntity[]>();
 
       const semesterMap = new Map<number, SubjectBreakdown[]>();
       for (const rel of relations) {
@@ -147,21 +158,25 @@ export class GetCareerBreakdownUseCase {
         if (!semesterMap.has(sem)) {
           semesterMap.set(sem, []);
         }
-        
+
         const rawAssignments = [
           ...(curAssignmentsMap.get(sub.id) || []),
           ...(sharedAssignmentsMap.get(sub.id) || []),
         ];
 
-        const assignments: SubjectAssignment[] = rawAssignments.map(ts => ({
+        const assignments: SubjectAssignment[] = rawAssignments.map((ts) => ({
           id: ts.id,
           teacherId: ts.teacherId,
           teacherName: teacherMap.get(ts.teacherId) || 'Desconocido',
           academicTermId: ts.academicTermId || '',
           modalityId: ts.modalityId || '',
-          modalityName: ts.modalityId ? modalityMap.get(ts.modalityId) || 'Sin Modalidad' : 'Sin Modalidad',
+          modalityName: ts.modalityId
+            ? modalityMap.get(ts.modalityId) || 'Sin Modalidad'
+            : 'Sin Modalidad',
           jornadaId: ts.jornadaId || '',
-          jornadaName: ts.jornadaId ? jornadaMap.get(ts.jornadaId) || 'Sin Jornada' : 'Sin Jornada',
+          jornadaName: ts.jornadaId
+            ? jornadaMap.get(ts.jornadaId) || 'Sin Jornada'
+            : 'Sin Jornada',
         }));
 
         semesterMap.get(sem)!.push({

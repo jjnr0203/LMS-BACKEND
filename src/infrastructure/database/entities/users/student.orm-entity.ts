@@ -34,7 +34,12 @@ export class StudentOrmEntity {
   @Column({ type: 'varchar', length: 255, nullable: true })
   address?: string;
 
-  @Column({ type: 'varchar', length: 255, name: 'linkedin_url', nullable: true })
+  @Column({
+    type: 'varchar',
+    length: 255,
+    name: 'linkedin_url',
+    nullable: true,
+  })
   linkedIn?: string;
 
   @Column({ type: 'varchar', length: 255, name: 'cv_url', nullable: true })
@@ -71,7 +76,7 @@ export class StudentOrmEntity {
       orm.address,
       orm.linkedIn,
       orm.cvUrl,
-      orm.certificates
+      orm.certificates,
     );
   }
 

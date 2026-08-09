@@ -1,4 +1,13 @@
-import { Controller, Post, Body, UseGuards, Get, BadRequestException, Query, Request as ReqDecorator } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Get,
+  BadRequestException,
+  Query,
+  Request as ReqDecorator,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '@infrastructure/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@infrastructure/auth/guards/roles.guard';
 import { Roles } from '@infrastructure/auth/decorators/roles.decorator';
@@ -34,7 +43,7 @@ export class HumanResourcesController {
   ) {
     const pageNum = parseInt(page, 10);
     const limitNum = parseInt(limit, 10);
-    
+
     // Si no hay rol especificado, traer solo los que HR maneja
     let rolesToSearch: string | string[] | undefined = role;
     if (!rolesToSearch) {
@@ -42,10 +51,13 @@ export class HumanResourcesController {
     }
 
     const host = req?.headers?.host || 'localhost:3000';
-    const result = await this.getPaginatedUsersUseCase.execute({ page: pageNum, limit: limitNum, role: rolesToSearch, search }, host);
+    const result = await this.getPaginatedUsersUseCase.execute(
+      { page: pageNum, limit: limitNum, role: rolesToSearch, search },
+      host,
+    );
 
     return {
-      data: result.data.map(u => AdminResponseDto.fromEntity(u)),
+      data: result.data.map((u) => AdminResponseDto.fromEntity(u)),
       total: result.pagination.total,
       page: pageNum,
       limit: limitNum,
@@ -56,7 +68,9 @@ export class HumanResourcesController {
   async createStaff(@Body() dto: CreateUserDto) {
     const allowedRoles = ['coordinator', 'secretary', 'treasury', 'teacher'];
     if (!allowedRoles.includes(dto.roleName)) {
-      throw new BadRequestException(`El rol ${dto.roleName} no está permitido para ser creado por Recursos Humanos`);
+      throw new BadRequestException(
+        `El rol ${dto.roleName} no está permitido para ser creado por Recursos Humanos`,
+      );
     }
     const { user } = await this.createUserUseCase.execute({
       id: dto.id,

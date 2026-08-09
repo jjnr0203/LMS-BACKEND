@@ -67,10 +67,18 @@ export class UsersController {
     const host = req.headers.host || 'localhost:3000';
     let facultyIds: string[] | undefined = undefined;
     if (facultyIdsRaw) {
-      facultyIds = Array.isArray(facultyIdsRaw) ? facultyIdsRaw : [facultyIdsRaw];
+      facultyIds = Array.isArray(facultyIdsRaw)
+        ? facultyIdsRaw
+        : [facultyIdsRaw];
     }
     const result = await this.getPaginatedUsersUseCase.execute(
-      { page: parseInt(page, 10), limit: parseInt(limit, 10), role, search, facultyIds },
+      {
+        page: parseInt(page, 10),
+        limit: parseInt(limit, 10),
+        role,
+        search,
+        facultyIds,
+      },
       host,
     );
     return {
@@ -142,9 +150,7 @@ export class UsersController {
   }
 
   @Delete('me/cv')
-  async deleteCv(
-    @ReqDecorator() req: AuthenticatedRequest,
-  ) {
+  async deleteCv(@ReqDecorator() req: AuthenticatedRequest) {
     await this.uploadCvUseCase.execute(req.user.id, null);
     return {
       message: 'CV eliminado exitosamente',
@@ -191,7 +197,11 @@ export class UsersController {
     @Body() dto: UpdateUserDto,
     @ReqDecorator() req: AuthenticatedRequest,
   ) {
-    if (req.user.role !== 'admin' && req.user.role !== 'human_resources' && req.user.id !== id) {
+    if (
+      req.user.role !== 'admin' &&
+      req.user.role !== 'human_resources' &&
+      req.user.id !== id
+    ) {
       if (req.user.role === 'treasury') {
         const targetUser = await this.getUserByIdUseCase.execute(id);
         if (targetUser.roleName !== 'student') {

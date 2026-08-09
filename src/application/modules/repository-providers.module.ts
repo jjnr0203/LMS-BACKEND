@@ -217,7 +217,12 @@ import { RolesGuard } from '@infrastructure/auth/guards/roles.guard';
         roleRepo: RoleRepositoryPort,
         rolePermRepo: RolePermissionRepositoryPort,
       ) => new RolesGuard(reflector, userRepo, roleRepo, rolePermRepo),
-      inject: [Reflector, UserRepositoryPort, RoleRepositoryPort, ROLE_PERMISSION_REPOSITORY],
+      inject: [
+        Reflector,
+        UserRepositoryPort,
+        RoleRepositoryPort,
+        ROLE_PERMISSION_REPOSITORY,
+      ],
     },
   ],
   exports: [

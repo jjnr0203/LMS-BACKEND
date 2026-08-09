@@ -12,18 +12,24 @@ export class EnrollmentSubjectPostgresRepository implements EnrollmentSubjectRep
     private readonly repository: Repository<EnrollmentSubjectOrmEntity>,
   ) {}
 
-  async findByEnrollmentDetailId(enrollmentDetailId: string): Promise<EnrollmentSubjectEntity[]> {
+  async findByEnrollmentDetailId(
+    enrollmentDetailId: string,
+  ): Promise<EnrollmentSubjectEntity[]> {
     const orms = await this.repository.find({ where: { enrollmentDetailId } });
     return orms.map(EnrollmentSubjectOrmEntity.toDomain);
   }
 
-  async save(enrollmentSubject: EnrollmentSubjectEntity): Promise<EnrollmentSubjectEntity> {
+  async save(
+    enrollmentSubject: EnrollmentSubjectEntity,
+  ): Promise<EnrollmentSubjectEntity> {
     const orm = EnrollmentSubjectOrmEntity.fromDomain(enrollmentSubject);
     const saved = await this.repository.save(orm);
     return EnrollmentSubjectOrmEntity.toDomain(saved);
   }
 
-  async saveMany(enrollmentSubjects: EnrollmentSubjectEntity[]): Promise<EnrollmentSubjectEntity[]> {
+  async saveMany(
+    enrollmentSubjects: EnrollmentSubjectEntity[],
+  ): Promise<EnrollmentSubjectEntity[]> {
     const orms = enrollmentSubjects.map(EnrollmentSubjectOrmEntity.fromDomain);
     const saved = await this.repository.save(orms);
     return saved.map(EnrollmentSubjectOrmEntity.toDomain);

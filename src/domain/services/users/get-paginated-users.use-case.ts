@@ -29,7 +29,7 @@ export class GetPaginatedUsersUseCase implements GetPaginatedUsersUseCasePort {
     let roleParam = '';
     if (role) {
       if (Array.isArray(role)) {
-        roleParam = role.map(r => `&role=${r}`).join('');
+        roleParam = role.map((r) => `&role=${r}`).join('');
       } else {
         roleParam = `&role=${role}`;
       }

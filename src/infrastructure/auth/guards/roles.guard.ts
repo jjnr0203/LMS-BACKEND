@@ -63,7 +63,9 @@ export class RolesGuard implements CanActivate {
     if (requiredPermissions && requiredPermissions.length > 0) {
       const dbRole = await this.roleRepository.findByName(user.role);
       if (!dbRole) return false;
-      const assigned = await this.rolePermissionRepository.findByRole(dbRole.id);
+      const assigned = await this.rolePermissionRepository.findByRole(
+        dbRole.id,
+      );
       const userPermissionCodes = assigned.map((rp) => rp.permissionId);
       return requiredPermissions.some((p) => userPermissionCodes.includes(p));
     }

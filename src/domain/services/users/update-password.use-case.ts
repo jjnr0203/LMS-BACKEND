@@ -5,7 +5,11 @@ import {
 import { UserRepositoryPort } from '../../ports/outbound/users/user-repository.port';
 import { PasswordHasherPort } from '../../ports/outbound/auth/password-hasher.port';
 import { UserEntity } from '../../entities/users/user.entity';
-import { NotFoundException, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import {
+  NotFoundException,
+  UnauthorizedException,
+  BadRequestException,
+} from '@nestjs/common';
 
 export class UpdatePasswordUseCase implements UpdatePasswordUseCasePort {
   constructor(

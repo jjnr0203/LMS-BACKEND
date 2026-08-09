@@ -49,7 +49,9 @@ export class PermissionPostgresRepository implements PermissionRepositoryPort {
   }
 
   async findAll(): Promise<Permission[]> {
-    const all = await this.repository.find({ order: { resource: 'ASC', name: 'ASC' } });
+    const all = await this.repository.find({
+      order: { resource: 'ASC', name: 'ASC' },
+    });
     return all.map((o) => this.mapToDomain(o));
   }
 

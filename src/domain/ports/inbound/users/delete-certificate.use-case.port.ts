@@ -1,6 +1,3 @@
 export abstract class DeleteCertificateUseCasePort {
-  abstract execute(
-    userId: string,
-    certificateUrl: string,
-  ): Promise<void>;
+  abstract execute(userId: string, certificateUrl: string): Promise<void>;
 }

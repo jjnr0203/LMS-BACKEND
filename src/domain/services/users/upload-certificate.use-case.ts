@@ -22,7 +22,9 @@ export class UploadCertificateUseCase implements UploadCertificateUseCasePort {
     fileName?: string,
   ): Promise<{ certificateUrl: string }> {
     if (!this.imageUploadService.uploadDocument) {
-      throw new Error('uploadDocument method is not implemented in ImageUploadPort');
+      throw new Error(
+        'uploadDocument method is not implemented in ImageUploadPort',
+      );
     }
 
     const certificateUrl = await this.imageUploadService.uploadDocument(

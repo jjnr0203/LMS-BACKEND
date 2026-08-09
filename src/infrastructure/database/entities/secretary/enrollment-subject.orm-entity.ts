@@ -52,7 +52,9 @@ export class EnrollmentSubjectOrmEntity {
     );
   }
 
-  static fromDomain(entity: EnrollmentSubjectEntity): EnrollmentSubjectOrmEntity {
+  static fromDomain(
+    entity: EnrollmentSubjectEntity,
+  ): EnrollmentSubjectOrmEntity {
     const orm = new EnrollmentSubjectOrmEntity();
     orm.id = entity.id;
     orm.enrollmentDetailId = entity.enrollmentDetailId;

@@ -14,10 +14,7 @@ export class DeleteCertificateUseCase implements DeleteCertificateUseCasePort {
     private readonly studentRepository: StudentRepositoryPort,
   ) {}
 
-  async execute(
-    userId: string,
-    certificateUrl: string,
-  ): Promise<void> {
+  async execute(userId: string, certificateUrl: string): Promise<void> {
     let updated = false;
 
     const user = await this.userRepository.findById(userId);
@@ -42,7 +39,7 @@ export class DeleteCertificateUseCase implements DeleteCertificateUseCasePort {
         user.address,
         user.linkedIn,
         user.cvUrl,
-        user.certificates.filter(url => url !== certificateUrl),
+        user.certificates.filter((url) => url !== certificateUrl),
       );
       await this.userRepository.save(updatedUser);
       updated = true;
@@ -65,7 +62,7 @@ export class DeleteCertificateUseCase implements DeleteCertificateUseCasePort {
         teacher.address,
         teacher.linkedIn,
         teacher.cvUrl,
-        teacher.certificates.filter(url => url !== certificateUrl),
+        teacher.certificates.filter((url) => url !== certificateUrl),
       );
       await this.teacherRepository.save(updatedTeacher);
       updated = true;
@@ -88,7 +85,7 @@ export class DeleteCertificateUseCase implements DeleteCertificateUseCasePort {
         student.address,
         student.linkedIn,
         student.cvUrl,
-        student.certificates.filter(url => url !== certificateUrl),
+        student.certificates.filter((url) => url !== certificateUrl),
       );
       await this.studentRepository.save(updatedStudent);
       updated = true;

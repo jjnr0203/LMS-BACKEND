@@ -12,14 +12,18 @@ export class SchedulePostgresRepository implements ScheduleRepositoryPort {
     private readonly repository: Repository<ScheduleOrmEntity>,
   ) {}
 
-  async findByTeacherSubject(teacherSubjectId: string): Promise<ScheduleEntity[]> {
+  async findByTeacherSubject(
+    teacherSubjectId: string,
+  ): Promise<ScheduleEntity[]> {
     const found = await this.repository.find({
       where: { teacherSubjectId },
     });
     return found.map((f) => this.toDomain(f));
   }
 
-  async findByTeacherSubjectIds(teacherSubjectIds: string[]): Promise<ScheduleEntity[]> {
+  async findByTeacherSubjectIds(
+    teacherSubjectIds: string[],
+  ): Promise<ScheduleEntity[]> {
     if (!teacherSubjectIds || teacherSubjectIds.length === 0) return [];
     const found = await this.repository.find({
       where: { teacherSubjectId: In(teacherSubjectIds) },

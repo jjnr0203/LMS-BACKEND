@@ -13,7 +13,10 @@ export class AcademicRecordPostgresRepository implements AcademicRecordRepositor
   ) {}
 
   async findByStudentId(studentId: string): Promise<AcademicRecordEntity[]> {
-    const orms = await this.repository.find({ where: { studentId }, relations: ['subject', 'academicTerm'] });
+    const orms = await this.repository.find({
+      where: { studentId },
+      relations: ['subject', 'academicTerm'],
+    });
     return orms.map(AcademicRecordOrmEntity.toDomain);
   }
 

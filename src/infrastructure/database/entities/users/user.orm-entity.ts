@@ -44,7 +44,12 @@ export class UserOrmEntity {
   @Column({ type: 'varchar', length: 255, nullable: true })
   address?: string;
 
-  @Column({ type: 'varchar', length: 255, name: 'linkedin_url', nullable: true })
+  @Column({
+    type: 'varchar',
+    length: 255,
+    name: 'linkedin_url',
+    nullable: true,
+  })
   linkedIn?: string;
 
   @Column({ type: 'varchar', length: 255, name: 'cv_url', nullable: true })
@@ -100,7 +105,7 @@ export class UserOrmEntity {
       ormEntity.updatedAt,
       ormEntity.deletedAt,
       ormEntity.role?.name,
-      ormEntity.faculties?.map(f => ({ id: f.id, name: f.name })),
+      ormEntity.faculties?.map((f) => ({ id: f.id, name: f.name })),
       ormEntity.requiresPasswordChange,
       ormEntity.address,
       ormEntity.linkedIn,
@@ -127,16 +132,16 @@ export class UserOrmEntity {
     orm.certificates = entity.certificates;
     orm.deletedAt = entity.deletedAt;
     orm.requiresPasswordChange = entity.requiresPasswordChange;
-    
+
     if (entity.faculties) {
-      orm.faculties = entity.faculties.map(f => {
+      orm.faculties = entity.faculties.map((f) => {
         const faculty = new FacultyOrmEntity();
         faculty.id = f.id;
         faculty.name = f.name ?? '';
         return faculty;
       });
     }
-    
+
     return orm;
   }
 }

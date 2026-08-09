@@ -21,7 +21,8 @@ export class ManagePermissionsUseCase {
 
   async create(data: CreatePermissionDto): Promise<Permission> {
     const existing = await this.permissionRepo.findByCode(data.code);
-    if (existing) throw new Error(`Permission with code "${data.code}" already exists`);
+    if (existing)
+      throw new Error(`Permission with code "${data.code}" already exists`);
 
     const permission = new Permission(
       uuidv4(),
@@ -34,13 +35,17 @@ export class ManagePermissionsUseCase {
     return this.permissionRepo.save(permission);
   }
 
-  async update(id: string, data: Partial<CreatePermissionDto>): Promise<Permission | null> {
+  async update(
+    id: string,
+    data: Partial<CreatePermissionDto>,
+  ): Promise<Permission | null> {
     const permission = await this.permissionRepo.findById(id);
     if (!permission) return null;
 
     if (data.name !== undefined) permission.name = data.name;
     if (data.code !== undefined) permission.code = data.code;
-    if (data.description !== undefined) permission.description = data.description;
+    if (data.description !== undefined)
+      permission.description = data.description;
     if (data.resource !== undefined) permission.resource = data.resource;
 
     return this.permissionRepo.save(permission);

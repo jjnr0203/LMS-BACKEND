@@ -25,7 +25,7 @@ export class StudentService {
       data.isActive ?? true,
       data.birthDate,
       data.phone,
-      data.avatarUrl
+      data.avatarUrl,
     );
     return this.studentRepository.save(student);
   }
@@ -47,7 +47,7 @@ export class StudentService {
       data.address !== undefined ? data.address : student.address,
       data.linkedIn !== undefined ? data.linkedIn : student.linkedIn,
       data.cvUrl !== undefined ? data.cvUrl : student.cvUrl,
-      student.certificates
+      student.certificates,
     );
     return this.studentRepository.save(updated);
   }

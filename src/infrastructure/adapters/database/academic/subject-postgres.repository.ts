@@ -32,7 +32,6 @@ export class SubjectPostgresRepository implements SubjectRepositoryPort {
   async findByCode(code: string): Promise<SubjectEntity | null> {
     const orm = await this.repository.findOne({
       where: { code },
-
     });
     return orm ? this.toDomain(orm) : null;
   }
@@ -41,7 +40,6 @@ export class SubjectPostgresRepository implements SubjectRepositoryPort {
     if (codes.length === 0) return [];
     const orms = await this.repository.find({
       where: { code: In(codes) },
-
     });
     return orms.map((o) => this.toDomain(o));
   }
@@ -64,7 +62,6 @@ export class SubjectPostgresRepository implements SubjectRepositoryPort {
   async findByTeacherId(teacherId: string): Promise<SubjectEntity[]> {
     const orms = await this.repository.find({
       where: { teacherId },
-
     });
     return orms.map((o) => this.toDomain(o));
   }

@@ -84,7 +84,13 @@ import { PasswordHasherPort } from '@domain/ports/outbound/auth/password-hasher.
         teacherRepo: TeacherRepositoryPort,
         studentRepo: StudentRepositoryPort,
         uploadPort: ImageUploadPort,
-      ) => new UploadCertificateUseCase(userRepo, teacherRepo, studentRepo, uploadPort),
+      ) =>
+        new UploadCertificateUseCase(
+          userRepo,
+          teacherRepo,
+          studentRepo,
+          uploadPort,
+        ),
       inject: [
         UserRepositoryPort,
         TeacherRepositoryPort,

@@ -57,9 +57,10 @@ export class CoordinatorController {
 
   @Post('asignar-docente')
   async assignTeacher(
-    @Body() body: { 
-      teacherId: string; 
-      subjectId: string; 
+    @Body()
+    body: {
+      teacherId: string;
+      subjectId: string;
       curriculumId?: string;
       academicTermId?: string;
       modalityId?: string;
@@ -89,7 +90,12 @@ export class CoordinatorController {
 
   @Post('quitar-docente')
   async unassignTeacher(
-    @Body() body: { subjectId: string; curriculumId?: string; assignmentId?: string },
+    @Body()
+    body: {
+      subjectId: string;
+      curriculumId?: string;
+      assignmentId?: string;
+    },
   ) {
     await this.unassignTeacherUseCase.execute(
       body.subjectId,
@@ -128,9 +134,12 @@ export class CoordinatorController {
 
   @Post('horarios')
   async saveSchedules(
-    @Body() body: { teacherSubjectId: string; schedules: any[] }
+    @Body() body: { teacherSubjectId: string; schedules: any[] },
   ) {
-    await this.manageSchedulesUseCase.saveSchedules(body.teacherSubjectId, body.schedules);
+    await this.manageSchedulesUseCase.saveSchedules(
+      body.teacherSubjectId,
+      body.schedules,
+    );
     return { success: true };
   }
 
@@ -178,7 +187,11 @@ export class CoordinatorController {
     @Body() dto: { subjectId: string; color: string },
   ) {
     const coordinatorId = req.user.id;
-    await this.manageSubjectColorsUseCase.saveColor(coordinatorId, dto.subjectId, dto.color);
+    await this.manageSubjectColorsUseCase.saveColor(
+      coordinatorId,
+      dto.subjectId,
+      dto.color,
+    );
     return { success: true };
   }
 
@@ -186,5 +199,4 @@ export class CoordinatorController {
   async getCareerDetail(@Param('id') id: string) {
     return this.getCareerDetailUseCase.execute(id);
   }
-
 }

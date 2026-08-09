@@ -8,7 +8,9 @@ export class ManageInstitutionConfigUseCase {
     return this.repo.findOne();
   }
 
-  async upsert(data: Partial<InstitutionConfigEntity>): Promise<InstitutionConfigEntity> {
+  async upsert(
+    data: Partial<InstitutionConfigEntity>,
+  ): Promise<InstitutionConfigEntity> {
     return this.repo.save(data);
   }
 }

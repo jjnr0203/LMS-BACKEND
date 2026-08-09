@@ -9,5 +9,7 @@ export interface CreateEnrollmentCommand {
 }
 
 export abstract class CreateEnrollmentUseCasePort {
-  abstract execute(command: CreateEnrollmentCommand): Promise<{ enrollment: EnrollmentDetailEntity }>;
+  abstract execute(
+    command: CreateEnrollmentCommand,
+  ): Promise<{ enrollment: EnrollmentDetailEntity }>;
 }

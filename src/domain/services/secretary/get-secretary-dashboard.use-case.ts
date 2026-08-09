@@ -14,12 +14,15 @@ export class GetSecretaryDashboardUseCase {
 
   async execute() {
     const inscriptions = await this.inscriptionRepo.findAll();
-    const pendingInscriptions = inscriptions.filter(i => i.status === 'pending').length;
+    const pendingInscriptions = inscriptions.filter(
+      (i) => i.status === 'pending',
+    ).length;
 
     return {
       totalInscriptions: inscriptions.length,
       pendingInscriptions,
-      totalCertificates: (await this.certificateRepo.findByStudentId('')).length || 0,
+      totalCertificates:
+        (await this.certificateRepo.findByStudentId('')).length || 0,
     };
   }
 }

@@ -8,7 +8,10 @@ import { INSTITUTION_CONFIG_REPOSITORY } from '@domain/ports/outbound/institutio
 import { RepositoryProvidersModule } from './repository-providers.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([InstitutionConfigOrmEntity]), RepositoryProvidersModule],
+  imports: [
+    TypeOrmModule.forFeature([InstitutionConfigOrmEntity]),
+    RepositoryProvidersModule,
+  ],
   controllers: [InstitutionConfigController],
   providers: [
     {

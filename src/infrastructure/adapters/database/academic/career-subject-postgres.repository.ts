@@ -97,7 +97,10 @@ export class CareerSubjectPostgresRepository implements CareerSubjectRepositoryP
     return found.map((f) => this.mapToDomain(f));
   }
 
-  async findSubjectsByCareerAndSemester(careerId: string, semester: number): Promise<any[]> {
+  async findSubjectsByCareerAndSemester(
+    careerId: string,
+    semester: number,
+  ): Promise<any[]> {
     const found = await this.repository.find({
       where: { careerId, semester },
       relations: ['subject'],

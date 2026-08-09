@@ -42,11 +42,17 @@ import {
         hasher: PasswordHasherPort,
         mailerService: MailerService,
       ) => new CreateUserUseCase(userRepo, roleRepo, hasher, mailerService),
-      inject: [UserRepositoryPort, RoleRepositoryPort, PasswordHasherPort, MailerService],
+      inject: [
+        UserRepositoryPort,
+        RoleRepositoryPort,
+        PasswordHasherPort,
+        MailerService,
+      ],
     },
     {
       provide: GetPaginatedUsersUseCase,
-      useFactory: (userRepo: UserRepositoryPort) => new GetPaginatedUsersUseCase(userRepo),
+      useFactory: (userRepo: UserRepositoryPort) =>
+        new GetPaginatedUsersUseCase(userRepo),
       inject: [UserRepositoryPort],
     },
     {

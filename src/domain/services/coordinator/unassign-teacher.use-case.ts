@@ -8,7 +8,11 @@ export class UnassignTeacherUseCase {
     private readonly teacherSubjectRepository: TeacherSubjectRepositoryPort,
   ) {}
 
-  async execute(subjectId: string, curriculumId?: string, assignmentId?: string): Promise<void> {
+  async execute(
+    subjectId: string,
+    curriculumId?: string,
+    assignmentId?: string,
+  ): Promise<void> {
     const subject = await this.subjectRepository.findById(subjectId);
     if (!subject) {
       throw new NotFoundException('Materia no encontrada');
@@ -22,9 +26,7 @@ export class UnassignTeacherUseCase {
         curriculumId,
       );
       if (existing.length === 0) {
-        throw new NotFoundException(
-          'No hay docente asignado a esta materia',
-        );
+        throw new NotFoundException('No hay docente asignado a esta materia');
       }
 
       await this.teacherSubjectRepository.deleteBySubjectId(

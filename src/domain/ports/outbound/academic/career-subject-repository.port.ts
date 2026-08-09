@@ -15,6 +15,9 @@ export interface CareerSubjectRepositoryPort {
   ): Promise<CareerSubject | null>;
   deleteBySubject(subjectId: string): Promise<void>;
   findByCurriculum(curriculumId: string): Promise<CareerSubject[]>;
-  findSubjectsByCareerAndSemester(careerId: string, semester: number): Promise<any[]>;
+  findSubjectsByCareerAndSemester(
+    careerId: string,
+    semester: number,
+  ): Promise<any[]>;
   findSemestersByCareer(careerId: string): Promise<number[]>;
 }

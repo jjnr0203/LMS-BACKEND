@@ -37,7 +37,12 @@ export class InscriptionOrmEntity {
   @Column({ type: 'varchar', length: 20, default: 'pending' })
   status: string;
 
-  @Column({ type: 'varchar', length: 255, name: 'document_url', nullable: true })
+  @Column({
+    type: 'varchar',
+    length: 255,
+    name: 'document_url',
+    nullable: true,
+  })
   documentUrl?: string;
 
   @Column({ type: 'text', nullable: true })

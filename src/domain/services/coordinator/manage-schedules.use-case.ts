@@ -14,13 +14,16 @@ export class ManageSchedulesUseCase {
     return this.scheduleRepository.findByTeacherSubject(teacherSubjectId);
   }
 
-  async saveSchedules(teacherSubjectId: string, schedules: ScheduleInput[]): Promise<void> {
+  async saveSchedules(
+    teacherSubjectId: string,
+    schedules: ScheduleInput[],
+  ): Promise<void> {
     // 1. Delete existing schedules for this assignment
     await this.scheduleRepository.deleteByTeacherSubject(teacherSubjectId);
 
     // 2. Insert new ones
     if (schedules && schedules.length > 0) {
-      const newSchedules = schedules.map(s => ({
+      const newSchedules = schedules.map((s) => ({
         teacherSubjectId,
         dayOfWeek: s.dayOfWeek,
         startTime: s.startTime,

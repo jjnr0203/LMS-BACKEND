@@ -27,7 +27,10 @@ export class CreateUserUseCase implements CreateUserUseCasePort {
     const existingByEmail = await this.userRepository.findByEmail(
       command.email,
     );
-    if (existingByEmail && (!existingByEmail.deletedAt || existingByEmail.id !== command.id)) {
+    if (
+      existingByEmail &&
+      (!existingByEmail.deletedAt || existingByEmail.id !== command.id)
+    ) {
       throw new BadRequestException('Ya existe un usuario con este email');
     }
 
@@ -52,10 +55,10 @@ export class CreateUserUseCase implements CreateUserUseCasePort {
       undefined, // avatarUrl
       undefined, // createdAt
       undefined, // updatedAt
-      null,      // deletedAt (null to restore soft-deleted users)
+      null, // deletedAt (null to restore soft-deleted users)
       role.name,
-      command.facultyIds?.map(id => ({ id })),
-      true // requiresPasswordChange = true
+      command.facultyIds?.map((id) => ({ id })),
+      true, // requiresPasswordChange = true
     );
 
     const savedUser = await this.userRepository.save(user);

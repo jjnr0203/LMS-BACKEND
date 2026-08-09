@@ -55,7 +55,7 @@ export class UserPostgresRepository implements UserRepositoryPort {
   ): Promise<{ data: UserEntity[]; total: number }> {
     let searchCondition = '';
     const params: any[] = [];
-    
+
     if (search) {
       searchCondition = ` AND (
         u.id ILIKE $1 OR 
@@ -83,7 +83,7 @@ export class UserPostgresRepository implements UserRepositoryPort {
       WHERE u.deleted_at IS NULL ${searchCondition}
     `;
 
-    let unionQuery = `
+    const unionQuery = `
       ${usersQuery}
       UNION ALL
       ${teachersQuery}
@@ -92,8 +92,8 @@ export class UserPostgresRepository implements UserRepositoryPort {
     `;
 
     let finalQuery = `SELECT * FROM (${unionQuery}) as q`;
-    
-    let whereClauses: string[] = [];
+
+    const whereClauses: string[] = [];
 
     // Filter by role
     if (role) {
@@ -111,7 +111,9 @@ export class UserPostgresRepository implements UserRepositoryPort {
 
     // Filter by facultyIds (only applies to users)
     if (facultyIds && facultyIds.length > 0) {
-      const facultyParams = facultyIds.map((_, i) => `$${params.length + i + 1}`);
+      const facultyParams = facultyIds.map(
+        (_, i) => `$${params.length + i + 1}`,
+      );
       const facultyCondition = `
         q.id IN (
           SELECT uf.user_id 
@@ -133,32 +135,35 @@ export class UserPostgresRepository implements UserRepositoryPort {
       ORDER BY created_at DESC
       LIMIT $${params.length + 1} OFFSET $${params.length + 2}
     `;
-    
+
     const countQuery = `SELECT COUNT(*) as total FROM (${finalQuery}) as counted_q`;
 
     const [rawData, countResult] = await Promise.all([
       this.repository.query(paginatedQuery, [...params, limit, offset]),
-      this.repository.query(countQuery, params)
+      this.repository.query(countQuery, params),
     ]);
 
-    const data = rawData.map((row: any) => new UserEntity(
-      row.id,
-      row.first_name,
-      row.last_name,
-      row.email,
-      '',
-      row.role_id,
-      row.is_active,
-      row.birth_date,
-      row.phone,
-      row.avatar_url,
-      row.created_at,
-      row.updated_at,
-      undefined,
-      row.role_name,
-      undefined,
-      row.requires_password_change
-    ));
+    const data = rawData.map(
+      (row: any) =>
+        new UserEntity(
+          row.id,
+          row.first_name,
+          row.last_name,
+          row.email,
+          '',
+          row.role_id,
+          row.is_active,
+          row.birth_date,
+          row.phone,
+          row.avatar_url,
+          row.created_at,
+          row.updated_at,
+          undefined,
+          row.role_name,
+          undefined,
+          row.requires_password_change,
+        ),
+    );
 
     return { data, total: parseInt(countResult[0].total, 10) };
   }

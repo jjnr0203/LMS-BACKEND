@@ -7,7 +7,10 @@ import { ListSubjectsUseCase } from '@domain/services/coordinator/list-subjects.
 import { RegisterTeacherUseCase } from '@domain/services/coordinator/register-teacher.use-case';
 import { GetCoordinatorDashboardUseCase } from '@domain/services/coordinator/get-coordinator-dashboard.use-case';
 import { ManageCoordinatorSubjectColorsUseCase } from '@domain/services/coordinator/manage-coordinator-subject-colors.use-case';
-import { COORDINATOR_SUBJECT_COLOR_REPOSITORY, CoordinatorSubjectColorRepositoryPort } from '@domain/ports/outbound/academic/coordinator-subject-color-repository.port';
+import {
+  COORDINATOR_SUBJECT_COLOR_REPOSITORY,
+  CoordinatorSubjectColorRepositoryPort,
+} from '@domain/ports/outbound/academic/coordinator-subject-color-repository.port';
 import { ManageSchedulesUseCase } from '@domain/services/coordinator/manage-schedules.use-case';
 import { ScheduleRepositoryPort } from '@domain/ports/outbound/academic/schedule-repository.port';
 import { GetCareerDetailUseCase } from '@domain/services/coordinator/get-career-detail.use-case';
@@ -94,7 +97,8 @@ import { RepositoryProvidersModule } from './repository-providers.module';
         subjectRepo: SubjectRepositoryPort,
         userRepo: UserRepositoryPort,
         teacherSubjectRepo: TeacherSubjectRepositoryPort,
-      ) => new BulkAssignTeacherUseCase(subjectRepo, userRepo, teacherSubjectRepo),
+      ) =>
+        new BulkAssignTeacherUseCase(subjectRepo, userRepo, teacherSubjectRepo),
       inject: [
         SubjectRepositoryPort,
         UserRepositoryPort,
@@ -122,7 +126,11 @@ import { RepositoryProvidersModule } from './repository-providers.module';
           careerSubjectRepo,
           modalityRepo,
         ),
-      inject: [CAREER_REPOSITORY, CAREER_SUBJECT_REPOSITORY, MODALITY_REPOSITORY],
+      inject: [
+        CAREER_REPOSITORY,
+        CAREER_SUBJECT_REPOSITORY,
+        MODALITY_REPOSITORY,
+      ],
     },
     {
       provide: UnassignTeacherUseCase,
@@ -197,7 +205,8 @@ import { RepositoryProvidersModule } from './repository-providers.module';
     },
     {
       provide: ManageCoordinatorSubjectColorsUseCase,
-      useFactory: (repo: CoordinatorSubjectColorRepositoryPort) => new ManageCoordinatorSubjectColorsUseCase(repo),
+      useFactory: (repo: CoordinatorSubjectColorRepositoryPort) =>
+        new ManageCoordinatorSubjectColorsUseCase(repo),
       inject: [COORDINATOR_SUBJECT_COLOR_REPOSITORY],
     },
   ],

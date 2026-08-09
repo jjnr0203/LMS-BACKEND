@@ -7,7 +7,7 @@ import { TeacherEntity } from '../../entities/users/teacher.entity';
 export class TeacherService {
   constructor(
     private readonly teacherRepository: TeacherRepositoryPort,
-    private readonly dataSource: DataSource
+    private readonly dataSource: DataSource,
   ) {}
 
   async getPaginated(page: number, limit: number, search?: string) {
@@ -21,35 +21,46 @@ export class TeacherService {
   }
 
   async getStats(teacherId: string) {
-    const careersResult = await this.dataSource.query(`
+    const careersResult = await this.dataSource.query(
+      `
       SELECT DISTINCT c.id, c.name 
       FROM teacher_subjects ts
       JOIN curriculums cur ON cur.id = ts.curriculum_id
       JOIN careers c ON c.id = cur.career_id
       WHERE ts.teacher_id = $1
-    `, [teacherId]);
+    `,
+      [teacherId],
+    );
 
-    const subjectsResult = await this.dataSource.query(`
+    const subjectsResult = await this.dataSource.query(
+      `
       SELECT DISTINCT sub.id, sub.name 
       FROM teacher_subjects ts
       JOIN subjects sub ON sub.id = ts.subject_id
       WHERE ts.teacher_id = $1
-    `, [teacherId]);
+    `,
+      [teacherId],
+    );
 
-    const schedulesResult = await this.dataSource.query(`
+    const schedulesResult = await this.dataSource.query(
+      `
       SELECT s.start_time, s.end_time 
       FROM schedules s
       JOIN teacher_subjects ts ON ts.id = s.teacher_subject_id
       WHERE ts.teacher_id = $1
-    `, [teacherId]);
+    `,
+      [teacherId],
+    );
 
     let totalHours = 0;
     for (const sched of schedulesResult) {
       if (sched.start_time && sched.end_time) {
         const startParts = sched.start_time.split(':');
         const endParts = sched.end_time.split(':');
-        const startMins = parseInt(startParts[0], 10) * 60 + parseInt(startParts[1], 10);
-        const endMins = parseInt(endParts[0], 10) * 60 + parseInt(endParts[1], 10);
+        const startMins =
+          parseInt(startParts[0], 10) * 60 + parseInt(startParts[1], 10);
+        const endMins =
+          parseInt(endParts[0], 10) * 60 + parseInt(endParts[1], 10);
         const diff = (endMins - startMins) / 60;
         if (diff > 0) totalHours += diff;
       }
@@ -58,7 +69,7 @@ export class TeacherService {
     return {
       totalHours,
       careers: careersResult,
-      subjects: subjectsResult
+      subjects: subjectsResult,
     };
   }
 
@@ -77,7 +88,7 @@ export class TeacherService {
       undefined, // deletedAt
       data.address,
       data.linkedIn,
-      data.cvUrl
+      data.cvUrl,
     );
     return this.teacherRepository.save(teacher);
   }
@@ -99,7 +110,7 @@ export class TeacherService {
       data.address !== undefined ? data.address : teacher.address,
       data.linkedIn !== undefined ? data.linkedIn : teacher.linkedIn,
       data.cvUrl !== undefined ? data.cvUrl : teacher.cvUrl,
-      teacher.certificates
+      teacher.certificates,
     );
     return this.teacherRepository.save(updated);
   }

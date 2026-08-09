@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '@infrastructure/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@infrastructure/auth/guards/roles.guard';
 import { StudentService } from '@domain/services/users/student.service';
@@ -17,7 +27,11 @@ export class StudentsController {
   ) {
     const pageInt = parseInt(page, 10);
     const limitInt = parseInt(limit, 10);
-    const result = await this.studentService.getPaginated(pageInt, limitInt, search);
+    const result = await this.studentService.getPaginated(
+      pageInt,
+      limitInt,
+      search,
+    );
     return {
       data: result.data.map((student: any) => ({
         ...student,
@@ -28,7 +42,7 @@ export class StudentsController {
         page: pageInt,
         limit: limitInt,
         lastPage: Math.ceil(result.total / limitInt),
-      }
+      },
     };
   }
 

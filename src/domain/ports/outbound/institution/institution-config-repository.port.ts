@@ -4,5 +4,7 @@ export const INSTITUTION_CONFIG_REPOSITORY = 'INSTITUTION_CONFIG_REPOSITORY';
 
 export interface InstitutionConfigRepositoryPort {
   findOne(): Promise<InstitutionConfigEntity | null>;
-  save(config: Partial<InstitutionConfigEntity>): Promise<InstitutionConfigEntity>;
+  save(
+    config: Partial<InstitutionConfigEntity>,
+  ): Promise<InstitutionConfigEntity>;
 }

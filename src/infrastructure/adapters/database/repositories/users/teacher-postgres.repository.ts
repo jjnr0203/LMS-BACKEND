@@ -22,14 +22,14 @@ export class TeacherPostgresRepository implements TeacherRepositoryPort {
 
   async findByIds(ids: string[]): Promise<TeacherEntity[]> {
     if (!ids || ids.length === 0) return [];
-    
+
     const ormEntities = await this.repository
       .createQueryBuilder('teacher')
       .where('teacher.id IN (:...ids)', { ids })
       .andWhere('teacher.deletedAt IS NULL')
       .getMany();
-      
-    return ormEntities.map(e => TeacherOrmEntity.toDomain(e));
+
+    return ormEntities.map((e) => TeacherOrmEntity.toDomain(e));
   }
 
   async save(teacher: TeacherEntity): Promise<TeacherEntity> {
@@ -52,8 +52,12 @@ export class TeacherPostgresRepository implements TeacherRepositoryPort {
         new Brackets((qbInner) => {
           qbInner
             .where('teacher.id ILIKE :search', { search: `%${search}%` })
-            .orWhere('teacher.firstName ILIKE :search', { search: `%${search}%` })
-            .orWhere('teacher.lastName ILIKE :search', { search: `%${search}%` });
+            .orWhere('teacher.firstName ILIKE :search', {
+              search: `%${search}%`,
+            })
+            .orWhere('teacher.lastName ILIKE :search', {
+              search: `%${search}%`,
+            });
         }),
       );
     }
@@ -63,7 +67,10 @@ export class TeacherPostgresRepository implements TeacherRepositoryPort {
       .take(limit);
 
     const [ormEntities, total] = await qb.getManyAndCount();
-    return { data: ormEntities.map((e) => TeacherOrmEntity.toDomain(e)), total };
+    return {
+      data: ormEntities.map((e) => TeacherOrmEntity.toDomain(e)),
+      total,
+    };
   }
 
   async softDelete(id: string): Promise<void> {

@@ -73,32 +73,43 @@ export class GetCareerDetailUseCase {
       .filter((n): n is string => n !== undefined);
 
     const curriculums = await this.curriculumRepository.findByCareer(careerId);
-    const careerSubjects = await this.careerSubjectRepository.findByCareer(careerId);
+    const careerSubjects =
+      await this.careerSubjectRepository.findByCareer(careerId);
     const subjectIds = [...new Set(careerSubjects.map((cs) => cs.subjectId))];
-    
-    const subjects = subjectIds.length > 0
-      ? await this.subjectRepository.findByIds(subjectIds)
-      : [];
+
+    const subjects =
+      subjectIds.length > 0
+        ? await this.subjectRepository.findByIds(subjectIds)
+        : [];
     const subjectMap = new Map(subjects.map((s) => [s.id, s]));
 
-    const allTeacherSubjects = subjectIds.length > 0
-      ? await Promise.all(
-          subjectIds.map((sid) => this.teacherSubjectRepository.findBySubjectId(sid)),
-        ).then((results) => results.flat())
-      : [];
+    const allTeacherSubjects =
+      subjectIds.length > 0
+        ? await Promise.all(
+            subjectIds.map((sid) =>
+              this.teacherSubjectRepository.findBySubjectId(sid),
+            ),
+          ).then((results) => results.flat())
+        : [];
 
-    const teacherIds = [...new Set(allTeacherSubjects.map((ts) => ts.teacherId))];
-    const teachers = teacherIds.length > 0
-      ? await this.teacherRepository.findByIds(teacherIds)
-      : [];
+    const teacherIds = [
+      ...new Set(allTeacherSubjects.map((ts) => ts.teacherId)),
+    ];
+    const teachers =
+      teacherIds.length > 0
+        ? await this.teacherRepository.findByIds(teacherIds)
+        : [];
     const teacherNameMap = new Map(
       teachers.map((u) => [u.id, `${u.firstName} ${u.lastName}`]),
     );
 
     const allTeacherSubjectIds = allTeacherSubjects.map((ts) => ts.id);
-    const allSchedules = allTeacherSubjectIds.length > 0
-      ? await this.scheduleRepository.findByTeacherSubjectIds(allTeacherSubjectIds)
-      : [];
+    const allSchedules =
+      allTeacherSubjectIds.length > 0
+        ? await this.scheduleRepository.findByTeacherSubjectIds(
+            allTeacherSubjectIds,
+          )
+        : [];
     const schedulesByTeacherSubject = new Map<string, any[]>();
     for (const sched of allSchedules) {
       if (!schedulesByTeacherSubject.has(sched.teacherSubjectId)) {
@@ -113,7 +124,10 @@ export class GetCareerDetailUseCase {
     }
 
     // Group assignments by curriculumId -> subjectId -> array of TeacherSubjectEntity
-    const assignmentsByCurriculum = new Map<string, Map<string, TeacherSubjectEntity[]>>();
+    const assignmentsByCurriculum = new Map<
+      string,
+      Map<string, TeacherSubjectEntity[]>
+    >();
     for (const ts of allTeacherSubjects) {
       const key = ts.curriculumId || '__shared__';
       if (!assignmentsByCurriculum.has(key)) {
@@ -132,8 +146,12 @@ export class GetCareerDetailUseCase {
           (cs) => cs.curriculumId === cur.id || !cs.curriculumId,
         );
 
-        const curAssignmentsMap = assignmentsByCurriculum.get(cur.id) || new Map<string, TeacherSubjectEntity[]>();
-        const sharedAssignmentsMap = assignmentsByCurriculum.get('__shared__') || new Map<string, TeacherSubjectEntity[]>();
+        const curAssignmentsMap =
+          assignmentsByCurriculum.get(cur.id) ||
+          new Map<string, TeacherSubjectEntity[]>();
+        const sharedAssignmentsMap =
+          assignmentsByCurriculum.get('__shared__') ||
+          new Map<string, TeacherSubjectEntity[]>();
 
         const semesterMap = new Map<number, SubjectEntry[]>();
 
@@ -151,15 +169,19 @@ export class GetCareerDetailUseCase {
             ...(sharedAssignmentsMap.get(sub.id) || []),
           ];
 
-          const assignments: SubjectAssignment[] = rawAssignments.map(ts => ({
+          const assignments: SubjectAssignment[] = rawAssignments.map((ts) => ({
             id: ts.id,
             teacherId: ts.teacherId,
             teacherName: teacherNameMap.get(ts.teacherId) || 'Desconocido',
             academicTermId: ts.academicTermId || '',
             modalityId: ts.modalityId || '',
-            modalityName: ts.modalityId ? modalityMap.get(ts.modalityId) || 'Sin Modalidad' : 'Sin Modalidad',
+            modalityName: ts.modalityId
+              ? modalityMap.get(ts.modalityId) || 'Sin Modalidad'
+              : 'Sin Modalidad',
             jornadaId: ts.jornadaId || '',
-            jornadaName: ts.jornadaId ? jornadaMap.get(ts.jornadaId) || 'Sin Jornada' : 'Sin Jornada',
+            jornadaName: ts.jornadaId
+              ? jornadaMap.get(ts.jornadaId) || 'Sin Jornada'
+              : 'Sin Jornada',
             schedules: schedulesByTeacherSubject.get(ts.id) || [],
           }));
 

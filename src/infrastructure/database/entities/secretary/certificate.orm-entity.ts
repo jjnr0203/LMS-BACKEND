@@ -29,7 +29,11 @@ export class CertificateOrmEntity {
   @Column({ type: 'varchar', length: 255, name: 'pdf_url', nullable: true })
   pdfUrl?: string;
 
-  @Column({ type: 'timestamp', name: 'generated_at', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({
+    type: 'timestamp',
+    name: 'generated_at',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   generatedAt: Date;
 
   @CreateDateColumn({ name: 'created_at' })

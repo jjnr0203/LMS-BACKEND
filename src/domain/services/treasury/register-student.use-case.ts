@@ -31,7 +31,10 @@ export class RegisterStudentUseCase implements RegisterStudentUseCasePort {
     const existingByEmail = await this.userRepository.findByEmail(
       command.email,
     );
-    if (existingByEmail && (!existingByEmail.deletedAt || existingByEmail.id !== command.id)) {
+    if (
+      existingByEmail &&
+      (!existingByEmail.deletedAt || existingByEmail.id !== command.id)
+    ) {
       throw new BadRequestException('Ya existe un usuario con este email');
     }
 
@@ -55,7 +58,7 @@ export class RegisterStudentUseCase implements RegisterStudentUseCasePort {
       undefined, // avatarUrl
       undefined, // createdAt
       undefined, // updatedAt
-      null,      // deletedAt
+      null, // deletedAt
       role.name,
     );
 

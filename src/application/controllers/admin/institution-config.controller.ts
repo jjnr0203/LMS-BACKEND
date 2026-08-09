@@ -95,7 +95,13 @@ export class InstitutionConfigController {
     });
 
     // Save logoUrl to config
-    const config = await this.useCase.upsert({ logoUrl: uploadResult.secure_url });
-    return { message: 'Logo subido exitosamente', logoUrl: uploadResult.secure_url, config };
+    const config = await this.useCase.upsert({
+      logoUrl: uploadResult.secure_url,
+    });
+    return {
+      message: 'Logo subido exitosamente',
+      logoUrl: uploadResult.secure_url,
+      config,
+    };
   }
 }

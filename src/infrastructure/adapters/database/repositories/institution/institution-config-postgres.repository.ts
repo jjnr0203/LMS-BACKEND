@@ -35,7 +35,9 @@ export class InstitutionConfigPostgresRepository implements InstitutionConfigRep
     return orm ? this.toDomain(orm) : null;
   }
 
-  async save(data: Partial<InstitutionConfigEntity>): Promise<InstitutionConfigEntity> {
+  async save(
+    data: Partial<InstitutionConfigEntity>,
+  ): Promise<InstitutionConfigEntity> {
     // Singleton: find existing or create new
     let orm = await this.repository.findOne({ where: {} });
     if (orm) {

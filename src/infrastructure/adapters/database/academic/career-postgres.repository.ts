@@ -54,8 +54,7 @@ export class CareerPostgresRepository implements CareerRepositoryPort {
     }
     if (domainEntity.coordinatorId)
       ormEntity.coordinatorId = domainEntity.coordinatorId;
-    if (domainEntity.facultyId)
-      ormEntity.facultyId = domainEntity.facultyId;
+    if (domainEntity.facultyId) ormEntity.facultyId = domainEntity.facultyId;
     ormEntity.isActive = domainEntity.isActive;
     return ormEntity;
   }

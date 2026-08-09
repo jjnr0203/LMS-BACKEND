@@ -22,7 +22,9 @@ export class UploadCvUseCase implements UploadCvUseCasePort {
     fileName?: string,
   ): Promise<{ cvUrl: string | null }> {
     if (fileBuffer && !this.imageUploadService.uploadDocument) {
-      throw new Error('uploadDocument method is not implemented in ImageUploadPort');
+      throw new Error(
+        'uploadDocument method is not implemented in ImageUploadPort',
+      );
     }
 
     let cvUrl: string | null = null;

@@ -11,14 +11,20 @@ export class CoordinatorSubjectColorPostgresRepository implements CoordinatorSub
     private readonly repository: Repository<CoordinatorSubjectColorOrmEntity>,
   ) {}
 
-  async findByCoordinatorId(coordinatorId: string): Promise<{ subjectId: string; color: string }[]> {
+  async findByCoordinatorId(
+    coordinatorId: string,
+  ): Promise<{ subjectId: string; color: string }[]> {
     const records = await this.repository.find({
       where: { coordinatorId },
     });
     return records.map((r) => ({ subjectId: r.subjectId, color: r.color }));
   }
 
-  async save(coordinatorId: string, subjectId: string, color: string): Promise<void> {
+  async save(
+    coordinatorId: string,
+    subjectId: string,
+    color: string,
+  ): Promise<void> {
     const existing = await this.repository.findOne({
       where: { coordinatorId, subjectId },
     });

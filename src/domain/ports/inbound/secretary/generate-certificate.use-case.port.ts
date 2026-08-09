@@ -6,5 +6,7 @@ export interface GenerateCertificateCommand {
 }
 
 export abstract class GenerateCertificateUseCasePort {
-  abstract execute(command: GenerateCertificateCommand): Promise<{ certificate: CertificateEntity }>;
+  abstract execute(
+    command: GenerateCertificateCommand,
+  ): Promise<{ certificate: CertificateEntity }>;
 }

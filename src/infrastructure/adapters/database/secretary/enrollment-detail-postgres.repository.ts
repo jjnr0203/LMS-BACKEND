@@ -17,12 +17,19 @@ export class EnrollmentDetailPostgresRepository implements EnrollmentDetailRepos
     return orm ? EnrollmentDetailOrmEntity.toDomain(orm) : null;
   }
 
-  async findByStudentAndTerm(studentId: string, academicTermId: string): Promise<EnrollmentDetailEntity | null> {
-    const orm = await this.repository.findOne({ where: { studentId, academicTermId } });
+  async findByStudentAndTerm(
+    studentId: string,
+    academicTermId: string,
+  ): Promise<EnrollmentDetailEntity | null> {
+    const orm = await this.repository.findOne({
+      where: { studentId, academicTermId },
+    });
     return orm ? EnrollmentDetailOrmEntity.toDomain(orm) : null;
   }
 
-  async save(enrollment: EnrollmentDetailEntity): Promise<EnrollmentDetailEntity> {
+  async save(
+    enrollment: EnrollmentDetailEntity,
+  ): Promise<EnrollmentDetailEntity> {
     const orm = EnrollmentDetailOrmEntity.fromDomain(enrollment);
     const saved = await this.repository.save(orm);
     return EnrollmentDetailOrmEntity.toDomain(saved);

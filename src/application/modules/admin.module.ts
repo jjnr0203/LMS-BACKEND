@@ -63,7 +63,12 @@ import { TeacherSubjectRepositoryPort } from '@domain/ports/outbound/academic/te
         hasher: PasswordHasherPort,
         mailerService: MailerService,
       ) => new CreateUserUseCase(userRepo, roleRepo, hasher, mailerService),
-      inject: [UserRepositoryPort, RoleRepositoryPort, PasswordHasherPort, MailerService],
+      inject: [
+        UserRepositoryPort,
+        RoleRepositoryPort,
+        PasswordHasherPort,
+        MailerService,
+      ],
     },
     {
       provide: GetDashboardStatsUseCase,

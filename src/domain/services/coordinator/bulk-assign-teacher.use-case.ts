@@ -29,7 +29,7 @@ export class BulkAssignTeacherUseCase {
     }
 
     // Verify all subjects exist
-    const subjectIds = command.subjects.map(s => s.subjectId);
+    const subjectIds = command.subjects.map((s) => s.subjectId);
     const subjects = await this.subjectRepository.findByIds(subjectIds);
     if (subjects.length !== subjectIds.length) {
       throw new NotFoundException('Algunas materias no fueron encontradas.');

@@ -26,7 +26,10 @@ export class RegisterTeacherUseCase implements RegisterTeacherUseCasePort {
     const existingByEmail = await this.userRepository.findByEmail(
       command.email,
     );
-    if (existingByEmail && (!existingByEmail.deletedAt || existingByEmail.id !== command.id)) {
+    if (
+      existingByEmail &&
+      (!existingByEmail.deletedAt || existingByEmail.id !== command.id)
+    ) {
       throw new BadRequestException('Ya existe un usuario con este email');
     }
 
@@ -50,9 +53,9 @@ export class RegisterTeacherUseCase implements RegisterTeacherUseCasePort {
       undefined, // avatarUrl
       undefined, // createdAt
       undefined, // updatedAt
-      null,      // deletedAt (null to restore soft-deleted users)
+      null, // deletedAt (null to restore soft-deleted users)
       role.name,
-      command.facultyIds?.map(id => ({ id }))
+      command.facultyIds?.map((id) => ({ id })),
     );
 
     const savedUser = await this.userRepository.save(user);
