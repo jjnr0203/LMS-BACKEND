@@ -39,4 +39,9 @@ export class EnrollmentDetailPostgresRepository implements EnrollmentDetailRepos
     const orms = await this.repository.find({ where: { studentId } });
     return orms.map(EnrollmentDetailOrmEntity.toDomain);
   }
+
+  async findAll(): Promise<EnrollmentDetailEntity[]> {
+    const orms = await this.repository.find();
+    return orms.map(EnrollmentDetailOrmEntity.toDomain);
+  }
 }

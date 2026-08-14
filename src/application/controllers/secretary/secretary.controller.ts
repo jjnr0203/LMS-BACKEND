@@ -15,6 +15,7 @@ import { CreateEnrollmentUseCase } from '@domain/services/secretary/create-enrol
 import { GenerateCertificateUseCase } from '@domain/services/secretary/generate-certificate.use-case';
 import { GetSecretaryDashboardUseCase } from '@domain/services/secretary/get-secretary-dashboard.use-case';
 import { InscriptionRepositoryPort } from '@domain/ports/outbound/secretary/inscription-repository.port';
+import { EnrollmentDetailRepositoryPort } from '@domain/ports/outbound/secretary/enrollment-detail-repository.port';
 import { StudentRepositoryPort } from '@domain/ports/outbound/users/student-repository.port';
 import { CAREER_REPOSITORY } from '@domain/ports/outbound/academic/career-repository.port';
 import { ACADEMIC_TERM_REPOSITORY } from '@domain/ports/outbound/academic/academic-term-repository.port';
@@ -35,6 +36,7 @@ export class SecretaryController {
     private readonly generateCertificateUseCase: GenerateCertificateUseCase,
     private readonly getDashboardUseCase: GetSecretaryDashboardUseCase,
     private readonly inscriptionRepo: InscriptionRepositoryPort,
+    private readonly enrollmentDetailRepo: EnrollmentDetailRepositoryPort,
     private readonly studentRepo: StudentRepositoryPort,
     @Inject(CAREER_REPOSITORY) private readonly careerRepo: any,
     @Inject(ACADEMIC_TERM_REPOSITORY) private readonly termRepo: any,
@@ -90,6 +92,9 @@ export class SecretaryController {
         latestByStudent.set(ins.studentId, ins);
     }
 
+    const enrollments = await this.enrollmentDetailRepo.findAll();
+    const matriculated = new Set(enrollments.map((e) => e.studentId));
+
     return {
       data: data.map((s: any) => {
         const ins = latestByStudent.get(s.id);
@@ -101,7 +106,7 @@ export class SecretaryController {
           isActive: s.isActive,
           careerId: ins?.careerId ?? null,
           careerName: ins?.careerName ?? null,
-          status: ins?.status ?? null,
+          status: matriculated.has(s.id) ? 'matriculado' : (ins?.status ?? null),
         };
       }),
       total,

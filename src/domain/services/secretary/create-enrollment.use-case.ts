@@ -1,4 +1,5 @@
 import { v4 as uuid } from 'uuid';
+import { randomUUID } from 'node:crypto';
 import { BadRequestException } from '@nestjs/common';
 import {
   CreateEnrollmentUseCasePort,
@@ -7,14 +8,17 @@ import {
 import { EnrollmentDetailRepositoryPort } from '@domain/ports/outbound/secretary/enrollment-detail-repository.port';
 import { EnrollmentSubjectRepositoryPort } from '@domain/ports/outbound/secretary/enrollment-subject-repository.port';
 import { StudentRepositoryPort } from '@domain/ports/outbound/users/student-repository.port';
+import { TuitionRepositoryPort } from '@domain/ports/outbound/academic/tuition-repository.port';
 import { EnrollmentDetailEntity } from '@domain/entities/secretary/enrollment-detail.entity';
 import { EnrollmentSubjectEntity } from '@domain/entities/secretary/enrollment-subject.entity';
+import { TuitionEntity } from '@domain/entities/academic/tuition.entity';
 
 export class CreateEnrollmentUseCase implements CreateEnrollmentUseCasePort {
   constructor(
     private readonly enrollmentDetailRepo: EnrollmentDetailRepositoryPort,
     private readonly enrollmentSubjectRepo: EnrollmentSubjectRepositoryPort,
     private readonly studentRepo: StudentRepositoryPort,
+    private readonly tuitionRepo: TuitionRepositoryPort,
   ) {}
 
   async execute(
@@ -58,6 +62,15 @@ export class CreateEnrollmentUseCase implements CreateEnrollmentUseCasePort {
           ),
       );
       await this.enrollmentSubjectRepo.saveMany(subjects);
+    }
+
+    const existingTuition = await this.tuitionRepo.findByStudentId(
+      command.studentId,
+    );
+    if (!existingTuition) {
+      await this.tuitionRepo.save(
+        new TuitionEntity(randomUUID(), command.studentId, 'no_paga', 0),
+      );
     }
 
     return { enrollment: saved };

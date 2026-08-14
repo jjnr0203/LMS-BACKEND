@@ -1,13 +1,13 @@
-import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '@infrastructure/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@infrastructure/auth/guards/roles.guard';
 import { Roles } from '@infrastructure/auth/decorators/roles.decorator';
-import { ListTuitionsUseCase } from '@domain/services/treasury/list-tuitions.use-case';
+import { ListMatriculasUseCase } from '@domain/services/treasury/list-matriculas.use-case';
 import { RegisterPaymentUseCase } from '@domain/services/treasury/register-payment.use-case';
+import { CompleteTuitionUseCase } from '@domain/services/treasury/complete-tuition.use-case';
+import { CreateConvenioUseCase } from '@domain/services/treasury/create-convenio.use-case';
 import { DisableAccountUseCase } from '@domain/services/treasury/disable-account.use-case';
-import { RegisterStudentUseCase } from '@domain/services/treasury/register-student.use-case';
-import { RegisterStudentDto } from '../../dto/treasury/register-student.dto';
-import { AdminResponseDto } from '../../dto/admin/admin-response.dto';
+import { GetTreasuryDashboardUseCase } from '@domain/services/treasury/get-treasury-dashboard.use-case';
 import { RegisterPaymentDto } from '../../dto/treasury/register-payment.dto';
 import { DisableAccountDto } from '../../dto/treasury/disable-account.dto';
 
@@ -16,33 +16,46 @@ import { DisableAccountDto } from '../../dto/treasury/disable-account.dto';
 @Roles('treasury')
 export class TreasuryController {
   constructor(
-    private readonly listTuitionsUseCase: ListTuitionsUseCase,
+    private readonly listMatriculasUseCase: ListMatriculasUseCase,
     private readonly registerPaymentUseCase: RegisterPaymentUseCase,
+    private readonly completeTuitionUseCase: CompleteTuitionUseCase,
+    private readonly createConvenioUseCase: CreateConvenioUseCase,
     private readonly disableAccountUseCase: DisableAccountUseCase,
-    private readonly registerStudentUseCase: RegisterStudentUseCase,
+    private readonly getTreasuryDashboardUseCase: GetTreasuryDashboardUseCase,
   ) {}
+
+  @Get('dashboard')
+  async getDashboard() {
+    const { stats, recentTuitions } = await this.getTreasuryDashboardUseCase.execute();
+    return { stats, recentTuitions };
+  }
 
   @Get('matriculas')
   async listTuitions() {
-    const { tuitions } = await this.listTuitionsUseCase.execute();
-    return { tuitions };
+    const { data } = await this.listMatriculasUseCase.execute();
+    return { data };
   }
 
-  @Post('estudiantes')
-  async registerStudent(@Body() dto: RegisterStudentDto) {
-    const { user, tuition } = await this.registerStudentUseCase.execute({
-      id: dto.id,
-      firstName: dto.firstName,
-      lastName: dto.lastName,
-      email: dto.email,
-      password: dto.password,
-      birthDate: dto.birthDate,
-      phone: dto.phone,
-    });
+  @Post('matriculas/:studentId/pago-completo')
+  async completeTuition(@Param('studentId') studentId: string) {
+    const { tuition } = await this.completeTuitionUseCase.execute(studentId);
     return {
-      message: 'Estudiante registrado exitosamente',
-      user: AdminResponseDto.fromEntity(user),
+      message: 'Matrícula marcada como pago completo',
       tuition: {
+        studentId: tuition.studentId,
+        status: tuition.status,
+        paidInstallments: tuition.paidInstallments,
+      },
+    };
+  }
+
+  @Post('matriculas/:studentId/convenio')
+  async createConvenio(@Param('studentId') studentId: string) {
+    const { tuition } = await this.createConvenioUseCase.execute(studentId);
+    return {
+      message: 'Convenio creado exitosamente',
+      tuition: {
+        studentId: tuition.studentId,
         status: tuition.status,
         paidInstallments: tuition.paidInstallments,
       },

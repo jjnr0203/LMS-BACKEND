@@ -1,4 +1,4 @@
-export type TuitionStatus = 'pago_total' | 'pendiente' | 'no_paga';
+export type TuitionStatus = 'pago_total' | 'pendiente' | 'convenio' | 'no_paga';
 
 export class TuitionEntity {
   constructor(

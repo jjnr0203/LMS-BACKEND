@@ -12,4 +12,5 @@ export abstract class EnrollmentDetailRepositoryPort {
   abstract findByStudentId(
     studentId: string,
   ): Promise<EnrollmentDetailEntity[]>;
+  abstract findAll(): Promise<EnrollmentDetailEntity[]>;
 }

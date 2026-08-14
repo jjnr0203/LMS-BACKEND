@@ -1,13 +1,14 @@
 import { Module } from '@nestjs/common';
 import { TreasuryController } from '../controllers/treasury/treasury.controller';
-import { ListTuitionsUseCase } from '@domain/services/treasury/list-tuitions.use-case';
+import { ListMatriculasUseCase } from '@domain/services/treasury/list-matriculas.use-case';
 import { RegisterPaymentUseCase } from '@domain/services/treasury/register-payment.use-case';
+import { CompleteTuitionUseCase } from '@domain/services/treasury/complete-tuition.use-case';
+import { CreateConvenioUseCase } from '@domain/services/treasury/create-convenio.use-case';
 import { DisableAccountUseCase } from '@domain/services/treasury/disable-account.use-case';
-import { RegisterStudentUseCase } from '@domain/services/treasury/register-student.use-case';
+import { GetTreasuryDashboardUseCase } from '@domain/services/treasury/get-treasury-dashboard.use-case';
 import { TuitionRepositoryPort } from '@domain/ports/outbound/academic/tuition-repository.port';
+import { StudentRepositoryPort } from '@domain/ports/outbound/users/student-repository.port';
 import { UserRepositoryPort } from '@domain/ports/outbound/users/user-repository.port';
-import { RoleRepositoryPort } from '@domain/ports/outbound/users/role-repository.port';
-import { PasswordHasherPort } from '@domain/ports/outbound/auth/password-hasher.port';
 import { RepositoryProvidersModule } from './repository-providers.module';
 
 @Module({
@@ -15,9 +16,17 @@ import { RepositoryProvidersModule } from './repository-providers.module';
   controllers: [TreasuryController],
   providers: [
     {
-      provide: ListTuitionsUseCase,
+      provide: ListMatriculasUseCase,
+      useFactory: (
+        studentRepo: StudentRepositoryPort,
+        tuitionRepo: TuitionRepositoryPort,
+      ) => new ListMatriculasUseCase(studentRepo, tuitionRepo),
+      inject: [StudentRepositoryPort, TuitionRepositoryPort],
+    },
+    {
+      provide: GetTreasuryDashboardUseCase,
       useFactory: (tuitionRepo: TuitionRepositoryPort) =>
-        new ListTuitionsUseCase(tuitionRepo),
+        new GetTreasuryDashboardUseCase(tuitionRepo),
       inject: [TuitionRepositoryPort],
     },
     {
@@ -27,27 +36,24 @@ import { RepositoryProvidersModule } from './repository-providers.module';
       inject: [TuitionRepositoryPort],
     },
     {
+      provide: CompleteTuitionUseCase,
+      useFactory: (tuitionRepo: TuitionRepositoryPort) =>
+        new CompleteTuitionUseCase(tuitionRepo),
+      inject: [TuitionRepositoryPort],
+    },
+    {
+      provide: CreateConvenioUseCase,
+      useFactory: (tuitionRepo: TuitionRepositoryPort) =>
+        new CreateConvenioUseCase(tuitionRepo),
+      inject: [TuitionRepositoryPort],
+    },
+    {
       provide: DisableAccountUseCase,
       useFactory: (
         userRepo: UserRepositoryPort,
         tuitionRepo: TuitionRepositoryPort,
       ) => new DisableAccountUseCase(userRepo, tuitionRepo),
       inject: [UserRepositoryPort, TuitionRepositoryPort],
-    },
-    {
-      provide: RegisterStudentUseCase,
-      useFactory: (
-        userRepo: UserRepositoryPort,
-        roleRepo: RoleRepositoryPort,
-        hasher: PasswordHasherPort,
-        tuitionRepo: TuitionRepositoryPort,
-      ) => new RegisterStudentUseCase(userRepo, roleRepo, hasher, tuitionRepo),
-      inject: [
-        UserRepositoryPort,
-        RoleRepositoryPort,
-        PasswordHasherPort,
-        TuitionRepositoryPort,
-      ],
     },
   ],
 })

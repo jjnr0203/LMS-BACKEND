@@ -22,6 +22,7 @@ import { AcademicRecordOrmEntity } from '@infrastructure/database/entities/secre
 import { CertificateOrmEntity } from '@infrastructure/database/entities/secretary/certificate.orm-entity';
 import { InstitutionConfigOrmEntity } from '@infrastructure/database/entities/institution/institution-config.orm-entity';
 import { StudentRepositoryPort } from '@domain/ports/outbound/users/student-repository.port';
+import { TuitionRepositoryPort } from '@domain/ports/outbound/academic/tuition-repository.port';
 import { PdfGeneratorPort } from '@domain/ports/outbound/storage/pdf-generator.port';
 import { PdfkitPdfGeneratorAdapter } from '@infrastructure/adapters/storage/pdfkit-pdf-generator.adapter';
 import { ImageUploadPort } from '@domain/ports/outbound/storage/image-upload.port';
@@ -89,16 +90,19 @@ import { RepositoryProvidersModule } from './repository-providers.module';
         enrollmentDetailRepo: EnrollmentDetailRepositoryPort,
         enrollmentSubjectRepo: EnrollmentSubjectRepositoryPort,
         studentRepo: StudentRepositoryPort,
+        tuitionRepo: TuitionRepositoryPort,
       ) =>
         new CreateEnrollmentUseCase(
           enrollmentDetailRepo,
           enrollmentSubjectRepo,
           studentRepo,
+          tuitionRepo,
         ),
       inject: [
         EnrollmentDetailRepositoryPort,
         EnrollmentSubjectRepositoryPort,
         StudentRepositoryPort,
+        TuitionRepositoryPort,
       ],
     },
     {
