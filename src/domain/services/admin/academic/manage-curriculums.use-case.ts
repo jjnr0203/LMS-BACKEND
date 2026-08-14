@@ -82,6 +82,7 @@ export class ManageCurriculumsUseCase {
         name: sub?.name || '',
         credits: sub?.credits || 0,
         hours: sub?.hours || 0,
+        prerequisiteIds: rel.prerequisiteIds,
       };
     });
   }

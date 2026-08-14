@@ -24,10 +24,13 @@ export interface SubjectAssignment {
 
 export interface SubjectEntry {
   id: string;
+  subjectId: string;
   code: string;
   name: string;
   credits: number;
+  hours: number;
   semester: number;
+  prerequisiteIds: string[];
   assignments: SubjectAssignment[];
 }
 
@@ -186,11 +189,14 @@ export class GetCareerDetailUseCase {
           }));
 
           semesterMap.get(semester)!.push({
-            id: sub.id,
+            id: rel.id,
+            subjectId: rel.subjectId,
             code: sub.code,
             name: sub.name,
             credits: sub.credits,
+            hours: sub.hours || 0,
             semester,
+            prerequisiteIds: rel.prerequisiteIds || [],
             assignments,
           });
         }

@@ -9,6 +9,8 @@ import {
   UseGuards,
   HttpException,
   HttpStatus,
+  Query,
+  Patch,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '@infrastructure/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@infrastructure/auth/guards/roles.guard';
@@ -24,6 +26,8 @@ import { ManageSemesterColorsUseCase } from '@domain/services/admin/manage-semes
 import { ManageCurriculumsUseCase } from '@domain/services/admin/academic/manage-curriculums.use-case';
 import { GetCareerBreakdownUseCase } from '@domain/services/admin/academic/get-career-breakdown.use-case';
 import { ManageFacultiesUseCase } from '@domain/services/admin/academic/manage-faculties.use-case';
+import { UpdatePrerequisitesUseCase } from '@domain/services/admin/academic/update-prerequisites.use-case';
+import { UpdateSuccessorsUseCase } from '@domain/services/admin/academic/update-successors.use-case';
 
 import {
   CreateAcademicTermDto,
@@ -35,6 +39,8 @@ import {
   BulkSubjectsDto,
   CreateCurriculumDto,
   CreateFacultyDto,
+  UpdatePrerequisitesDto,
+  UpdateSuccessorsDto,
 } from '../../dto/admin/academic.dto';
 
 @Controller('admin/academic')
@@ -52,10 +58,12 @@ export class AdminAcademicController {
     private readonly manageCurriculumsUC: ManageCurriculumsUseCase,
     private readonly getCareerBreakdownUC: GetCareerBreakdownUseCase,
     private readonly manageFacultiesUC: ManageFacultiesUseCase,
+    private readonly updatePrerequisitesUC: UpdatePrerequisitesUseCase,
+    private readonly updateSuccessorsUC: UpdateSuccessorsUseCase,
   ) {}
 
   // --- SEMESTER COLORS ---
-  @Roles('admin', 'coordinator')
+  @Roles('admin', 'coordinator', 'human_resources')
   @Get('semester-colors')
   async getSemesterColors() {
     return this.manageSemesterColorsUC.getColors();
@@ -229,6 +237,35 @@ export class AdminAcademicController {
     return subjects;
   }
 
+  @Get('curriculums/:curriculumId/possible-prerequisites')
+  async getPossiblePrerequisites(
+    @Param('curriculumId') curriculumId: string,
+    @Query('excludeCareerSubjectId') excludeCareerSubjectId?: string,
+  ) {
+    const subjects =
+      await this.manageCurriculumsUC.getSubjectsByCurriculum(curriculumId);
+    if (!excludeCareerSubjectId) return subjects;
+    return subjects.filter((s) => s.relationId !== excludeCareerSubjectId);
+  }
+
+  @Patch('career-subjects/:id/prerequisites')
+  async updatePrerequisites(
+    @Param('id') id: string,
+    @Body() dto: UpdatePrerequisitesDto,
+  ) {
+    await this.updatePrerequisitesUC.execute(id, dto.prerequisiteIds || []);
+    return { success: true };
+  }
+
+  @Patch('career-subjects/:id/successors')
+  async updateSuccessors(
+    @Param('id') id: string,
+    @Body() dto: UpdateSuccessorsDto,
+  ) {
+    await this.updateSuccessorsUC.execute(id, dto.successorIds || []);
+    return { success: true };
+  }
+
   // --- CAREER BREAKDOWN (desglose academico detail) ---
   @Get('careers/:id/breakdown')
   async getCareerBreakdown(@Param('id') id: string): Promise<object> {
@@ -239,6 +276,7 @@ export class AdminAcademicController {
   }
 
   // --- FACULTIES ---
+  @Roles('admin', 'human_resources', 'coordinator')
   @Get('faculties')
   async getFaculties() {
     return this.manageFacultiesUC.findAll();

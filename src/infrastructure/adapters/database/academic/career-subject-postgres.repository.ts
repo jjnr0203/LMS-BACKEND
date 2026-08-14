@@ -19,6 +19,7 @@ export class CareerSubjectPostgresRepository implements CareerSubjectRepositoryP
       ormEntity.subjectId,
       ormEntity.semester,
       ormEntity.curriculumId,
+      ormEntity.prerequisiteIds || [],
     );
   }
 
@@ -29,7 +30,14 @@ export class CareerSubjectPostgresRepository implements CareerSubjectRepositoryP
     ormEntity.subjectId = domainEntity.subjectId;
     ormEntity.semester = domainEntity.semester;
     ormEntity.curriculumId = domainEntity.curriculumId;
+    ormEntity.prerequisiteIds = domainEntity.prerequisiteIds || [];
     return ormEntity;
+  }
+
+  async findById(id: string): Promise<CareerSubject | null> {
+    const found = await this.repository.findOne({ where: { id } });
+    if (!found) return null;
+    return this.mapToDomain(found);
   }
 
   async save(careerSubject: CareerSubject): Promise<CareerSubject> {

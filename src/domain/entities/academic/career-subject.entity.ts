@@ -5,5 +5,6 @@ export class CareerSubject {
     public subjectId: string,
     public semester: number,
     public curriculumId?: string,
+    public prerequisiteIds: string[] = [],
   ) {}
 }

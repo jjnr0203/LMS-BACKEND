@@ -21,12 +21,15 @@ interface SubjectAssignment {
 
 interface SubjectBreakdown {
   id: string;
+  subjectId: string;
   code: string;
   name: string;
   credits: number;
   hours: number;
   semester: number;
   assignments: SubjectAssignment[];
+  prerequisiteIds?: string[];
+  prerequisiteCodes?: string[];
 }
 
 interface SemesterBreakdown {
@@ -179,14 +182,26 @@ export class GetCareerBreakdownUseCase {
             : 'Sin Jornada',
         }));
 
+        const prerequisiteIds = rel.prerequisiteIds || [];
+        const prerequisiteCodes = prerequisiteIds.map(id => {
+           const cRel = allCareerSubjects.find(cs => cs.id === id);
+           if (cRel) {
+             return subjectMap.get(cRel.subjectId)?.code || '';
+           }
+           return '';
+        }).filter(c => c !== '');
+
         semesterMap.get(sem)!.push({
-          id: rel.subjectId,
+          id: rel.id,
+          subjectId: rel.subjectId,
           code: sub.code,
           name: sub.name,
           credits: sub.credits,
           hours: sub.hours || 0,
           semester: sem,
           assignments,
+          prerequisiteIds,
+          prerequisiteCodes,
         });
       }
 
