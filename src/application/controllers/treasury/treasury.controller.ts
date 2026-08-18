@@ -3,12 +3,15 @@ import { JwtAuthGuard } from '@infrastructure/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@infrastructure/auth/guards/roles.guard';
 import { Roles } from '@infrastructure/auth/decorators/roles.decorator';
 import { ListMatriculasUseCase } from '@domain/services/treasury/list-matriculas.use-case';
+import { ListOverdueStudentsUseCase } from '@domain/services/treasury/list-overdue-students.use-case';
 import { RegisterPaymentUseCase } from '@domain/services/treasury/register-payment.use-case';
 import { CompleteTuitionUseCase } from '@domain/services/treasury/complete-tuition.use-case';
 import { CreateConvenioUseCase } from '@domain/services/treasury/create-convenio.use-case';
+import { EnrollStudentUseCase } from '@domain/services/treasury/enroll-student.use-case';
 import { DisableAccountUseCase } from '@domain/services/treasury/disable-account.use-case';
 import { GetTreasuryDashboardUseCase } from '@domain/services/treasury/get-treasury-dashboard.use-case';
 import { RegisterPaymentDto } from '../../dto/treasury/register-payment.dto';
+import { EnrollStudentDto } from '../../dto/treasury/enroll-student.dto';
 import { DisableAccountDto } from '../../dto/treasury/disable-account.dto';
 
 @Controller('treasury')
@@ -17,9 +20,11 @@ import { DisableAccountDto } from '../../dto/treasury/disable-account.dto';
 export class TreasuryController {
   constructor(
     private readonly listMatriculasUseCase: ListMatriculasUseCase,
+    private readonly listOverdueStudentsUseCase: ListOverdueStudentsUseCase,
     private readonly registerPaymentUseCase: RegisterPaymentUseCase,
     private readonly completeTuitionUseCase: CompleteTuitionUseCase,
     private readonly createConvenioUseCase: CreateConvenioUseCase,
+    private readonly enrollStudentUseCase: EnrollStudentUseCase,
     private readonly disableAccountUseCase: DisableAccountUseCase,
     private readonly getTreasuryDashboardUseCase: GetTreasuryDashboardUseCase,
   ) {}
@@ -33,6 +38,12 @@ export class TreasuryController {
   @Get('matriculas')
   async listTuitions() {
     const { data } = await this.listMatriculasUseCase.execute();
+    return { data };
+  }
+
+  @Get('overdue-students')
+  async listOverdueStudents() {
+    const { data } = await this.listOverdueStudentsUseCase.execute();
     return { data };
   }
 
@@ -54,6 +65,19 @@ export class TreasuryController {
     const { tuition } = await this.createConvenioUseCase.execute(studentId);
     return {
       message: 'Convenio creado exitosamente',
+      tuition: {
+        studentId: tuition.studentId,
+        status: tuition.status,
+        paidInstallments: tuition.paidInstallments,
+      },
+    };
+  }
+
+  @Post('matricular')
+  async enrollStudent(@Body() dto: EnrollStudentDto) {
+    const { tuition } = await this.enrollStudentUseCase.execute(dto.studentId);
+    return {
+      message: 'Estudiante matriculado exitosamente',
       tuition: {
         studentId: tuition.studentId,
         status: tuition.status,

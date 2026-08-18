@@ -12,6 +12,7 @@ export class ListMatriculasUseCase {
       studentId: string;
       firstName: string;
       lastName: string;
+      enrolled: boolean;
       status: string;
       paidInstallments: number;
     }[];
@@ -23,10 +24,12 @@ export class ListMatriculasUseCase {
 
     const data = students.map((student) => {
       const tuition = tuitionMap.get(student.id);
+      const enrolled = tuition != null;
       return {
         studentId: student.id,
         firstName: student.firstName,
         lastName: student.lastName,
+        enrolled,
         status: tuition ? tuition.status : 'no_paga',
         paidInstallments: tuition ? tuition.paidInstallments : 0,
       };
