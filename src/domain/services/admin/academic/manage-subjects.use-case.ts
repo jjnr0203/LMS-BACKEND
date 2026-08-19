@@ -57,7 +57,8 @@ export class ManageSubjectsUseCase {
         data.semester,
         data.curriculumId,
       );
-      await this.careerSubjectRepository.save(relation);
+      const savedRelation = await this.careerSubjectRepository.save(relation);
+      (savedSubject as any).relationId = savedRelation.id;
     }
 
     return savedSubject;

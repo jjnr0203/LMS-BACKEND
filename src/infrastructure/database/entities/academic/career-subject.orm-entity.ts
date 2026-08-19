@@ -41,4 +41,7 @@ export class CareerSubjectOrmEntity {
   @ManyToOne(() => CurriculumOrmEntity)
   @JoinColumn({ name: 'curriculum_id' })
   curriculum?: CurriculumOrmEntity;
+
+  @Column({ type: 'jsonb', name: 'prerequisite_ids', default: [] })
+  prerequisiteIds: string[];
 }

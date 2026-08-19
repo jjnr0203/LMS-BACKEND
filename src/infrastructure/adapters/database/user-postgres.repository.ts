@@ -67,18 +67,18 @@ export class UserPostgresRepository implements UserRepositoryPort {
     }
 
     const usersQuery = `
-      SELECT u.id, u.first_name, u.last_name, u.email, u.phone, u.birth_date, u.is_active, u.created_at, r.name as role_name, r.id as role_id, u.avatar_url, u.updated_at, u.requires_password_change
+      SELECT u.id, u.first_name, u.last_name, u.email, u.phone, u.birth_date, u.is_active, u.created_at, r.name as role_name, r.id as role_id, u.avatar_url, u.updated_at, u.requires_password_change, u.address, u.linkedin_url, u.cv_url, u.certificates
       FROM users u 
       INNER JOIN roles r ON u.role_id = r.id 
       WHERE u.deleted_at IS NULL ${searchCondition}
     `;
     const teachersQuery = `
-      SELECT u.id, u.first_name, u.last_name, u.email, u.phone, u.birth_date, u.is_active, u.created_at, 'teacher' as role_name, NULL as role_id, u.avatar_url, u.updated_at, false as requires_password_change
+      SELECT u.id, u.first_name, u.last_name, u.email, u.phone, u.birth_date, u.is_active, u.created_at, 'teacher' as role_name, NULL as role_id, u.avatar_url, u.updated_at, false as requires_password_change, u.address, u.linkedin_url, u.cv_url, u.certificates
       FROM teachers u
       WHERE u.deleted_at IS NULL ${searchCondition}
     `;
     const studentsQuery = `
-      SELECT u.id, u.first_name, u.last_name, u.email, u.phone, u.birth_date, u.is_active, u.created_at, 'student' as role_name, NULL as role_id, u.avatar_url, u.updated_at, false as requires_password_change
+      SELECT u.id, u.first_name, u.last_name, u.email, u.phone, u.birth_date, u.is_active, u.created_at, 'student' as role_name, NULL as role_id, u.avatar_url, u.updated_at, false as requires_password_change, u.address, u.linkedin_url, u.cv_url, u.certificates
       FROM students u
       WHERE u.deleted_at IS NULL ${searchCondition}
     `;
@@ -162,6 +162,10 @@ export class UserPostgresRepository implements UserRepositoryPort {
           row.role_name,
           undefined,
           row.requires_password_change,
+          row.address,
+          row.linkedin_url,
+          row.cv_url,
+          row.certificates,
         ),
     );
 

@@ -12,6 +12,11 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { RepositoryProvidersModule } from './repository-providers.module';
 import { TeacherRepositoryPort } from '@domain/ports/outbound/users/teacher-repository.port';
 import { StudentRepositoryPort } from '@domain/ports/outbound/users/student-repository.port';
+import { UploadCvUseCase } from '@domain/services/users/upload-cv.use-case';
+import { UploadCertificateUseCase } from '@domain/services/users/upload-certificate.use-case';
+import { DeleteCertificateUseCase } from '@domain/services/users/delete-certificate.use-case';
+import { ImageUploadPort } from '@domain/ports/outbound/storage/image-upload.port';
+import { CloudinaryAdapter } from '@infrastructure/adapters/storage/cloudinary.adapter';
 import {
   CAREER_REPOSITORY,
   CareerRepositoryPort,
@@ -34,6 +39,10 @@ import {
   imports: [DatabaseModule, AuthModule, RepositoryProvidersModule],
   controllers: [HumanResourcesController],
   providers: [
+    {
+      provide: ImageUploadPort,
+      useClass: CloudinaryAdapter,
+    },
     {
       provide: CreateUserUseCase,
       useFactory: (
@@ -84,6 +93,55 @@ import {
         CURRICULUM_REPOSITORY,
         SubjectRepositoryPort,
         FACULTY_REPOSITORY,
+        TeacherRepositoryPort,
+        StudentRepositoryPort,
+      ],
+    },
+    {
+      provide: UploadCvUseCase,
+      useFactory: (
+        userRepo: UserRepositoryPort,
+        teacherRepo: TeacherRepositoryPort,
+        studentRepo: StudentRepositoryPort,
+        uploadPort: ImageUploadPort,
+      ) => new UploadCvUseCase(userRepo, teacherRepo, studentRepo, uploadPort),
+      inject: [
+        UserRepositoryPort,
+        TeacherRepositoryPort,
+        StudentRepositoryPort,
+        ImageUploadPort,
+      ],
+    },
+    {
+      provide: UploadCertificateUseCase,
+      useFactory: (
+        userRepo: UserRepositoryPort,
+        teacherRepo: TeacherRepositoryPort,
+        studentRepo: StudentRepositoryPort,
+        uploadPort: ImageUploadPort,
+      ) =>
+        new UploadCertificateUseCase(
+          userRepo,
+          teacherRepo,
+          studentRepo,
+          uploadPort,
+        ),
+      inject: [
+        UserRepositoryPort,
+        TeacherRepositoryPort,
+        StudentRepositoryPort,
+        ImageUploadPort,
+      ],
+    },
+    {
+      provide: DeleteCertificateUseCase,
+      useFactory: (
+        userRepo: UserRepositoryPort,
+        teacherRepo: TeacherRepositoryPort,
+        studentRepo: StudentRepositoryPort,
+      ) => new DeleteCertificateUseCase(userRepo, teacherRepo, studentRepo),
+      inject: [
+        UserRepositoryPort,
         TeacherRepositoryPort,
         StudentRepositoryPort,
       ],

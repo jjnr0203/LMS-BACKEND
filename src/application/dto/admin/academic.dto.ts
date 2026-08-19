@@ -160,6 +160,23 @@ export class BulkSubjectItemDto {
   @IsOptional()
   @IsString()
   curriculumId?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  successorCodes?: string[];
+}
+
+export class UpdatePrerequisitesDto {
+  @IsArray()
+  @IsUUID('4', { each: true })
+  prerequisiteIds!: string[];
+}
+
+export class UpdateSuccessorsDto {
+  @IsArray()
+  @IsUUID('4', { each: true })
+  successorIds!: string[];
 }
 
 export class BulkSubjectsDto {

@@ -36,19 +36,19 @@ export class BulkCreateSubjectsUseCase {
           item.hours || 0,
         );
         await this.subjectRepository.save(subject);
+        existingByCode.set(item.code, subject);
       }
 
-      const existingRelation =
-        await this.careerSubjectRepository.findByCareerAndSubject(
-          dto.careerId,
-          subject.id,
-        );
-      if (existingRelation) {
-        existingRelation.semester = item.semester;
-        existingRelation.curriculumId = item.curriculumId || dto.curriculumId;
-        await this.careerSubjectRepository.save(existingRelation);
+      let relation = await this.careerSubjectRepository.findByCareerAndSubject(
+        dto.careerId,
+        subject.id,
+      );
+      if (relation) {
+        relation.semester = item.semester;
+        relation.curriculumId = item.curriculumId || dto.curriculumId;
+        await this.careerSubjectRepository.save(relation);
       } else {
-        const relation = new CareerSubject(
+        relation = new CareerSubject(
           uuidv4(),
           dto.careerId,
           subject.id,
@@ -56,6 +56,47 @@ export class BulkCreateSubjectsUseCase {
           item.curriculumId || dto.curriculumId,
         );
         await this.careerSubjectRepository.save(relation);
+      }
+    }
+
+    // Second pass: Update successors
+    for (const item of dto.subjects) {
+      if (item.successorCodes && item.successorCodes.length > 0) {
+        const parentSubject = existingByCode.get(item.code);
+        if (!parentSubject) continue;
+
+        const parentRelation = await this.careerSubjectRepository.findByCareerAndSubject(
+          dto.careerId,
+          parentSubject.id,
+        );
+        if (!parentRelation) continue;
+
+        for (const sCode of item.successorCodes) {
+          let sSubject = existingByCode.get(sCode);
+          if (!sSubject) {
+            const subjectsFromDb = await this.subjectRepository.findByCodes([sCode]);
+            if (subjectsFromDb.length > 0) {
+              sSubject = subjectsFromDb[0];
+              existingByCode.set(sCode, sSubject);
+            }
+          }
+
+          if (sSubject) {
+            const sRelation = await this.careerSubjectRepository.findByCareerAndSubject(
+              dto.careerId,
+              sSubject.id,
+            );
+            if (sRelation) {
+              if (!sRelation.prerequisiteIds) {
+                sRelation.prerequisiteIds = [];
+              }
+              if (!sRelation.prerequisiteIds.includes(parentRelation.id)) {
+                sRelation.prerequisiteIds.push(parentRelation.id);
+                await this.careerSubjectRepository.save(sRelation);
+              }
+            }
+          }
+        }
       }
     }
   }

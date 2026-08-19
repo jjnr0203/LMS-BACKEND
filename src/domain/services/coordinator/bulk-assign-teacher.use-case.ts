@@ -1,6 +1,7 @@
 import { SubjectRepositoryPort } from '../../ports/outbound/academic/subject-repository.port';
 import { TeacherSubjectRepositoryPort } from '../../ports/outbound/academic/teacher-subject-repository.port';
 import { UserRepositoryPort } from '../../ports/outbound/users/user-repository.port';
+import { TeacherRepositoryPort } from '../../ports/outbound/users/teacher-repository.port';
 import { TeacherSubjectEntity } from '../../entities/academic/teacher-subject.entity';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
 import * as crypto from 'crypto';
@@ -9,6 +10,7 @@ export class BulkAssignTeacherUseCase {
   constructor(
     private readonly subjectRepository: SubjectRepositoryPort,
     private readonly userRepository: UserRepositoryPort,
+    private readonly teacherRepository: TeacherRepositoryPort,
     private readonly teacherSubjectRepository: TeacherSubjectRepositoryPort,
   ) {}
 
@@ -42,7 +44,7 @@ export class BulkAssignTeacherUseCase {
         teacherIds.add(assign.teacherId);
       }
     }
-    const teachers = await this.userRepository.findByIds([...teacherIds]);
+    const teachers = await this.teacherRepository.findByIds([...teacherIds]);
     if (teachers.length !== teacherIds.size) {
       throw new NotFoundException('Algunos docentes no fueron encontrados.');
     }

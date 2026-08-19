@@ -16,6 +16,8 @@ import { ManageModalitiesUseCase } from '@domain/services/admin/academic/manage-
 import { ManageCareersUseCase } from '@domain/services/admin/academic/manage-careers.use-case';
 import { ManageSubjectsUseCase } from '@domain/services/admin/academic/manage-subjects.use-case';
 import { BulkCreateSubjectsUseCase } from '@domain/services/admin/academic/bulk-create-subjects.use-case';
+import { UpdatePrerequisitesUseCase } from '@domain/services/admin/academic/update-prerequisites.use-case';
+import { UpdateSuccessorsUseCase } from '@domain/services/admin/academic/update-successors.use-case';
 import { ManageSemesterColorsUseCase } from '@domain/services/admin/manage-semester-colors.use-case';
 import {
   AcademicTermRepositoryPort,
@@ -143,12 +145,24 @@ import { TeacherSubjectRepositoryPort } from '@domain/ports/outbound/academic/te
       inject: [SubjectRepositoryPort, CAREER_SUBJECT_REPOSITORY],
     },
     {
+      provide: UpdateSuccessorsUseCase,
+      useFactory: (careerSubjRepo: CareerSubjectRepositoryPort) =>
+        new UpdateSuccessorsUseCase(careerSubjRepo),
+      inject: [CAREER_SUBJECT_REPOSITORY],
+    },
+    {
       provide: BulkCreateSubjectsUseCase,
       useFactory: (
         subjRepo: SubjectRepositoryPort,
         careerSubjRepo: CareerSubjectRepositoryPort,
       ) => new BulkCreateSubjectsUseCase(subjRepo, careerSubjRepo),
       inject: [SubjectRepositoryPort, CAREER_SUBJECT_REPOSITORY],
+    },
+    {
+      provide: UpdatePrerequisitesUseCase,
+      useFactory: (careerSubjRepo: CareerSubjectRepositoryPort) =>
+        new UpdatePrerequisitesUseCase(careerSubjRepo),
+      inject: [CAREER_SUBJECT_REPOSITORY],
     },
     {
       provide: ManageSemesterColorsUseCase,

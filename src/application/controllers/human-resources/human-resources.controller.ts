@@ -7,13 +7,21 @@ import {
   BadRequestException,
   Query,
   Request as ReqDecorator,
+  Param,
+  Delete,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '@infrastructure/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@infrastructure/auth/guards/roles.guard';
 import { Roles } from '@infrastructure/auth/decorators/roles.decorator';
 import { CreateUserUseCase } from '@domain/services/admin/create-user.use-case';
 import { GetPaginatedUsersUseCase } from '@domain/services/users/get-paginated-users.use-case';
 import { GetDashboardStatsUseCase } from '@domain/services/admin/get-dashboard-stats.use-case';
+import { UploadCvUseCase } from '@domain/services/users/upload-cv.use-case';
+import { UploadCertificateUseCase } from '@domain/services/users/upload-certificate.use-case';
+import { DeleteCertificateUseCase } from '@domain/services/users/delete-certificate.use-case';
 import { CreateUserDto } from '../../dto/admin/create-user.dto';
 import { AdminResponseDto } from '../../dto/admin/admin-response.dto';
 
@@ -25,6 +33,9 @@ export class HumanResourcesController {
     private readonly createUserUseCase: CreateUserUseCase,
     private readonly getPaginatedUsersUseCase: GetPaginatedUsersUseCase,
     private readonly getDashboardStatsUseCase: GetDashboardStatsUseCase,
+    private readonly uploadCvUseCase: UploadCvUseCase,
+    private readonly uploadCertificateUseCase: UploadCertificateUseCase,
+    private readonly deleteCertificateUseCase: DeleteCertificateUseCase,
   ) {}
 
   @Get('dashboard/stats')
@@ -85,6 +96,68 @@ export class HumanResourcesController {
     return {
       message: 'Personal creado exitosamente',
       user: AdminResponseDto.fromEntity(user),
+    };
+  }
+
+  @Post('users/:id/cv')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadCv(
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    if (!file) {
+      throw new BadRequestException('Ningún archivo enviado');
+    }
+    const result = await this.uploadCvUseCase.execute(
+      id,
+      file.buffer,
+      file.originalname,
+    );
+    return {
+      message: 'CV subido exitosamente',
+      cvUrl: result.cvUrl,
+    };
+  }
+
+  @Delete('users/:id/cv')
+  async deleteCv(@Param('id') id: string) {
+    await this.uploadCvUseCase.execute(id, null);
+    return {
+      message: 'CV eliminado exitosamente',
+    };
+  }
+
+  @Post('users/:id/certificates')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadCertificate(
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    if (!file) {
+      throw new BadRequestException('Ningún archivo enviado');
+    }
+    const result = await this.uploadCertificateUseCase.execute(
+      id,
+      file.buffer,
+      file.originalname,
+    );
+    return {
+      message: 'Certificado subido exitosamente',
+      certificateUrl: result.certificateUrl,
+    };
+  }
+
+  @Delete('users/:id/certificates')
+  async deleteCertificate(
+    @Param('id') id: string,
+    @Body('url') url: string,
+  ) {
+    if (!url) {
+      throw new BadRequestException('URL del certificado es requerida');
+    }
+    await this.deleteCertificateUseCase.execute(id, url);
+    return {
+      message: 'Certificado eliminado exitosamente',
     };
   }
 }

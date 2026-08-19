@@ -17,6 +17,13 @@ export class UserMapper {
       orm.createdAt,
       orm.updatedAt,
       orm.deletedAt,
+      undefined, // roleName
+      undefined, // faculties
+      undefined, // requiresPasswordChange
+      orm.address,
+      orm.linkedIn,
+      orm.cvUrl,
+      orm.certificates,
     );
   }
 
@@ -32,6 +39,10 @@ export class UserMapper {
     orm.birthDate = entity.birthDate;
     orm.phone = entity.phone;
     orm.avatarUrl = entity.avatarUrl;
+    orm.address = entity.address;
+    orm.linkedIn = entity.linkedIn;
+    orm.cvUrl = entity.cvUrl;
+    orm.certificates = entity.certificates;
     orm.deletedAt = entity.deletedAt;
     return orm;
   }
@@ -47,6 +58,10 @@ export class UserMapper {
       birthDate: entity.birthDate,
       phone: entity.phone,
       avatarUrl: entity.avatarUrl,
+      address: entity.address,
+      linkedIn: entity.linkedIn,
+      cvUrl: entity.cvUrl,
+      certificates: entity.certificates,
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
     };

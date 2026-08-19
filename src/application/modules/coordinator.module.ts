@@ -21,11 +21,12 @@ import { ManageModalitiesUseCase } from '@domain/services/admin/academic/manage-
 import { ManageJornadasUseCase } from '@domain/services/admin/academic/manage-jornadas.use-case';
 import { RegisterTeacherUseCasePort } from '@domain/ports/inbound/coordinator/register-teacher.use-case.port';
 import { UserRepositoryPort } from '@domain/ports/outbound/users/user-repository.port';
+import { TeacherRepositoryPort } from '@domain/ports/outbound/users/teacher-repository.port';
 import { RoleRepositoryPort } from '@domain/ports/outbound/users/role-repository.port';
 import { PasswordHasherPort } from '@domain/ports/outbound/auth/password-hasher.port';
 import { TuitionRepositoryPort } from '@domain/ports/outbound/academic/tuition-repository.port';
 import { SubjectRepositoryPort } from '@domain/ports/outbound/academic/subject-repository.port';
-import { TeacherRepositoryPort } from '@domain/ports/outbound/users/teacher-repository.port';
+
 import { EnrollmentRepositoryPort } from '@domain/ports/outbound/academic/enrollment-repository.port';
 import { TeacherSubjectRepositoryPort } from '@domain/ports/outbound/academic/teacher-subject-repository.port';
 import {
@@ -83,11 +84,13 @@ import { RepositoryProvidersModule } from './repository-providers.module';
       useFactory: (
         subjectRepo: SubjectRepositoryPort,
         userRepo: UserRepositoryPort,
+        teacherRepo: TeacherRepositoryPort,
         teacherSubjectRepo: TeacherSubjectRepositoryPort,
-      ) => new AssignTeacherUseCase(subjectRepo, userRepo, teacherSubjectRepo),
+      ) => new AssignTeacherUseCase(subjectRepo, userRepo, teacherRepo, teacherSubjectRepo),
       inject: [
         SubjectRepositoryPort,
         UserRepositoryPort,
+        TeacherRepositoryPort,
         TeacherSubjectRepositoryPort,
       ],
     },
@@ -96,12 +99,14 @@ import { RepositoryProvidersModule } from './repository-providers.module';
       useFactory: (
         subjectRepo: SubjectRepositoryPort,
         userRepo: UserRepositoryPort,
+        teacherRepo: TeacherRepositoryPort,
         teacherSubjectRepo: TeacherSubjectRepositoryPort,
       ) =>
-        new BulkAssignTeacherUseCase(subjectRepo, userRepo, teacherSubjectRepo),
+        new BulkAssignTeacherUseCase(subjectRepo, userRepo, teacherRepo, teacherSubjectRepo),
       inject: [
         SubjectRepositoryPort,
         UserRepositoryPort,
+        TeacherRepositoryPort,
         TeacherSubjectRepositoryPort,
       ],
     },
