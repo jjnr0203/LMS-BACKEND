@@ -16,17 +16,18 @@ export class UserPostgresRepository implements UserRepositoryPort {
     const ormEntity = await this.repository.findOne({
       where: { id },
       withDeleted: true,
-      relations: ['role', 'faculties'],
+      relations: ['role'],
     });
     return ormEntity ? UserOrmEntity.toDomain(ormEntity) : null;
   }
 
   async findByIds(ids: string[]): Promise<UserEntity[]> {
-    if (ids.length === 0) return [];
+    if (!ids || ids.length === 0) return [];
+
     const ormEntities = await this.repository.find({
       where: { id: In(ids) },
       withDeleted: true,
-      relations: ['role', 'faculties'],
+      relations: ['role'],
     });
     return ormEntities.map((e) => UserOrmEntity.toDomain(e));
   }
@@ -35,7 +36,7 @@ export class UserPostgresRepository implements UserRepositoryPort {
     const ormEntity = await this.repository.findOne({
       where: { email },
       withDeleted: true,
-      relations: ['role', 'faculties'],
+      relations: ['role'],
     });
     return ormEntity ? UserOrmEntity.toDomain(ormEntity) : null;
   }
@@ -51,7 +52,6 @@ export class UserPostgresRepository implements UserRepositoryPort {
     limit: number,
     role?: string | string[],
     search?: string,
-    facultyIds?: string[],
   ): Promise<{ data: UserEntity[]; total: number }> {
     let searchCondition = '';
     const params: any[] = [];
@@ -97,32 +97,11 @@ export class UserPostgresRepository implements UserRepositoryPort {
 
     // Filter by role
     if (role) {
-      let roleCondition = '';
-      if (Array.isArray(role)) {
-        const roleParams = role.map((_, i) => `$${params.length + i + 1}`);
-        roleCondition = `q.role_name IN (${roleParams.join(', ')})`;
-        params.push(...role);
-      } else {
-        params.push(role);
-        roleCondition = `q.role_name = $${params.length}`;
-      }
+      const rolesArray = Array.isArray(role) ? role : [role];
+      const roleParams = rolesArray.map((_, i) => `$${params.length + i + 1}`);
+      const roleCondition = `q.role_name IN (${roleParams.join(', ')})`;
+      params.push(...rolesArray);
       whereClauses.push(roleCondition);
-    }
-
-    // Filter by facultyIds (only applies to users)
-    if (facultyIds && facultyIds.length > 0) {
-      const facultyParams = facultyIds.map(
-        (_, i) => `$${params.length + i + 1}`,
-      );
-      const facultyCondition = `
-        q.id IN (
-          SELECT uf.user_id 
-          FROM user_faculties uf 
-          WHERE uf.faculty_id IN (${facultyParams.join(', ')})
-        )
-      `;
-      params.push(...facultyIds);
-      whereClauses.push(facultyCondition);
     }
 
     if (whereClauses.length > 0) {
@@ -160,7 +139,6 @@ export class UserPostgresRepository implements UserRepositoryPort {
           row.updated_at,
           undefined,
           row.role_name,
-          undefined,
           row.requires_password_change,
           row.address,
           row.linkedin_url,

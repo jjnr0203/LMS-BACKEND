@@ -105,7 +105,7 @@ export class UserOrmEntity {
       ormEntity.updatedAt,
       ormEntity.deletedAt,
       ormEntity.role?.name,
-      ormEntity.faculties?.map((f) => ({ id: f.id, name: f.name })),
+      
       ormEntity.requiresPasswordChange,
       ormEntity.address,
       ormEntity.linkedIn,
@@ -133,14 +133,7 @@ export class UserOrmEntity {
     orm.deletedAt = entity.deletedAt;
     orm.requiresPasswordChange = entity.requiresPasswordChange;
 
-    if (entity.faculties) {
-      orm.faculties = entity.faculties.map((f) => {
-        const faculty = new FacultyOrmEntity();
-        faculty.id = f.id;
-        faculty.name = f.name ?? '';
-        return faculty;
-      });
-    }
+    
 
     return orm;
   }

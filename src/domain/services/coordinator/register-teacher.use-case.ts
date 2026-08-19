@@ -55,7 +55,6 @@ export class RegisterTeacherUseCase implements RegisterTeacherUseCasePort {
       undefined, // updatedAt
       null, // deletedAt (null to restore soft-deleted users)
       role.name,
-      command.facultyIds?.map((id) => ({ id })),
     );
 
     const savedUser = await this.userRepository.save(user);

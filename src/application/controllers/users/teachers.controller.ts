@@ -25,13 +25,21 @@ export class TeachersController {
     @Query('page') page: string = '1',
     @Query('limit') limit: string = '10',
     @Query('search') search?: string,
+    @Query('facultyIds') facultyIdsRaw?: string | string[],
   ) {
     const pageInt = parseInt(page, 10);
     const limitInt = parseInt(limit, 10);
+
+    let facultyIds: string[] | undefined = undefined;
+    if (facultyIdsRaw) {
+      facultyIds = Array.isArray(facultyIdsRaw) ? facultyIdsRaw : [facultyIdsRaw];
+    }
+
     const result = await this.teacherService.getPaginated(
       pageInt,
       limitInt,
       search,
+      facultyIds,
     );
     return {
       data: result.data.map((teacher: any) => ({
@@ -68,7 +76,8 @@ export class TeachersController {
   @Patch(':id')
   @Roles('admin', 'human_resources')
   async update(@Param('id') id: string, @Body() body: any) {
-    return this.teacherService.update(id, body);
+    const teacher = await this.teacherService.update(id, body);
+    return { user: teacher };
   }
 
   @Delete(':id')

@@ -52,7 +52,6 @@ export class UploadCertificateUseCase implements UploadCertificateUseCasePort {
         user.updatedAt,
         user.deletedAt,
         user.roleName,
-        user.faculties,
         user.requiresPasswordChange,
         user.address,
         user.linkedIn,

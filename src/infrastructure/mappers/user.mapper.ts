@@ -18,7 +18,6 @@ export class UserMapper {
       orm.updatedAt,
       orm.deletedAt,
       undefined, // roleName
-      undefined, // faculties
       undefined, // requiresPasswordChange
       orm.address,
       orm.linkedIn,

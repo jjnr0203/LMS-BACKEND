@@ -37,9 +37,6 @@ export class UpdateUserUseCase implements UpdateUserUseCasePort {
       user.updatedAt,
       user.deletedAt,
       user.roleName,
-      command.facultyIds !== undefined
-        ? command.facultyIds.map((id) => ({ id }))
-        : user.faculties,
       user.requiresPasswordChange,
       command.address ?? user.address,
       command.linkedIn ?? user.linkedIn,

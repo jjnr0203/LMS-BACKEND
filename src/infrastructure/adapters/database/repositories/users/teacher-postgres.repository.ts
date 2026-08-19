@@ -15,6 +15,7 @@ export class TeacherPostgresRepository implements TeacherRepositoryPort {
   async findById(id: string): Promise<TeacherEntity | null> {
     const ormEntity = await this.repository.findOne({
       where: { id },
+      relations: ['faculties'],
       withDeleted: true,
     });
     return ormEntity ? TeacherOrmEntity.toDomain(ormEntity) : null;
@@ -25,6 +26,7 @@ export class TeacherPostgresRepository implements TeacherRepositoryPort {
 
     const ormEntities = await this.repository
       .createQueryBuilder('teacher')
+      .leftJoinAndSelect('teacher.faculties', 'faculties')
       .where('teacher.id IN (:...ids)', { ids })
       .andWhere('teacher.deletedAt IS NULL')
       .getMany();
@@ -42,9 +44,11 @@ export class TeacherPostgresRepository implements TeacherRepositoryPort {
     page: number,
     limit: number,
     search?: string,
+    facultyIds?: string[],
   ): Promise<{ data: TeacherEntity[]; total: number }> {
     const qb = this.repository
       .createQueryBuilder('teacher')
+      .leftJoinAndSelect('teacher.faculties', 'faculties')
       .where('teacher.deletedAt IS NULL');
 
     if (search) {
@@ -60,6 +64,10 @@ export class TeacherPostgresRepository implements TeacherRepositoryPort {
             });
         }),
       );
+    }
+
+    if (facultyIds && facultyIds.length > 0) {
+      qb.andWhere('faculties.id IN (:...facultyIds)', { facultyIds });
     }
 
     qb.orderBy('teacher.createdAt', 'DESC')

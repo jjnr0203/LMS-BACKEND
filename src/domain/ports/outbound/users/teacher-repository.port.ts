@@ -8,6 +8,7 @@ export abstract class TeacherRepositoryPort {
     page: number,
     limit: number,
     search?: string,
+    facultyIds?: string[],
   ): Promise<{ data: TeacherEntity[]; total: number }>;
   abstract softDelete(id: string): Promise<void>;
   abstract count(): Promise<number>;

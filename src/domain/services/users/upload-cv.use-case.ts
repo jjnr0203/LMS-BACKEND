@@ -55,7 +55,6 @@ export class UploadCvUseCase implements UploadCvUseCasePort {
         user.updatedAt,
         user.deletedAt,
         user.roleName,
-        user.faculties,
         user.requiresPasswordChange,
         user.address,
         user.linkedIn,

@@ -58,26 +58,19 @@ export class UsersController {
     @Query('limit') limit: string = '10',
     @Query('role') role: string | undefined,
     @Query('search') search: string | undefined,
-    @Query('facultyIds') facultyIdsRaw: string | string[] | undefined,
     @ReqDecorator() req: AuthenticatedRequest,
   ) {
     if (req.user.role === 'treasury') {
       role = 'student';
     }
     const host = req.headers.host || 'localhost:3000';
-    let facultyIds: string[] | undefined = undefined;
-    if (facultyIdsRaw) {
-      facultyIds = Array.isArray(facultyIdsRaw)
-        ? facultyIdsRaw
-        : [facultyIdsRaw];
-    }
+    
     const result = await this.getPaginatedUsersUseCase.execute(
       {
         page: parseInt(page, 10),
         limit: parseInt(limit, 10),
         role,
         search,
-        facultyIds,
       },
       host,
     );

@@ -10,8 +10,8 @@ export class TeacherService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async getPaginated(page: number, limit: number, search?: string) {
-    return this.teacherRepository.findPaginated(page, limit, search);
+  async getPaginated(page: number, limit: number, search?: string, facultyIds?: string[]) {
+    return this.teacherRepository.findPaginated(page, limit, search, facultyIds);
   }
 
   async getById(id: string) {
@@ -34,9 +34,16 @@ export class TeacherService {
 
     const subjectsResult = await this.dataSource.query(
       `
-      SELECT DISTINCT sub.id, sub.name 
+      SELECT DISTINCT 
+        sub.id, 
+        sub.name, 
+        c.name as career_name, 
+        cs.semester
       FROM teacher_subjects ts
       JOIN subjects sub ON sub.id = ts.subject_id
+      LEFT JOIN curriculums cur ON cur.id = ts.curriculum_id
+      LEFT JOIN careers c ON c.id = cur.career_id
+      LEFT JOIN career_subjects cs ON cs.curriculum_id = cur.id AND cs.subject_id = sub.id
       WHERE ts.teacher_id = $1
     `,
       [teacherId],
@@ -73,7 +80,7 @@ export class TeacherService {
     };
   }
 
-  async create(data: Partial<TeacherEntity>) {
+  async create(data: Partial<TeacherEntity> & { facultyIds?: string[] }) {
     const teacher = new TeacherEntity(
       data.id as string,
       data.firstName as string,
@@ -89,11 +96,13 @@ export class TeacherService {
       data.address,
       data.linkedIn,
       data.cvUrl,
+      [], // certificates
+      data.facultyIds?.map((fId) => ({ id: fId })),
     );
     return this.teacherRepository.save(teacher);
   }
 
-  async update(id: string, data: Partial<TeacherEntity>) {
+  async update(id: string, data: Partial<TeacherEntity> & { facultyIds?: string[] }) {
     const teacher = await this.getById(id);
     const updated = new TeacherEntity(
       teacher.id,
@@ -111,6 +120,9 @@ export class TeacherService {
       data.linkedIn !== undefined ? data.linkedIn : teacher.linkedIn,
       data.cvUrl !== undefined ? data.cvUrl : teacher.cvUrl,
       teacher.certificates,
+      data.facultyIds !== undefined 
+        ? data.facultyIds.map((fId) => ({ id: fId })) 
+        : teacher.faculties,
     );
     return this.teacherRepository.save(updated);
   }

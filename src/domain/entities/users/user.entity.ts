@@ -14,7 +14,6 @@ export class UserEntity {
     public readonly updatedAt?: Date,
     public readonly deletedAt?: Date | null,
     public readonly roleName?: string,
-    public readonly faculties?: { id: string; name?: string }[],
     public readonly requiresPasswordChange: boolean = true,
     public readonly address?: string,
     public readonly linkedIn?: string,

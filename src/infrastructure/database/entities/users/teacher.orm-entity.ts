@@ -6,7 +6,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
+import { FacultyOrmEntity } from '../academic/faculty.orm-entity';
 
 @Entity('teachers')
 export class TeacherOrmEntity {
@@ -51,6 +54,14 @@ export class TeacherOrmEntity {
   @Column({ type: 'boolean', name: 'is_active', default: true })
   isActive: boolean;
 
+  @ManyToMany(() => FacultyOrmEntity)
+  @JoinTable({
+    name: 'teacher_faculties',
+    joinColumn: { name: 'teacher_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'faculty_id', referencedColumnName: 'id' },
+  })
+  faculties: FacultyOrmEntity[];
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
@@ -77,6 +88,7 @@ export class TeacherOrmEntity {
       orm.linkedIn,
       orm.cvUrl,
       orm.certificates,
+      orm.faculties?.map((f) => ({ id: f.id, name: f.name })),
     );
   }
 
@@ -97,6 +109,14 @@ export class TeacherOrmEntity {
     orm.createdAt = entity.createdAt as any;
     orm.updatedAt = entity.updatedAt as any;
     orm.deletedAt = entity.deletedAt;
+    if (entity.faculties) {
+      orm.faculties = entity.faculties.map((f) => {
+        const faculty = new FacultyOrmEntity();
+        faculty.id = f.id;
+        faculty.name = f.name ?? '';
+        return faculty;
+      });
+    }
     return orm;
   }
 }

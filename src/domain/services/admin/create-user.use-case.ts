@@ -57,7 +57,6 @@ export class CreateUserUseCase implements CreateUserUseCasePort {
       undefined, // updatedAt
       null, // deletedAt (null to restore soft-deleted users)
       role.name,
-      command.facultyIds?.map((id) => ({ id })),
       true, // requiresPasswordChange = true
     );
 

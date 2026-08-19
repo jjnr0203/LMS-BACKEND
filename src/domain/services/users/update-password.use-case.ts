@@ -50,7 +50,6 @@ export class UpdatePasswordUseCase implements UpdatePasswordUseCasePort {
       user.updatedAt,
       user.deletedAt,
       user.roleName,
-      user.faculties,
       false, // requiresPasswordChange
     );
 

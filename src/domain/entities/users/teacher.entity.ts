@@ -15,5 +15,6 @@ export class TeacherEntity {
     public readonly linkedIn?: string,
     public readonly cvUrl?: string | null,
     public readonly certificates: string[] = [],
+    public readonly faculties?: { id: string; name?: string }[],
   ) {}
 }

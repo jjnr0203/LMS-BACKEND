@@ -34,7 +34,6 @@ export class DeleteCertificateUseCase implements DeleteCertificateUseCasePort {
         user.updatedAt,
         user.deletedAt,
         user.roleName,
-        user.faculties,
         user.requiresPasswordChange,
         user.address,
         user.linkedIn,

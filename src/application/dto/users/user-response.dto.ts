@@ -11,7 +11,6 @@ export class UserResponseDto {
   avatarUrl?: string;
   createdAt?: Date;
   roleName?: string;
-  faculties?: { id: string; name?: string }[];
   requiresPasswordChange?: boolean;
   address?: string;
   linkedIn?: string;
@@ -30,7 +29,6 @@ export class UserResponseDto {
     dto.avatarUrl = entity.avatarUrl;
     dto.createdAt = entity.createdAt;
     dto.roleName = entity.roleName;
-    dto.faculties = entity.faculties;
     dto.requiresPasswordChange = entity.requiresPasswordChange;
     dto.address = entity.address;
     dto.linkedIn = entity.linkedIn;

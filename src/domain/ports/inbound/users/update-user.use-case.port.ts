@@ -8,7 +8,6 @@ export interface UpdateUserCommand {
   phone?: string;
   avatarUrl?: string;
   birthDate?: Date;
-  facultyIds?: string[];
   address?: string;
   linkedIn?: string;
 }
