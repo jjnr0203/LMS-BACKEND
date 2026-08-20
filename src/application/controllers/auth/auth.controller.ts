@@ -3,6 +3,8 @@ import { LoginUseCase } from '@domain/services/auth/login.use-case';
 import { RegisterUseCase } from '@domain/services/auth/register.use-case';
 import { RefreshUseCase } from '@domain/services/auth/refresh.use-case';
 import { LogoutUseCase } from '@domain/services/auth/logout.use-case';
+import { ForgotPasswordUseCase } from '@domain/services/auth/forgot-password.use-case';
+import { ResetPasswordUseCase } from '@domain/services/auth/reset-password.use-case';
 import { LoginDto } from '../../dto/auth/login.dto';
 import { RegisterDto } from '../../dto/auth/register.dto';
 import { RefreshTokenDto } from '../../dto/auth/refresh-token.dto';
@@ -14,6 +16,8 @@ export class AuthController {
     private readonly registerUseCase: RegisterUseCase,
     private readonly refreshUseCase: RefreshUseCase,
     private readonly logoutUseCase: LogoutUseCase,
+    private readonly forgotPasswordUseCase: ForgotPasswordUseCase,
+    private readonly resetPasswordUseCase: ResetPasswordUseCase,
   ) {}
 
   @Post('register')
@@ -75,5 +79,17 @@ export class AuthController {
   async logout(@Body() dto: RefreshTokenDto) {
     await this.logoutUseCase.execute(dto.refreshToken);
     return { message: 'Sesión cerrada exitosamente' };
+  }
+
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  async forgotPassword(@Body() dto: { email: string }) {
+    return this.forgotPasswordUseCase.execute({ email: dto.email });
+  }
+
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  async resetPassword(@Body() dto: { token: string; password: string }) {
+    return this.resetPasswordUseCase.execute({ token: dto.token, password: dto.password });
   }
 }

@@ -170,4 +170,13 @@ export class UserPostgresRepository implements UserRepositoryPort {
     }
     return result;
   }
+
+  async findByResetToken(tokenHash: string): Promise<UserEntity | null> {
+    const ormEntity = await this.repository.findOne({
+      where: { resetPasswordToken: tokenHash },
+      withDeleted: true,
+      relations: ['role'],
+    });
+    return ormEntity ? UserOrmEntity.toDomain(ormEntity) : null;
+  }
 }

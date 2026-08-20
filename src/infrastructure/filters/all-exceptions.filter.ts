@@ -42,9 +42,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
       if (status < 500) {
-        this.logger.warn(
-          `HTTP ${status} - ${request.method} ${request.url} - ${message}`,
-        );
+        if (status !== 401 && status !== 404) {
+          this.logger.warn(
+            `HTTP ${status} - ${request.method} ${request.url} - ${message}`,
+          );
+        }
       } else {
         this.logger.error(
           `HTTP ${status} - ${request.method} ${request.url} - ${message}`,

@@ -64,6 +64,12 @@ export class UserOrmEntity {
   @Column({ type: 'boolean', name: 'requires_password_change', default: true })
   requiresPasswordChange: boolean;
 
+  @Column({ type: 'varchar', name: 'reset_password_token', nullable: true })
+  resetPasswordToken?: string | null;
+
+  @Column({ type: 'timestamp', name: 'reset_password_expires', nullable: true })
+  resetPasswordExpires?: Date | null;
+
   @Index()
   @Column({ type: 'uuid', name: 'role_id' })
   roleId: string;
@@ -111,6 +117,8 @@ export class UserOrmEntity {
       ormEntity.linkedIn,
       ormEntity.cvUrl,
       ormEntity.certificates,
+      ormEntity.resetPasswordToken,
+      ormEntity.resetPasswordExpires,
     );
   }
 
@@ -132,8 +140,8 @@ export class UserOrmEntity {
     orm.certificates = entity.certificates;
     orm.deletedAt = entity.deletedAt;
     orm.requiresPasswordChange = entity.requiresPasswordChange;
-
-    
+    orm.resetPasswordToken = entity.resetPasswordToken;
+    orm.resetPasswordExpires = entity.resetPasswordExpires;
 
     return orm;
   }

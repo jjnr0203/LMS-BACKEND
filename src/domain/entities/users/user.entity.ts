@@ -19,5 +19,7 @@ export class UserEntity {
     public readonly linkedIn?: string,
     public readonly cvUrl?: string | null,
     public readonly certificates: string[] = [],
+    public readonly resetPasswordToken?: string | null,
+    public readonly resetPasswordExpires?: Date | null,
   ) {}
 }

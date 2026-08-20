@@ -12,6 +12,10 @@ import { TokenGeneratorPort } from '@domain/ports/outbound/auth/token-generator.
 import { RepositoryProvidersModule } from './repository-providers.module';
 import { JwtStrategy } from '@infrastructure/auth/strategies/jwt.strategy';
 
+import { MailerService } from '@nestjs-modules/mailer';
+import { ForgotPasswordUseCase } from '@domain/services/auth/forgot-password.use-case';
+import { ResetPasswordUseCase } from '@domain/services/auth/reset-password.use-case';
+
 @Module({
   imports: [RepositoryProvidersModule],
   controllers: [AuthController],
@@ -62,6 +66,18 @@ import { JwtStrategy } from '@infrastructure/auth/strategies/jwt.strategy';
       useFactory: (refreshRepo: RefreshTokenRepositoryPort) =>
         new LogoutUseCase(refreshRepo),
       inject: [RefreshTokenRepositoryPort],
+    },
+    {
+      provide: ForgotPasswordUseCase,
+      useFactory: (userRepo: UserRepositoryPort, mailerService: MailerService) =>
+        new ForgotPasswordUseCase(userRepo, mailerService),
+      inject: [UserRepositoryPort, MailerService],
+    },
+    {
+      provide: ResetPasswordUseCase,
+      useFactory: (userRepo: UserRepositoryPort, hasher: PasswordHasherPort) =>
+        new ResetPasswordUseCase(userRepo, hasher),
+      inject: [UserRepositoryPort, PasswordHasherPort],
     },
     JwtStrategy,
   ],

@@ -23,6 +23,8 @@ export class UserMapper {
       orm.linkedIn,
       orm.cvUrl,
       orm.certificates,
+      orm.resetPasswordToken,
+      orm.resetPasswordExpires,
     );
   }
 
@@ -43,6 +45,8 @@ export class UserMapper {
     orm.cvUrl = entity.cvUrl;
     orm.certificates = entity.certificates;
     orm.deletedAt = entity.deletedAt;
+    orm.resetPasswordToken = entity.resetPasswordToken;
+    orm.resetPasswordExpires = entity.resetPasswordExpires;
     return orm;
   }
 
