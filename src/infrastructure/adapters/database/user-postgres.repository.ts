@@ -151,7 +151,7 @@ export class UserPostgresRepository implements UserRepositoryPort {
   }
 
   async softDelete(id: string): Promise<void> {
-    await this.repository.softDelete(id);
+    const entity = await this.repository.findOne({ where: { id: id as any } }); if (entity) { await this.repository.softRemove(entity); } else { await this.repository.softDelete(id); }
   }
 
   async getCountsByRole(): Promise<Record<string, number>> {
@@ -180,3 +180,4 @@ export class UserPostgresRepository implements UserRepositoryPort {
     return ormEntity ? UserOrmEntity.toDomain(ormEntity) : null;
   }
 }
+

@@ -131,7 +131,10 @@ export class TeacherSubjectPostgresRepository implements TeacherSubjectRepositor
     if (curriculumId !== undefined) {
       where.curriculumId = curriculumId;
     }
-    await this.repository.delete(where);
+    const entities = await this.repository.find({ where });
+    if (entities.length > 0) {
+      await this.repository.remove(entities);
+    }
   }
 
   async deleteByContext(
@@ -145,7 +148,10 @@ export class TeacherSubjectPostgresRepository implements TeacherSubjectRepositor
     if (curriculumId !== undefined) {
       where.curriculumId = curriculumId;
     }
-    await this.repository.delete(where);
+    const entities = await this.repository.find({ where });
+    if (entities.length > 0) {
+      await this.repository.remove(entities);
+    }
   }
 
   async deleteBySubjectAndTerm(
@@ -157,10 +163,16 @@ export class TeacherSubjectPostgresRepository implements TeacherSubjectRepositor
     if (curriculumId !== undefined) {
       where.curriculumId = curriculumId;
     }
-    await this.repository.delete(where);
+    const entities = await this.repository.find({ where });
+    if (entities.length > 0) {
+      await this.repository.remove(entities);
+    }
   }
 
   async deleteById(id: string): Promise<void> {
-    await this.repository.delete({ id });
+    const entity = await this.repository.findOne({ where: { id } });
+    if (entity) {
+      await this.repository.remove(entity);
+    }
   }
 }

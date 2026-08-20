@@ -31,6 +31,8 @@ import { EnrollmentDetailOrmEntity } from '@infrastructure/database/entities/sec
 import { EnrollmentSubjectOrmEntity } from '@infrastructure/database/entities/secretary/enrollment-subject.orm-entity';
 import { AcademicRecordOrmEntity } from '@infrastructure/database/entities/secretary/academic-record.orm-entity';
 import { CertificateOrmEntity } from '@infrastructure/database/entities/secretary/certificate.orm-entity';
+import { AuditLogOrmEntity } from '@infrastructure/database/entities/audit/audit-log.orm-entity';
+import { AuditSubscriber } from '@infrastructure/database/subscribers/audit.subscriber';
 
 @Module({
   imports: [
@@ -79,6 +81,7 @@ import { CertificateOrmEntity } from '@infrastructure/database/entities/secretar
           AcademicRecordOrmEntity,
           CertificateOrmEntity,
           InstitutionConfigOrmEntity,
+          AuditLogOrmEntity,
         ],
         synchronize: false,
         extra: {
@@ -119,8 +122,10 @@ import { CertificateOrmEntity } from '@infrastructure/database/entities/secretar
       AcademicRecordOrmEntity,
       CertificateOrmEntity,
       InstitutionConfigOrmEntity,
+      AuditLogOrmEntity,
     ]),
   ],
+  providers: [AuditSubscriber],
   exports: [TypeOrmModule],
 })
 export class DatabaseModule {}

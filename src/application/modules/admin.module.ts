@@ -52,10 +52,22 @@ import {
 } from '@domain/ports/outbound/academic/faculty-repository.port';
 import { SubjectRepositoryPort } from '@domain/ports/outbound/academic/subject-repository.port';
 import { TeacherSubjectRepositoryPort } from '@domain/ports/outbound/academic/teacher-subject-repository.port';
+import { AuditLogsController } from '../controllers/admin/audit-logs.controller';
+import { BackupController } from '../controllers/admin/backup.controller';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuditLogOrmEntity } from '@infrastructure/database/entities/audit/audit-log.orm-entity';
 
 @Module({
-  imports: [RepositoryProvidersModule],
-  controllers: [AdminController, AdminAcademicController],
+  imports: [
+    RepositoryProvidersModule,
+    TypeOrmModule.forFeature([AuditLogOrmEntity]),
+  ],
+  controllers: [
+    AdminController,
+    AdminAcademicController,
+    AuditLogsController,
+    BackupController,
+  ],
   providers: [
     {
       provide: CreateUserUseCase,

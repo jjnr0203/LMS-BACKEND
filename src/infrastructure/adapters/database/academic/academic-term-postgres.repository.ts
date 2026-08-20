@@ -48,7 +48,7 @@ export class AcademicTermPostgresRepository implements AcademicTermRepositoryPor
   }
 
   async delete(id: string): Promise<void> {
-    await this.repository.delete(id);
+    const entity = await this.repository.findOne({ where: { id: id as any } }); if (entity) { await this.repository.remove(entity); } else { await this.repository.delete(id); }
   }
 
   async deactivateAllExcept(id: string): Promise<void> {
@@ -60,3 +60,4 @@ export class AcademicTermPostgresRepository implements AcademicTermRepositoryPor
       .execute();
   }
 }
+
