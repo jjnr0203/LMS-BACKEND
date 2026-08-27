@@ -16,6 +16,8 @@ export class UserResponseDto {
   linkedIn?: string;
   cvUrl?: string | null;
   certificates: string[];
+  tuitionStatus?: string | null;
+  paidInstallments?: number | null;
 
   static fromEntity(entity: UserEntity): UserResponseDto {
     const dto = new UserResponseDto();
@@ -34,6 +36,8 @@ export class UserResponseDto {
     dto.linkedIn = entity.linkedIn;
     dto.cvUrl = entity.cvUrl;
     dto.certificates = entity.certificates;
+    dto.tuitionStatus = entity.tuitionStatus ?? null;
+    dto.paidInstallments = entity.paidInstallments ?? null;
     return dto;
   }
 }

@@ -115,6 +115,7 @@ import { RepositoryProvidersModule } from './repository-providers.module';
         pdfGenerator: PdfGeneratorPort,
         imageUpload: ImageUploadPort,
         institutionRepo: InstitutionConfigPostgresRepository,
+        tuitionRepo: TuitionRepositoryPort,
       ) =>
         new GenerateCertificateUseCase(
           certificateRepo,
@@ -124,6 +125,7 @@ import { RepositoryProvidersModule } from './repository-providers.module';
           pdfGenerator,
           imageUpload,
           institutionRepo,
+          tuitionRepo,
         ),
       inject: [
         CertificateRepositoryPort,
@@ -133,6 +135,7 @@ import { RepositoryProvidersModule } from './repository-providers.module';
         PdfGeneratorPort,
         ImageUploadPort,
         InstitutionConfigPostgresRepository,
+        TuitionRepositoryPort,
       ],
     },
     {

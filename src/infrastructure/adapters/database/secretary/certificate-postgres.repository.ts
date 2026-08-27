@@ -22,6 +22,11 @@ export class CertificatePostgresRepository implements CertificateRepositoryPort 
     return orms.map(CertificateOrmEntity.toDomain);
   }
 
+  async findAll(): Promise<CertificateEntity[]> {
+    const orms = await this.repository.find();
+    return orms.map(CertificateOrmEntity.toDomain);
+  }
+
   async save(certificate: CertificateEntity): Promise<CertificateEntity> {
     const orm = CertificateOrmEntity.fromDomain(certificate);
     const saved = await this.repository.save(orm);

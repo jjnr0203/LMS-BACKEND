@@ -58,13 +58,13 @@ export class StudentsController {
   }
 
   @Patch(':id')
-  @Roles('admin')
+  @Roles('admin', 'secretary')
   async update(@Param('id') id: string, @Body() body: any) {
     return this.studentService.update(id, body);
   }
 
   @Delete(':id')
-  @Roles('admin')
+  @Roles('admin', 'secretary')
   async remove(@Param('id') id: string) {
     await this.studentService.delete(id);
     return { message: 'Student deleted successfully' };

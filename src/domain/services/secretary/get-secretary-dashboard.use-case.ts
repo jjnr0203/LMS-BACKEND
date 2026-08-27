@@ -14,15 +14,18 @@ export class GetSecretaryDashboardUseCase {
 
   async execute() {
     const inscriptions = await this.inscriptionRepo.findAll();
+    const enrollments = await this.enrollmentDetailRepo.findAll();
+    const matriculated = new Set(enrollments.map((e) => e.studentId));
+
     const pendingInscriptions = inscriptions.filter(
-      (i) => i.status === 'pending',
+      (i) => i.status === 'pending' && !matriculated.has(i.studentId),
     ).length;
 
     return {
       totalInscriptions: inscriptions.length,
       pendingInscriptions,
-      totalCertificates:
-        (await this.certificateRepo.findByStudentId('')).length || 0,
+      totalEnrollments: matriculated.size,
+      totalCertificates: (await this.certificateRepo.findAll()).length,
     };
   }
 }

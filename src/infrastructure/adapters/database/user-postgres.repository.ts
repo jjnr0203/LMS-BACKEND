@@ -67,19 +67,22 @@ export class UserPostgresRepository implements UserRepositoryPort {
     }
 
     const usersQuery = `
-      SELECT u.id, u.first_name, u.last_name, u.email, u.phone, u.birth_date, u.is_active, u.created_at, r.name as role_name, r.id as role_id, u.avatar_url, u.updated_at, u.requires_password_change, u.address, u.linkedin_url, u.cv_url, u.certificates
+      SELECT u.id, u.first_name, u.last_name, u.email, u.phone, u.birth_date, u.is_active, u.created_at, r.name as role_name, r.id as role_id, u.avatar_url, u.updated_at, u.requires_password_change, u.address, u.linkedin_url, u.cv_url, u.certificates, t.status as tuition_status, t.paid_installments
       FROM users u 
       INNER JOIN roles r ON u.role_id = r.id 
+      LEFT JOIN tuitions t ON t.student_id = u.id
       WHERE u.deleted_at IS NULL ${searchCondition}
     `;
     const teachersQuery = `
-      SELECT u.id, u.first_name, u.last_name, u.email, u.phone, u.birth_date, u.is_active, u.created_at, 'teacher' as role_name, NULL as role_id, u.avatar_url, u.updated_at, false as requires_password_change, u.address, u.linkedin_url, u.cv_url, u.certificates
+      SELECT u.id, u.first_name, u.last_name, u.email, u.phone, u.birth_date, u.is_active, u.created_at, 'teacher' as role_name, NULL as role_id, u.avatar_url, u.updated_at, false as requires_password_change, u.address, u.linkedin_url, u.cv_url, u.certificates, t.status as tuition_status, t.paid_installments
       FROM teachers u
+      LEFT JOIN tuitions t ON t.student_id = u.id
       WHERE u.deleted_at IS NULL ${searchCondition}
     `;
     const studentsQuery = `
-      SELECT u.id, u.first_name, u.last_name, u.email, u.phone, u.birth_date, u.is_active, u.created_at, 'student' as role_name, NULL as role_id, u.avatar_url, u.updated_at, false as requires_password_change, u.address, u.linkedin_url, u.cv_url, u.certificates
+      SELECT u.id, u.first_name, u.last_name, u.email, u.phone, u.birth_date, u.is_active, u.created_at, 'student' as role_name, NULL as role_id, u.avatar_url, u.updated_at, false as requires_password_change, u.address, u.linkedin_url, u.cv_url, u.certificates, t.status as tuition_status, t.paid_installments
       FROM students u
+      LEFT JOIN tuitions t ON t.student_id = u.id
       WHERE u.deleted_at IS NULL ${searchCondition}
     `;
 
@@ -144,6 +147,8 @@ export class UserPostgresRepository implements UserRepositoryPort {
           row.linkedin_url,
           row.cv_url,
           row.certificates,
+          row.tuition_status ?? null,
+          row.paid_installments ?? null,
         ),
     );
 

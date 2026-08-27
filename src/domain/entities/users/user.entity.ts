@@ -21,5 +21,7 @@ export class UserEntity {
     public readonly certificates: string[] = [],
     public readonly resetPasswordToken?: string | null,
     public readonly resetPasswordExpires?: Date | null,
+    public readonly tuitionStatus?: string | null,
+    public readonly paidInstallments?: number | null,
   ) {}
 }

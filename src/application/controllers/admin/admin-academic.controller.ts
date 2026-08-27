@@ -63,7 +63,7 @@ export class AdminAcademicController {
   ) {}
 
   // --- SEMESTER COLORS ---
-  @Roles('admin', 'coordinator', 'human_resources')
+  @Roles('admin', 'coordinator', 'human_resources', 'treasury')
   @Get('semester-colors')
   async getSemesterColors() {
     return this.manageSemesterColorsUC.getColors();
@@ -276,7 +276,7 @@ export class AdminAcademicController {
   }
 
   // --- FACULTIES ---
-  @Roles('admin', 'human_resources', 'coordinator')
+  @Roles('admin', 'human_resources', 'coordinator', 'treasury')
   @Get('faculties')
   async getFaculties() {
     return this.manageFacultiesUC.findAll();

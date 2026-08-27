@@ -9,6 +9,8 @@ import { InscriptionRepositoryPort } from '@domain/ports/outbound/secretary/insc
 import { StudentRepositoryPort } from '@domain/ports/outbound/users/student-repository.port';
 import { CertificateEntity } from '@domain/entities/secretary/certificate.entity';
 import { PdfGeneratorPort } from '@domain/ports/outbound/storage/pdf-generator.port';
+import { TuitionRepositoryPort } from '@domain/ports/outbound/academic/tuition-repository.port';
+import { CertificatePaymentStatus } from '@domain/ports/outbound/storage/pdf-generator.port';
 import { ImageUploadPort } from '@domain/ports/outbound/storage/image-upload.port';
 import type { InstitutionConfigRepositoryPort } from '@domain/ports/outbound/institution/institution-config-repository.port';
 import { CAREER_REPOSITORY } from '@domain/ports/outbound/academic/career-repository.port';
@@ -24,6 +26,7 @@ export class GenerateCertificateUseCase implements GenerateCertificateUseCasePor
     private readonly pdfGenerator: PdfGeneratorPort,
     private readonly imageUpload: ImageUploadPort,
     private readonly institutionRepo: InstitutionConfigRepositoryPort,
+    private readonly tuitionRepo: TuitionRepositoryPort,
   ) {}
 
   async execute(
@@ -34,7 +37,7 @@ export class GenerateCertificateUseCase implements GenerateCertificateUseCasePor
       throw new BadRequestException('El estudiante no existe');
     }
 
-    const validTypes = ['matricula'];
+    const validTypes = ['matricula', 'pago'];
     if (!validTypes.includes(command.type)) {
       throw new BadRequestException(
         `Tipo de certificado inválido. Tipos válidos: ${validTypes.join(', ')}`,
@@ -44,7 +47,7 @@ export class GenerateCertificateUseCase implements GenerateCertificateUseCasePor
     const inscriptions = await this.inscriptionRepo.findByStudentId(
       command.studentId,
     );
-    if (!inscriptions.length) {
+    if (!inscriptions.length && command.type === 'matricula') {
       throw new BadRequestException(
         'El estudiante no tiene una inscripción registrada',
       );
@@ -59,6 +62,20 @@ export class GenerateCertificateUseCase implements GenerateCertificateUseCasePor
       : null;
     const careerName = career?.name ?? '';
 
+    const tuition = await this.tuitionRepo.findByStudentId(command.studentId);
+    let paymentStatus: CertificatePaymentStatus = 'sin_pagos';
+    let paidInstallments = 0;
+    if (tuition) {
+      paidInstallments = tuition.paidInstallments;
+      if (tuition.status === 'pago_total' || tuition.paidInstallments >= 4) {
+        paymentStatus = 'pagado';
+      } else if (tuition.status === 'convenio') {
+        paymentStatus = 'pagando';
+      } else {
+        paymentStatus = 'sin_pagos';
+      }
+    }
+
     const institution = await this.institutionRepo.findOne();
     const address = institution?.address ?? '';
     const city = address.includes(',') ? address.split(',')[0].trim() : 'Quito';
@@ -72,22 +89,38 @@ export class GenerateCertificateUseCase implements GenerateCertificateUseCasePor
       );
     }
 
-    const pdfBuffer = await this.pdfGenerator.generateEnrollmentCertificate({
+    const certificateData = {
       institutionName: institution?.name ?? 'Institución Educativa',
       institutionSlogan: institution?.slogan ?? undefined,
       institutionRuc: institution?.ruc ?? undefined,
+      institutionAddress: institution?.address ?? undefined,
+      institutionPhone: institution?.phone ?? undefined,
+      institutionMobile: institution?.mobile ?? undefined,
+      institutionEmail: institution?.email ?? undefined,
+      institutionWebsite: institution?.website ?? undefined,
+      institutionLogoUrl: institution?.logoUrl ?? undefined,
       city,
       studentFullName: `${student.firstName} ${student.lastName}`.trim(),
       studentId: student.id,
       careerName,
       generatedAt,
       certificateCode: certificateId,
-    });
+    };
+
+    const isPayment = command.type === 'pago';
+
+    const pdfBuffer = isPayment
+      ? await this.pdfGenerator.generatePaymentCertificate({
+          ...certificateData,
+          paymentStatus,
+          paidInstallments,
+        })
+      : await this.pdfGenerator.generateEnrollmentCertificate(certificateData);
 
     const pdfUrl = await this.imageUpload.uploadDocument(
       pdfBuffer,
       'lms/certificados',
-      `certificado-matricula-${student.id}-${Date.now()}`,
+      `${isPayment ? 'certificado-pago' : 'certificado-matricula'}-${student.id}-${Date.now()}`,
     );
 
     const certificate = new CertificateEntity(

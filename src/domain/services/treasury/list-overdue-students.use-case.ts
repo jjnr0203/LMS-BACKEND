@@ -38,7 +38,10 @@ export class ListOverdueStudentsUseCase {
     }
 
     const { data: students } = await this.studentRepository.findPaginated(1, 100000);
-    const { data: tuitions } = await this.tuitionRepository.findAllWithStudent();
+    const { data: tuitions } = await this.tuitionRepository.findAllWithStudent(
+      100000,
+      0,
+    );
 
     const tuitionMap = new Map(tuitions.map((t) => [t.studentId, t]));
 

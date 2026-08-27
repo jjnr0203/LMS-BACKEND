@@ -7,6 +7,6 @@ export class GenerateCertificateDto {
 
   @IsOptional()
   @IsString()
-  @IsIn(['matricula'])
+  @IsIn(['matricula', 'pago'])
   type?: string;
 }

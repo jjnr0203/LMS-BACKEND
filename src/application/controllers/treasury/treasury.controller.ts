@@ -8,6 +8,7 @@ import { RegisterPaymentUseCase } from '@domain/services/treasury/register-payme
 import { CompleteTuitionUseCase } from '@domain/services/treasury/complete-tuition.use-case';
 import { CreateConvenioUseCase } from '@domain/services/treasury/create-convenio.use-case';
 import { EnrollStudentUseCase } from '@domain/services/treasury/enroll-student.use-case';
+import { MatricularUseCase } from '@domain/services/treasury/matricular.use-case';
 import { DisableAccountUseCase } from '@domain/services/treasury/disable-account.use-case';
 import { GetTreasuryDashboardUseCase } from '@domain/services/treasury/get-treasury-dashboard.use-case';
 import { RegisterPaymentDto } from '../../dto/treasury/register-payment.dto';
@@ -25,6 +26,7 @@ export class TreasuryController {
     private readonly completeTuitionUseCase: CompleteTuitionUseCase,
     private readonly createConvenioUseCase: CreateConvenioUseCase,
     private readonly enrollStudentUseCase: EnrollStudentUseCase,
+    private readonly matricularUseCase: MatricularUseCase,
     private readonly disableAccountUseCase: DisableAccountUseCase,
     private readonly getTreasuryDashboardUseCase: GetTreasuryDashboardUseCase,
   ) {}
@@ -76,6 +78,19 @@ export class TreasuryController {
   @Post('matricular')
   async enrollStudent(@Body() dto: EnrollStudentDto) {
     const { tuition } = await this.enrollStudentUseCase.execute(dto.studentId);
+    return {
+      message: 'Estudiante matriculado exitosamente',
+      tuition: {
+        studentId: tuition.studentId,
+        status: tuition.status,
+        paidInstallments: tuition.paidInstallments,
+      },
+    };
+  }
+
+  @Post('matriculas/:studentId/matricular')
+  async matricular(@Param('studentId') studentId: string) {
+    const { tuition } = await this.matricularUseCase.execute(studentId);
     return {
       message: 'Estudiante matriculado exitosamente',
       tuition: {

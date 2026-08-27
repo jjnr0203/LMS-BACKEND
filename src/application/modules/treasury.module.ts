@@ -6,6 +6,7 @@ import { RegisterPaymentUseCase } from '@domain/services/treasury/register-payme
 import { CompleteTuitionUseCase } from '@domain/services/treasury/complete-tuition.use-case';
 import { CreateConvenioUseCase } from '@domain/services/treasury/create-convenio.use-case';
 import { EnrollStudentUseCase } from '@domain/services/treasury/enroll-student.use-case';
+import { MatricularUseCase } from '@domain/services/treasury/matricular.use-case';
 import { DisableAccountUseCase } from '@domain/services/treasury/disable-account.use-case';
 import { GetTreasuryDashboardUseCase } from '@domain/services/treasury/get-treasury-dashboard.use-case';
 import { TuitionRepositoryPort } from '@domain/ports/outbound/academic/tuition-repository.port';
@@ -38,9 +39,11 @@ import { RepositoryProvidersModule } from './repository-providers.module';
     },
     {
       provide: GetTreasuryDashboardUseCase,
-      useFactory: (tuitionRepo: TuitionRepositoryPort) =>
-        new GetTreasuryDashboardUseCase(tuitionRepo),
-      inject: [TuitionRepositoryPort],
+      useFactory: (
+        tuitionRepo: TuitionRepositoryPort,
+        studentRepo: StudentRepositoryPort,
+      ) => new GetTreasuryDashboardUseCase(tuitionRepo, studentRepo),
+      inject: [TuitionRepositoryPort, StudentRepositoryPort],
     },
     {
       provide: RegisterPaymentUseCase,
@@ -64,6 +67,12 @@ import { RepositoryProvidersModule } from './repository-providers.module';
       provide: EnrollStudentUseCase,
       useFactory: (tuitionRepo: TuitionRepositoryPort) =>
         new EnrollStudentUseCase(tuitionRepo),
+      inject: [TuitionRepositoryPort],
+    },
+    {
+      provide: MatricularUseCase,
+      useFactory: (tuitionRepo: TuitionRepositoryPort) =>
+        new MatricularUseCase(tuitionRepo),
       inject: [TuitionRepositoryPort],
     },
     {
