@@ -18,11 +18,18 @@ export class GetTreasuryDashboardUseCase implements GetTreasuryDashboardUseCaseP
     const studentIds = new Set(students.map((s) => s.id));
     const validTuitions = tuitions.filter((t) => studentIds.has(t.studentId));
 
+    const matriculados = validTuitions.filter(
+      (t) => t.status === 'convenio' || t.status === 'pago_total',
+    );
+    const pendientes = validTuitions.filter(
+      (t) => t.status === 'no_paga' || t.status === 'pendiente',
+    );
+
     const stats = {
       total: students.length,
-      matriculados: validTuitions.length,
-      pendientes: students.length - validTuitions.length,
-      pagoTotal: validTuitions.filter((t) => t.status === 'pago_total').length,
+      matriculados: matriculados.length,
+      pendientes: pendientes.length,
+      pagoTotal: matriculados.filter((t) => t.status === 'pago_total').length,
       cuotasPagadas: validTuitions.reduce(
         (sum, t) => sum + t.paidInstallments,
         0,
