@@ -100,13 +100,13 @@ export class AuditSubscriber implements EntitySubscriberInterface {
 
       const primaryColumn = event.metadata.primaryColumns[0];
       if (primaryColumn) {
-        const idValue = event.entity[primaryColumn.propertyName] ?? event.databaseEntity[primaryColumn.propertyName];
-        audit.entityId = String(idValue);
+        const idValue = event.entity[primaryColumn.propertyName] ?? event.databaseEntity?.[primaryColumn.propertyName];
+        audit.entityId = idValue ? String(idValue) : 'unknown';
       } else {
         audit.entityId = 'unknown';
       }
 
-      audit.oldValues = event.databaseEntity;
+      audit.oldValues = event.databaseEntity ?? {};
       audit.newValues = event.entity;
       audit.userId = requestContext.getStore()?.userId || 'system';
 
